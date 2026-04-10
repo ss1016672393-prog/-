@@ -609,11 +609,16 @@ function renderAll() {
   if (activeChannel === 'concept') {
     document.getElementById('filterSection').innerHTML = '';
 
-    var conceptDocs = [];   // 名称含"概念推导"
+    var conceptDocs = [];   // 纯"XXX概念推导"格式
     var worldDocs = [];     // 其余 = 世界观元素
     for (var ci = 0; ci < docs.length; ci++) {
       var cd = docs[ci];
-      if ((cd.name || '').indexOf('概念推导') >= 0) {
+      // 严格匹配：名称以"概念推导"结尾，且前面没有额外描述性文字
+      var name = cd.name || '';
+      // 去掉前缀后判断：必须是简洁的"人名/项目名+概念推导"格式
+      var cleaned = name.replace(/^\s*【[^】]+】\s*/, '');
+      // 匹配模式：短名称 + 以"概念推导"结尾，不含其他业务关键词
+      if (/^[^【】\d]{2,15}概念推导$/.test(cleaned)) {
         conceptDocs.push(cd);
       } else {
         worldDocs.push(cd);
