@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="pageTitle">📋 CFH设计中心</title>
+<style>
+  :root {
+    --bg-primary: #0d1117;
+    --bg-secondary: #161b22;
+    --bg-card: #1c2128;
+    --bg-hover: #242c38;
+    --border-color: #30363d;
+    --text-primary: #e6edf3;
+    --text-secondary: #8b949e;
+    --text-muted: #6e7681;
+    --accent: #58a6ff;
+    --accent-hover: #79c0ff;
+    --status-design: #f0883e;
+    --status-review: #d29922;
+    --status-done: #3fb950;
+    --status-paused: #8957e5;
+    --tag-bg: rgba(88,166,255,0.12);
+    --tag-text: #58a6ff;
+    --shadow: 0 4px 12px rgba(0,0,0,0.3);
+    --radius: 10px;
+    --radius-sm: 6px;
+
+    /* 职能 Tab 主题色 */
+    --tab-ixd-color: #a259ff;
+    --tab-ixd-bg: rgba(162,89,255,0.12);
+    --tab-vis-color: #f24e1e;
+    --tab-vis-bg: rgba(242,78,30,0.12);
+    --tab-refactor-color: #00f2fe;
+    --tab-refactor-bg: rgba(0,242,254,0.10);
+    --tab-weekly-color: #ff7262;
+    --tab-weekly-bg:rgba(255,114,98,0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', 'PingFang SC', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.5;
+  }
+
+  /* 居中容器 */
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  /* ===== Header ===== */
+  .header {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding: 20px 0 0;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .header .container {
+    display: block;
+  }
+  .header-top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+    flex-wrap: wrap; gap: 12px;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, #a259ff, #f24e1e, #ff7262);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .logo-text { font-size: 20px; font-weight: 700; }
+  .logo-sub { font-size: 12px; color: var(--text-secondary); }
+
+  /* Search */
+  .search-bar { position: relative; max-width: 460px; width: 100%; }
+  .search-input {
+    width: 100%;
+    padding: 10px 16px 10px 42px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 14px; outline: none; transition: border-color 0.2s;
+  }
+  .search-input:focus { border-color: var(--accent); }
+  .search-input::placeholder { color: var(--text-muted); }
+  .search-icon {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    color: var(--text-muted); font-size: 14px;
+  }
+
+  /* ===== 职能 Tab 导航栏（新增）===== */
+  .nav-tabs {
+    display: flex; gap: 4px;
+    padding: 0 0 0; margin-top: 4px;
+    border-bottom: 1px solid var(--border-color);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .nav-tabs::-webkit-scrollbar { height: 0; }
+  .nav-tab {
+    flex-shrink: 0;
+    padding: 10px 22px;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer; border: none; border-bottom: 2px solid transparent;
+    background: none; color: var(--text-secondary);
+    transition: all 0.2s; position: relative;
+    white-space: nowrap;
+    letter-spacing: 0.3px;
+  }
+  .nav-tab:hover { color: var(--text-primary); background: var(--bg-hover); }
+  /* 各 Tab 激活态 — 用对应职能色 */
+  .nav-tab.active-ixd {
+    color: var(--tab-ixd-color);
+    border-bottom-color: var(--tab-ixd-color);
+  }
+  .nav-tab.active-vis {
+    color: var(--tab-vis-color);
+    border-bottom-color: var(--tab-vis-color);
+  }
+  .nav-tab.active-refactor {
+    color: var(--tab-refactor-color);
+    border-bottom-color: var(--tab-refactor-color);
+  }
+  .nav-tab.active-weekly {
+    color: var(--tab-weekly-color);
+    border-bottom-color: var(--tab-weekly-color);
+  }
+
+  /* Tab 角标数字 */
+  .nav-tab .tab-count {
+    font-size: 11px; font-weight: 700;
+    margin-left: 6px;
+    padding: 1px 7px; border-radius: 10px;
+    vertical-align: middle;
+  }
+  .nav-tab.active-ixd .tab-count   { background: var(--tab-ixd-bg); color: var(--tab-ixd-color); }
+  .nav-tab.active-vis .tab-count    { background: var(--tab-vis-bg); color: var(--tab-vis-color); }
+  .nav-tab.active-refactor .tab-count{ background: var(--tab-refactor-bg); color: var(--tab-refactor-color); }
+  .nav-tab.active-weekly .tab-count { background: var(--tab-weekly-bg); color: var(--tab-weekly-color); }
+  .nav-tab:not(.active-ixd):not(.active-vis):not(.active-refactor):not(.active-weekly) .tab-count {
+    background: var(--bg-card); color: var(--text-muted);
+  }
+
+  /* Stats */
+  .stats-row {
+    display: flex; gap: 16px; padding: 20px 0; flex-wrap: wrap;
+  }
+  .stat-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 12px 18px;
+    display: flex; align-items: center; gap: 12px;
+    min-width: 120px;
+  }
+  .stat-num { font-size: 24px; font-weight: 700; }
+  .stat-label { font-size: 13px; color: var(--text-secondary); }
+
+  /* Filter Tabs */
+  .filter-section {
+    padding: 0 0 16px;
+    display: flex; flex-direction: column; gap: 0;
+  }
+  .filter-label { font-size: 13px; color: var(--text-secondary); margin-right: 4px; }
+  .filter-tab {
+    padding: 5px 14px; border-radius: 20px; font-size: 13px;
+    cursor: pointer; border: 1px solid transparent;
+    background: transparent; color: var(--text-secondary);
+    transition: all 0.15s;
+  }
+  .filter-tab:hover { background: var(--bg-hover); color: var(--text-primary); }
+  .filter-tab.active {
+    background: var(--tag-bg); color: var(--tag-text);
+    border-color: rgba(88,166,255,0.25);
+  }
+  /* 板块按钮稍微大一点，区分层级 */
+  .section-tab { font-weight: 600; padding: 6px 18px; }
+  .cat-tab { font-size: 12px; }
+
+  /* 两行筛选垂直堆叠 */
+  .filter-row-section {
+    display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+    margin-bottom: 10px; padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .filter-row-cat {
+    display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+    min-height: 36px;
+  }
+
+  /* Main Content */
+  .main { padding: 0 0 60px; }
+
+  /* Section Group (板块分组) */
+  .section-group { margin-bottom: 56px; }
+  .section-title {
+    font-size: 20px; font-weight: 700; color: var(--text-primary);
+    margin-bottom: 18px; padding-bottom: 10px;
+    border-bottom: 2px solid var(--accent);
+    display: inline-block;
+  }
+
+  /* Category Section */
+  .category-section { margin-bottom: 32px; }
+  .category-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 14px; padding-left: 12px;
+    border-left: 3px solid var(--accent);
+  }
+  .category-count {
+    font-size: 13px; color: var(--text-muted);
+    background: var(--bg-card); padding: 2px 10px; border-radius: 10px;
+  }
+
+  /* Card Grid */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+  }
+
+  /* Doc Card */
+  .doc-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none; color: inherit;
+    display: block; position: relative;
+  }
+  .doc-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+
+  /* 新文档角标 */
+  .new-badge {
+    display: inline-block; margin-left: 6px;
+    background: linear-gradient(135deg, #f0883e, #ff6b35);
+    color: #fff; font-size: 11px; font-weight: 700;
+    padding: 1px 7px; border-radius: 8px;
+    line-height: 1.4; vertical-align: middle;
+    animation: pulse-badge 2s ease-in-out infinite;
+  }
+  @keyframes pulse-badge {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.05); }
+  }
+
+  /* 已访问效果 */
+  .doc-card.visited { opacity: 0.55; }
+  .doc-card.visited:hover { opacity: 0.85; }
+  .card-top {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .card-title {
+    font-size: 15px; font-weight: 600;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card-title .figma-icon { color: #a259ff; font-size: 15px; }
+  .card-status {
+    font-size: 11px; padding: 3px 10px; border-radius: 12px; font-weight: 500;
+    white-space: nowrap;
+  }
+  .status-designing { background: rgba(240,136,62,0.15); color: var(--status-design); }
+  .status-review   { background: rgba(210,153,34,0.15); color: var(--status-review); }
+  .status-done     { background: rgba(63,185,80,0.15); color: var(--status-done); }
+  .status-paused   { background: rgba(137,87,229,0.15); color: var(--status-paused); }
+
+  .card-desc {
+    font-size: 13px; color: var(--text-secondary);
+    margin-bottom: 14px;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .card-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+  .card-tag {
+    font-size: 11px; padding: 2px 8px; border-radius: 4px;
+    background: var(--tag-bg); color: var(--tag-text);
+  }
+  .card-tag.phase { background: rgba(137,87,229,0.12); color: #a371f7; }
+
+  .card-meta {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 12px; color: var(--text-muted);
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+  }
+  .card-owner { display: flex; align-items: center; gap: 6px; }
+  .avatar {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; color: white; font-weight: 600;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center; padding: 30px;
+    color: var(--text-muted); font-size: 12px;
+    border-top: 1px solid var(--border-color); margin-top: 40px;
+  }
+
+  /* No Results */
+  .no-results { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+  .no-results-icon { font-size: 48px; margin-bottom: 12px; }
+
+  /* 空状态（Tab 无数据） */
+  .empty-tab {
+    text-align: center; padding: 80px 20px;
+    color: var(--text-muted);
+  }
+  .empty-tab-icon { font-size: 56px; margin-bottom: 16px; }
+  .empty-tab h3 { font-size: 18px; color: var(--text-secondary); margin-bottom: 8px; font-weight: 600; }
+  .empty-tab p { font-size: 13px; }
+
+  /* Loading */
+  .loading {
+    text-align: center; padding: 80px 20px; color: var(--text-muted);
+    font-size: 15px;
+  }
+  .loading-spinner {
+    display: inline-block; width: 24px; height: 24px;
+    border: 3px solid var(--border-color);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle; margin-right: 10px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .doc-card { animation: fadeIn 0.3s ease-out forwards; }
+
+  @media (max-width: 768px) {
+    .container { padding: 0 20px; }
+    .header { padding: 16px 0 0; }
+    .stats-row { padding: 16px 0; }
+    .filter-section { padding: 0 0 12px; }
+    .main { padding: 0 0 40px; }
+    .card-grid { grid-template-columns: 1fr; }
+    .nav-tab { padding: 8px 14px; font-size: 13px; }
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <div class="container">
+  <div class="header-top">
+    <div class="logo">
+      <div class="logo-icon">🎮</div>
+      <div>
+        <div class="logo-text" id="logoTitle">CFH设计中心</div>
+        <div class="logo-sub" id="logoSub">CFH Design Hub</div>
+      </div>
+    </div>
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-input" id="searchInput"
+             placeholder="搜索文档名称、标签或负责人..." oninput="renderAll()">
+    </div>
+  </div>
+
+  <!-- 职能 Tab 导航 -->
+  <nav class="nav-tabs" id="navTabs"></nav>
+  </div>
+</header>
+
+<!-- Stats -->
+<div class="stats-row container" id="statsRow"></div>
+
+<!-- Filters -->
+<div class="filter-section container" id="filterSection"></div>
+
+<!-- Main Content -->
+<main class="main container" id="mainContent">
+  <div class="loading"><span class="loading-spinner"></span>正在加载数据...</div>
+</main>
+
+<!-- Footer -->
+<footer class="footer">
+  <p id="footerText">📋 CFH设计中心 · 最后更新中...</p>
+</footer>
+
+<script src="data.js"></script>
+<script>
+/**
+ * ============================================================
+ * 🎮 CFH 设计中心 - 多职能索引页
+ * ============================================================
+ * 支持多个职能 Tab：交互稿 / 视觉稿 / 重构落地 / 概念推导&周报
+ * 每个 Tab 独立展示对应的文档集合
+ */
+
+// ========== 职能定义 ==========
+// 每个 Tab 对应 data.js 中的一套独立数据（通过 channel 字段区分）
+var CHANNELS = [
+  { key: 'ixd',       label: '✏️ 交互稿',     shortLabel: '交互稿',     colorClass: 'ixd',       icon: '✏️' },
+  { key: 'refactor',  label: '🔧 重构落地',    shortLabel: '重构落地',    colorClass: 'refactor',  icon: '🔧' },
+  { key: 'weekly',    label: '📊 概念推导 & 周报', shortLabel: '概念/周报', colorClass: 'weekly',  icon: '📊' },
+];
+
+var activeChannel = 'ixd';   // 当前选中的职能 Tab
+var activeCategory = 'all';
+var activeSection = 'all';   // 板块筛选
+var activeStatus = 'all';    // 状态筛选
+var newDocSet = null;        // 随机标记"新"的文档 URL 集合
+var appData = null;          // 当前职能的数据
+
+// ========== 初始化 ==========
+(function init() {
+  try {
+    if (typeof DOC_DATA === 'undefined' && typeof INDEX_DATA === 'undefined') {
+      showError('⚠️ 数据文件加载失败，请确认 data.js 存在');
+      return;
+    }
+    // 兼容旧格式：如果 DOC_DATA 是单对象，包装为多通道格式
+    if (typeof DOC_DATA !== 'undefined' && !DOC_DATA.channels) {
+      appData = { channels: {} };
+      appData.channels['ixd'] = DOC_DATA;
+      appData.channels['refactor'] = { title: 'CFH重构落地', subtitle: '', documents: [], updatedAt: '' };
+      appData.channels['weekly']   = { title: 'CFH概念推导 & 周报', subtitle: '', documents: [], updatedAt: '' };
+    } else if (typeof INDEX_DATA !== 'undefined' && !INDEX_DATA.channels) {
+      appData = { channels: {} };
+      appData.channels['ixd'] = INDEX_DATA;
+      appData.channels['refactor'] = { title: 'CFH重构落地', subtitle: '', documents: [], updatedAt: '' };
+      appData.channels['weekly']   = { title: 'CFH概念推导 & 周报', subtitle: '', documents: [], updatedAt: '' };
+    } else {
+      appData = typeof DOC_DATA !== 'undefined' ? DOC_DATA : INDEX_DATA;
+    }
+
+    renderNavTabs();
+    switchChannel('ixd');
+  } catch(e) {
+    showError('❌ 页面初始化失败: ' + e.message);
+  }
+})();
+
+// ========== 渲染职能导航 Tab ==========
+function renderNavTabs() {
+  var html = '';
+  for (var i = 0; i < CHANNELS.length; i++) {
+    var ch = CHANNELS[i];
+    var chData = (appData.channels && appData.channels[ch.key]) || {};
+    var docs = chData.documents || [];
+    var count = docs.length;
+    var activeCls = activeChannel === ch.key ? ' active-' + ch.colorClass : '';
+    html += '<button class="nav-tab' + activeCls + '" onclick="switchChannel(\'' + ch.key + '\')">' +
+            ch.label + '<span class="tab-count">' + count + '</span></button>';
+  }
+  document.getElementById('navTabs').innerHTML = html;
+}
+
+// ========== 切换职能 Tab ==========
+function switchChannel(channelKey) {
+  activeChannel = channelKey;
+  activeCategory = 'all';
+  activeSection = 'all';
+  activeStatus = 'all';
+
+  // 更新 Tab 高亮
+  var tabs = document.querySelectorAll('.nav-tab');
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].className = 'nav-tab';
+  }
+  // 重新渲染 Tab 以更新高亮和计数
+  renderNavTabs();
+
+  // 获取当前通道的数据
+  appData = (typeof DOC_DATA !== 'undefined' ? DOC_DATA : INDEX_DATA);
+  // 兼容处理：如果是旧格式
+  if (!appData.channels) return;
+  var chData = appData.channels[channelKey] || { documents: [] };
+
+  // 设置新文档标记集
+  var docs = chData.documents || [];
+  var urls = docs.map(function(d) { return d.url || d.name; });
+  var shuffled = urls.slice().sort(function() { return Math.random() - 0.5; });
+  var pickCount = Math.min(Math.max(4, Math.floor(docs.length * 0.1)), 8);
+  newDocSet = {};
+  for (var j = 0; j < pickCount && j < shuffled.length; j++) {
+    newDocSet[shuffled[j]] = true;
+  }
+
+  renderAll();
+}
+
+// ========== 主渲染函数 ==========
+function renderAll() {
+  // 兼容获取当前通道数据
+  var allData = (typeof DOC_DATA !== 'undefined' ? DOC_DATA : INDEX_DATA);
+  if (!allData) return;
+  var chData = allData.channels ? (allData.channels[activeChannel] || {}) : allData;
+  var docs = chData.documents || [];
+  var keyword = document.getElementById('searchInput').value.toLowerCase().trim();
+
+  // 更新全局信息
+  var chInfo = CHANNELS.find(function(c) { return c.key === activeChannel; });
+  var chLabel = chInfo ? chInfo.shortLabel : '文档';
+  document.getElementById('pageTitle').textContent = '🎮 CFH设计中心 · ' + chLabel;
+  document.getElementById('logoTitle').textContent = 'CFH设计中心';
+  document.getElementById('logoSub').textContent = (chInfo ? chInfo.label : '') + (chData.subtitle ? ' · ' + chData.subtitle : '');
+  document.getElementById('footerText').innerHTML =
+    '🎮 CFH设计中心 · ' + chLabel +
+    ' · 最后更新 ' + (chData.updatedAt || chData.lastUpdated || new Date().toLocaleDateString('zh-CN'));
+
+  // 如果该 Tab 完全没有数据，显示空状态
+  if (docs.length === 0) {
+    renderEmptyTab(chInfo);
+    document.getElementById('statsRow').innerHTML = '';
+    document.getElementById('filterSection').innerHTML = '';
+    return;
+  }
+
+  // 按 categoryKey 分组
+  var grouped = {};
+  for (var i = 0; i < docs.length; i++) {
+    var d = docs[i];
+    var catKey = (d.categoryKey || 'other').toLowerCase();
+    if (!grouped[catKey]) grouped[catKey] = [];
+    grouped[catKey].push(d);
+  }
+
+  // 筛选
+  var filteredDocs = [];
+  var filteredGrouped = {};
+  Object.keys(grouped).forEach(function(catKey) {
+    var catDocs = grouped[catKey];
+    var firstDoc = catDocs[0] || null;
+    if (!firstDoc) return;
+    var docSec = (firstDoc.section || '其他');
+
+    // 板块过滤
+    if (activeSection !== 'all' && docSec !== activeSection) return;
+
+    var matched = catDocs.filter(function(d) {
+      if (activeCategory !== 'all' && (d.categoryKey || 'other').toLowerCase() !== activeCategory) return false;
+      if (activeStatus !== 'all') {
+        var docStatus = normalizeStatus(d.status || 'unknown');
+        if (activeStatus === 'designing' && docStatus !== 'designing') return false;
+        if (activeStatus === 'review' && docStatus !== 'review') return false;
+        if (activeStatus === 'done' && docStatus !== 'done') return false;
+      }
+      if (keyword) {
+        var haystack = (d.name || '') + ' ' + (d.tags || []).join(' ') + ' ' + (d.owner || '') + ' ' + (d.desc || '');
+        if (haystack.toLowerCase().indexOf(keyword) === -1) return false;
+      }
+      return true;
+    });
+    if (matched.length > 0) {
+      filteredGrouped[catKey] = { category: matched[0].category || catKey, docs: matched };
+      filteredDocs = filteredDocs.concat(matched);
+    }
+  });
+
+  // 渲染各部分
+  renderStats(filteredDocs, chInfo);
+  renderFilters(grouped);
+  renderContent(filteredGrouped, filteredDocs.length === 0 && keyword);
+}
+
+// ========== 统计栏 ==========
+function renderStats(docs, chInfo) {
+  var total = docs.length;
+  // 兼容多种状态命名
+  var s = { designing: 0, review: 0, done: 0, paused: 0 };
+  for (var i = 0; i < docs.length; i++) {
+    var st = normalizeStatus(docs[i].status || 'unknown');
+    if (s.hasOwnProperty(st)) s[st]++;
+  }
+  var iconColor = '#58a6ff';
+  if (chInfo) {
+    if (chInfo.colorClass === 'ixd')      iconColor = '#a259ff';
+    else if (chInfo.colorClass === 'vis')  iconColor = '#f24e1e';
+    else if (chInfo.colorClass === 'refactor') iconColor = '#00f2fe';
+    else if (chInfo.colorClass === 'weekly') iconColor = '#ff7262';
+  }
+
+  var statLabel = (chInfo && chInfo.shortLabel) ? chInfo.shortLabel.replace(/&/g, '&') : '文档';
+
+  var html =
+    '<div class="stat-card" onclick="filterByStatus(\'all\')" style="cursor:pointer;">' +
+      '<span style="color:' + iconColor + ';font-weight:700;font-size:20px;">' + (chInfo ? chInfo.icon : '📄') + '</span>' +
+      '<div><div class="stat-num">' + total + '</div><div class="stat-label">' + statLabel + '</div></div>' +
+    '</div>' +
+    '<div class="stat-card" onclick="filterByStatus(\'designing\')" style="cursor:pointer;">' +
+      '<span style="color:#f0883e;font-weight:700;font-size:20px;">✏️</span>' +
+      '<div><div class="stat-num">' + s.designing + '</div><div class="stat-label">新建</div></div>' +
+    '</div>' +
+    '<div class="stat-card" onclick="filterByStatus(\'review\')" style="cursor:pointer;">' +
+      '<span style="color:#d29922;font-weight:700;font-size:20px;">👀</span>' +
+      '<div><div class="stat-num">' + s.review + '</div><div class="stat-label">设计中</div></div>' +
+    '</div>' +
+    '<div class="stat-card" onclick="filterByStatus(\'done\')" style="cursor:pointer;">' +
+      '<span style="color:#3fb950;font-weight:700;font-size:20px;">✅</span>' +
+      '<div><div class="stat-num">' + s.done + '</div><div class="stat-label">已定稿</div></div>' +
+    '</div>';
+
+  document.getElementById('statsRow').innerHTML = html;
+}
+
+// ========== 空状态（某 Tab 无数据时）==========
+function renderEmptyTab(chInfo) {
+  var container = document.getElementById('mainContent');
+  var iconName = chInfo ? chInfo.icon : '📭';
+  var tabName = chInfo ? chInfo.label : '此分类';
+  container.innerHTML =
+    '<div class="empty-tab">' +
+      '<div class="empty-tab-icon">' + iconName + '</div>' +
+      '<h3>' + escapeHtml(tabName) + ' 整理中…</h3>' +
+      '<p>该分类暂无内容，敬请期待！<br>后续会陆续添加相关文档。</p>' +
+    '</div>';
+}
+
+// ========== 分类筛选标签（板块 + 子分类两层）==========
+function renderFilters(grouped) {
+  var sections = {};
+
+  Object.keys(grouped).forEach(function(catKey) {
+    var catInfo = grouped[catKey];
+    var doc = Array.isArray(catInfo) ? catInfo[0] : (catInfo.docs && catInfo.docs.length ? catInfo.docs[0] : null);
+    if (!doc) return;
+    var sec = doc.section || '其他';
+    var catName = catInfo.category || doc.category || catKey;
+    var count = Array.isArray(catInfo) ? catInfo.length : (catInfo.docs ? catInfo.docs.length : 0);
+
+    if (!sections[sec]) sections[sec] = { total: 0, cats: [] };
+    sections[sec].total += count;
+    sections[sec].cats.push({ key: catKey, name: catName, count: count, sectionOrder: doc.sectionOrder || 99 });
+  });
+
+  var sectionOrder = ['局外', '局内', '主机相关', '通用'];
+  var sortedSections = Object.keys(sections).sort(function(a, b) {
+    var ai = sectionOrder.indexOf(a), bi = sectionOrder.indexOf(b);
+    return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+  });
+
+  // 第一行：板块按钮
+  var sectionHtml = '<button class="filter-tab section-tab' + (activeSection === 'all' ? ' active' : '') +
+                 '" onclick="setSection(this, \'all\')">📋 全部</button>';
+
+  for (var si = 0; si < sortedSections.length; si++) {
+    var secName = sortedSections[si];
+    var secData = sections[secName];
+    sectionHtml += '<button class="filter-tab section-tab' + (activeSection === secName ? ' active' : '') +
+                   '" onclick="setSection(this, \'' + escapeHtml(secName) + '\')">' +
+                   '📂 ' + escapeHtml(secName) + ' (' + secData.total + ')</button>';
+  }
+
+  // 第二行：子分类标签
+  var categoryHtml = '';
+  categoryHtml += '<button class="filter-tab cat-tab' + (activeCategory === 'all' ? ' active' : '') + '" onclick="setFilter(this, \'all\')">全部</button>';
+
+  var showCats = (activeSection === 'all')
+    ? sortedSections.map(function(s) { return sections[s].cats; }).reduce(function(a, b) { return a.concat(b); }, [])
+    : (sections[activeSection] ? sections[activeSection].cats : []);
+
+  showCats.sort(function(a, b) { return (a.sectionOrder || 0) - (b.sectionOrder || 0); });
+  for (var i = 0; i < showCats.length; i++) {
+    var c = showCats[i];
+    categoryHtml += '<button class="filter-tab cat-tab' + (activeCategory === c.key ? ' active' : '') +
+                    '" onclick="setFilter(this,\'' + c.key + '\')">📦 ' + c.name + ' (' + c.count + ')</button>';
+  }
+
+  document.getElementById('filterSection').innerHTML =
+    '<div class="filter-row-section">' + sectionHtml + '</div>' +
+    '<div class="filter-row-cat">' + categoryHtml + '</div>';
+}
+
+// 设置板块筛选
+function setSection(btn, section) {
+  document.querySelectorAll('.section-tab').forEach(function(t) { t.classList.remove('active'); });
+  btn.classList.add('active');
+  activeSection = section;
+  activeCategory = 'all';
+  renderAll();
+}
+
+// 设置状态筛选
+function filterByStatus(status) {
+  document.querySelectorAll('.stat-card').forEach(function(c) { c.style.opacity = '0.5'; });
+  event.currentTarget.style.opacity = '1';
+  activeStatus = status;
+  renderAll();
+}
+
+// ========== 内容区域（按板块分组渲染）==========
+function renderContent(grouped, showNoResults) {
+  var container = document.getElementById('mainContent');
+
+  if (showNoResults) {
+    container.innerHTML =
+      '<div class="no-results">' +
+        '<div class="no-results-icon">🔍</div>' +
+        '<p>没有找到匹配的文档</p>' +
+        '<p style="font-size:13px;margin-top:4px;color:var(--text-muted);">试试其他关键词</p>' +
+      '</div>';
+    return;
+  }
+
+  // 按 section 分组
+  var sections = {};
+  Object.keys(grouped).forEach(function(catKey) {
+    var catInfo = grouped[catKey];
+    if (!catInfo || !catInfo.docs) return;
+    var doc = catInfo.docs.length ? catInfo.docs[0] : null;
+    if (!doc) return;
+    var sec = doc.section || '其他';
+    if (!sections[sec]) sections[sec] = { docs: {}, order: doc.sectionOrder || 99 };
+    sections[sec].docs[catKey] = catInfo;
+  });
+
+  var sectionOrder = ['局外', '局内', '主机相关', '通用'];
+  var sortedSecs = Object.keys(sections).sort(function(a, b) {
+    var ai = sectionOrder.indexOf(a), bi = sectionOrder.indexOf(b);
+    return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+  });
+
+  var html = '';
+
+  for (var si = 0; si < sortedSecs.length; si++) {
+    var secName = sortedSecs[si];
+    var secData = sections[secName];
+
+    html += '<section class="section-group">';
+    html += '<h2 class="section-title">' + escapeHtml(secName) + '</h2>';
+
+    var catKeys = Object.keys(secData.docs).sort();
+    for (var ci = 0; ci < catKeys.length; ci++) {
+      var catKey = catKeys[ci];
+      var catInfo = grouped[catKey];
+      var catName = catInfo.category || catKey;
+      var catDocs = catInfo.docs;
+
+      html += '<div class="category-section" data-category="' + catKey + '">' +
+        '<div class="category-header">' +
+          '<span class="category-title">' + escapeHtml(catName) + '</span>' +
+          '<span class="category-count">' + catDocs.length + '</span>' +
+        '</div>' +
+        '<div class="card-grid">';
+
+      for (var di = 0; di < catDocs.length; di++) {
+        html += renderCard(catDocs[di], di);
+      }
+
+      html += '</div></div>';
+    }
+    html += '</section>';
+  }
+
+  container.innerHTML = html;
+}
+
+// ========== 单个卡片 ==========
+function renderCard(doc, index) {
+  var statusInfo = getStatusInfo(doc.status);
+  var isNew = newDocSet && !!(newDocSet[doc.url] || newDocSet[doc.name]);
+  var newBadge = isNew ? '<span class="new-badge">新</span>' : '';
+  var ownerHtml = doc.owner
+    ? '<div class="card-owner"><div class="avatar" style="' + getAvatarColor(doc.owner) + '">' + doc.owner.charAt(0) + '</div> ' + escapeHtml(doc.owner) + '</div>'
+    : '<div class="card-owner"></div>';
+  var updatedHtml = doc.updatedAt ? '<span>更新于 ' + doc.updatedAt + '</span>' : '';
+
+  var visitedKey = 'visited_' + (doc.url || doc.name);
+  var isVisited = localStorage.getItem(visitedKey) === '1';
+  var visitedCls = isVisited ? ' visited' : '';
+
+  var tagsHtml = '';
+  if (doc.tags && doc.tags.length > 0) {
+    tagsHtml = '<div class="card-tags">';
+    for (var ti = 0; ti < doc.tags.length; ti++) {
+      var tag = doc.tags[ti];
+      var isPhase = /^v?\d/.test(tag);
+      tagsHtml += '<span class="card-tag' + (isPhase ? ' phase' : '') + '">' + escapeHtml(tag) + '</span>';
+    }
+    tagsHtml += '</div>';
+  } else {
+    tagsHtml = '<div class="card-tags"></div>';
+  }
+
+  return '<a class="doc-card' + visitedCls + '" href="' + escapeHtml(doc.url || '#') + '" target="_blank" rel="noopener"' +
+    ' style="animation-delay:' + (index * 0.03) + 's"' +
+    ' data-visit-key="' + escapeHtml(visitedKey) + '"' +
+    ' onclick="markVisited(this)">' +
+    '<div class="card-top">' +
+      '<span class="card-title"><span class="figma-icon">◉</span> ' + escapeHtml(doc.name) + newBadge + '</span>' +
+      '<span class="card-status ' + statusInfo.cls + '">' + statusInfo.label + '</span>' +
+    '</div>' +
+    '<div class="card-desc">' + escapeHtml(doc.desc || '') + '</div>' +
+    tagsHtml +
+    '<div class="card-meta">' + ownerHtml + updatedHtml + '</div>' +
+    '</a>';
+}
+
+// 标记为已访问
+function markVisited(el) {
+  var key = el.getAttribute('data-visit-key');
+  if (key) localStorage.setItem(key, '1');
+}
+
+// ========== 工具函数 ==========
+
+/**
+ * 将各种状态值归一化为标准四态
+ */
+function normalizeStatus(status) {
+  var s = (status || 'unknown').toLowerCase();
+  if (['designing', 'wip', 'active', 'new'].indexOf(s) !== -1) return 'designing';
+  if (['review', 'reviewing', '评审中', '进行中'].indexOf(s) !== -1) return 'review';
+  if (['done', 'complete', 'finished', 'stable', '定稿', '已定稿'].indexOf(s) !== -1) return 'done';
+  if (['paused', 'suspended', 'archived', '暂缓', '延期'].indexOf(s) !== -1) return 'paused';
+  // 未知状态默认归入 designing
+  return 'designing';
+}
+
+function setFilter(btn, category) {
+  document.querySelectorAll('.filter-tab').forEach(function(t) { t.classList.remove('active'); });
+  btn.classList.add('active');
+  activeCategory = category;
+  renderAll();
+}
+
+function getStatusInfo(status) {
+  // 完整的状态映射（覆盖 Figma API 返回值 + 自定义状态）
+  var map = {
+    // 标准四态
+    designing: { label: '新建',     cls: 'status-designing' },
+    wip:       { label: '新建',     cls: 'status-designing' },
+    review:    { label: '评审中',   cls: 'status-review' },
+    reviewing: { label: '评审中',   cls: 'status-review' },
+    done:      { label: '已定稿',   cls: 'status-done' },
+    complete:  { label: '已定稿',   cls: 'status-done' },
+    finished:  { label: '已定稿',   cls: 'status-done' },
+    paused:    { label: '暂缓',     cls: 'status-paused' },
+    suspended: { label: '暂缓',     cls: 'status-paused' },
+    // Figma 文件常见状态
+    active:    { label: '进行中',   cls: 'status-designing' },
+    stable:    { label: '稳定版',   cls: 'status-done' },
+    archived:  { label: '已归档',   cls: 'status-paused' },
+    none:      { label: '',         cls: '' },
+    unknown:   { label: '',         cls: '' },
+  };
+  return map[(status || '').toLowerCase()] || { label: String(status || ''), cls: 'status-designing' };
+}
+
+function getAvatarColor(name) {
+  var colors = [
+    'background:linear-gradient(135deg,#667eea,#764ba2)',
+    'background:linear-gradient(135deg,#f093fb,#f5576c)',
+    'background:linear-gradient(135deg,#4facfe,#00f2fe)',
+    'background:linear-gradient(135deg,#fa709a,#fee140)',
+    'background:linear-gradient(135deg,#a8edea,#fed6e3)',
+    'background:linear-gradient(135deg,#d299c2,#fef9d7)',
+  ];
+  var hash = 0;
+  for (var i = 0; i < (name || '').length; i++) { hash = name.charCodeAt(i) + ((hash << 5) - hash); }
+  return colors[Math.abs(hash) % colors.length];
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  var div = document.createElement('div');
+  div.appendChild(document.createTextNode(str));
+  return div.innerHTML;
+}
+
+function showError(msg) {
+  document.getElementById('mainContent').innerHTML =
+    '<div class="no-results"><div class="no-results-icon">⚠️</div><p>' + msg + '</p></div>';
+}
+
+// 快捷键: / 聚焦搜索框
+document.addEventListener('keydown', function(e) {
+  if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+    e.preventDefault();
+    document.getElementById('searchInput').focus();
+  }
+});
+</script>
+
+</body>
+</html>
