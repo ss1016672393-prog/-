@@ -1,5 +1,5 @@
 // CFH 设计中心索引数据 | 多职能通道格式
-// 更新时间: 2026-04-10 16:35:21
+// 更新时间: 2026-04-10 16:43:38
 // 总计: 179 个文件 | 3 个通道
 
 var DOC_DATA = {
@@ -7,7 +7,7 @@ var DOC_DATA = {
     "ixd": {
       "title": "CFH交互稿索引",
       "subtitle": "Figma 交互设计文档",
-      "updatedAt": "2026-04-10 16:35:18",
+      "updatedAt": "2026-04-10 16:43:35",
       "totalDocuments": 78,
       "sections": [
             {
@@ -602,7 +602,7 @@ var DOC_DATA = {
                   "section": "局外",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T06:33:20Z"
+                  "lastModified": "2026-04-10T08:40:27Z"
             },
             {
                   "name": "【设计稿】派遣 MS8",
@@ -912,7 +912,7 @@ var DOC_DATA = {
                   "section": "局内",
                   "sectionOrder": 2,
                   "status": "active",
-                  "lastModified": "2026-04-10T08:20:25Z"
+                  "lastModified": "2026-04-10T08:38:20Z"
             },
             {
                   "name": "【设计稿】局内HUD-主机适配",
@@ -939,7 +939,7 @@ var DOC_DATA = {
     "refactor": {
       "title": "CFH重构落地",
       "subtitle": "重构与落地跟踪",
-      "updatedAt": "2026-04-10 16:35:19",
+      "updatedAt": "2026-04-10 16:43:36",
       "totalDocuments": 11,
       "sections": [
             {
@@ -1094,7 +1094,7 @@ var DOC_DATA = {
     "weekly": {
       "title": "CFH概念推导 & 周报",
       "subtitle": "概念推导、周报与汇报材料",
-      "updatedAt": "2026-04-10 16:35:21",
+      "updatedAt": "2026-04-10 16:43:38",
       "totalDocuments": 90,
       "sections": [
             {
@@ -1272,7 +1272,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T08:07:22Z"
+                  "lastModified": "2026-04-10T08:43:12Z"
             },
             {
                   "name": "【概念推导】PVE界面问题讨论",
@@ -1302,7 +1302,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T07:21:33Z"
+                  "lastModified": "2026-04-10T08:42:13Z"
             },
             {
                   "name": "【概念推导】Zongshi概念推导",
@@ -1322,7 +1322,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T08:32:24Z"
+                  "lastModified": "2026-04-10T08:42:42Z"
             },
             {
                   "name": "【概念推导】loop概念推导",
@@ -1542,7 +1542,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T08:32:59Z"
+                  "lastModified": "2026-04-10T08:43:33Z"
             },
             {
                   "name": "王慧概念推导",
@@ -1856,16 +1856,6 @@ var DOC_DATA = {
             },
             {
                   "name": "2025.7月周报",
-                  "url": "https://www.figma.com/file/MgvCHXbyfjVunlBGyNGkzy",
-                  "category": "周报",
-                  "categoryKey": "W03",
-                  "section": "推导&周报",
-                  "sectionOrder": 1,
-                  "status": "stable",
-                  "lastModified": "2025-08-06T08:33:37Z"
-            },
-            {
-                  "name": "2025.7月周报",
                   "url": "https://www.figma.com/file/28XgVtjtufuUtBEWi1V1Jn",
                   "category": "周报",
                   "categoryKey": "W03",
@@ -1873,6 +1863,16 @@ var DOC_DATA = {
                   "sectionOrder": 1,
                   "status": "stable",
                   "lastModified": "2025-08-07T08:06:59Z"
+            },
+            {
+                  "name": "2025.7月周报",
+                  "url": "https://www.figma.com/file/MgvCHXbyfjVunlBGyNGkzy",
+                  "category": "周报",
+                  "categoryKey": "W03",
+                  "section": "推导&周报",
+                  "sectionOrder": 1,
+                  "status": "stable",
+                  "lastModified": "2025-08-06T08:33:37Z"
             },
             {
                   "name": "2025.8月周报",
