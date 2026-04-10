@@ -1,5 +1,5 @@
 // CFH 设计中心索引数据 | 多职能通道格式
-// 更新时间: 2026-04-10 16:43:38
+// 更新时间: 2026-04-10 16:45:20
 // 总计: 179 个文件 | 3 个通道
 
 var DOC_DATA = {
@@ -7,7 +7,7 @@ var DOC_DATA = {
     "ixd": {
       "title": "CFH交互稿索引",
       "subtitle": "Figma 交互设计文档",
-      "updatedAt": "2026-04-10 16:43:35",
+      "updatedAt": "2026-04-10 16:45:17",
       "totalDocuments": 78,
       "sections": [
             {
@@ -939,7 +939,7 @@ var DOC_DATA = {
     "refactor": {
       "title": "CFH重构落地",
       "subtitle": "重构与落地跟踪",
-      "updatedAt": "2026-04-10 16:43:36",
+      "updatedAt": "2026-04-10 16:45:18",
       "totalDocuments": 11,
       "sections": [
             {
@@ -1094,7 +1094,7 @@ var DOC_DATA = {
     "weekly": {
       "title": "CFH概念推导 & 周报",
       "subtitle": "概念推导、周报与汇报材料",
-      "updatedAt": "2026-04-10 16:43:38",
+      "updatedAt": "2026-04-10 16:45:20",
       "totalDocuments": 90,
       "sections": [
             {
@@ -1142,7 +1142,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T07:53:40Z"
+                  "lastModified": "2026-04-10T08:45:04Z"
             },
             {
                   "name": "PARKI1.0概念版",
@@ -1552,7 +1552,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T04:02:08Z"
+                  "lastModified": "2026-04-10T08:45:07Z"
             },
             {
                   "name": "蛋挞概念推导",
@@ -1856,16 +1856,6 @@ var DOC_DATA = {
             },
             {
                   "name": "2025.7月周报",
-                  "url": "https://www.figma.com/file/28XgVtjtufuUtBEWi1V1Jn",
-                  "category": "周报",
-                  "categoryKey": "W03",
-                  "section": "推导&周报",
-                  "sectionOrder": 1,
-                  "status": "stable",
-                  "lastModified": "2025-08-07T08:06:59Z"
-            },
-            {
-                  "name": "2025.7月周报",
                   "url": "https://www.figma.com/file/MgvCHXbyfjVunlBGyNGkzy",
                   "category": "周报",
                   "categoryKey": "W03",
@@ -1873,6 +1863,16 @@ var DOC_DATA = {
                   "sectionOrder": 1,
                   "status": "stable",
                   "lastModified": "2025-08-06T08:33:37Z"
+            },
+            {
+                  "name": "2025.7月周报",
+                  "url": "https://www.figma.com/file/28XgVtjtufuUtBEWi1V1Jn",
+                  "category": "周报",
+                  "categoryKey": "W03",
+                  "section": "推导&周报",
+                  "sectionOrder": 1,
+                  "status": "stable",
+                  "lastModified": "2025-08-07T08:06:59Z"
             },
             {
                   "name": "2025.8月周报",
