@@ -2,8 +2,8 @@ name: Sync Figma Data
 
 on:
   schedule:
-    # [测试] 临时改为 UTC 08:02 = 北京时间 16:02，测完改回 '0 2 * * *'
-    - cron: '2 8 * * *'
+    # 每天 UTC 02:00 = 北京时间 10:00 自动运行
+    - cron: '0 2 * * *'
   workflow_dispatch: # 也支持手动触发
 
 permissions:
