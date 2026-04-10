@@ -16,10 +16,6 @@
     --text-muted: #6e7681;
     --accent: #58a6ff;
     --accent-hover: #79c0ff;
-    --status-design: #f0883e;
-    --status-review: #d29922;
-    --status-done: #3fb950;
-    --status-paused: #8957e5;
     --tag-bg: rgba(88,166,255,0.12);
     --tag-text: #58a6ff;
     --shadow: 0 4px 12px rgba(0,0,0,0.3);
@@ -35,6 +31,8 @@
     --tab-refactor-bg: rgba(0,242,254,0.10);
     --tab-weekly-color: #ff7262;
     --tab-weekly-bg:rgba(255,114,98,0.12);
+    --tab-weeklyreport-color: #2ea043;
+    --tab-weeklyreport-bg: rgba(46,160,67,0.12);
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -66,8 +64,9 @@
   }
   .header-top {
     display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
     flex-wrap: wrap; gap: 12px;
+    padding-bottom: 16px;
   }
   .logo {
     display: flex; align-items: center; gap: 10px;
@@ -103,7 +102,7 @@
   /* ===== 职能 Tab 导航栏（新增）===== */
   .nav-tabs {
     display: flex; gap: 4px;
-    padding: 0 0 0; margin-top: 4px;
+    padding: 0 0 0; margin-top: 8px;
     border-bottom: 1px solid var(--border-color);
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -137,6 +136,10 @@
     color: var(--tab-weekly-color);
     border-bottom-color: var(--tab-weekly-color);
   }
+  .nav-tab.active-weeklyreport {
+    color: var(--tab-weeklyreport-color);
+    border-bottom-color: var(--tab-weeklyreport-color);
+  }
 
   /* Tab 角标数字 */
   .nav-tab .tab-count {
@@ -149,28 +152,14 @@
   .nav-tab.active-vis .tab-count    { background: var(--tab-vis-bg); color: var(--tab-vis-color); }
   .nav-tab.active-refactor .tab-count{ background: var(--tab-refactor-bg); color: var(--tab-refactor-color); }
   .nav-tab.active-weekly .tab-count { background: var(--tab-weekly-bg); color: var(--tab-weekly-color); }
-  .nav-tab:not(.active-ixd):not(.active-vis):not(.active-refactor):not(.active-weekly) .tab-count {
+  .nav-tab.active-weeklyreport .tab-count { background: var(--tab-weeklyreport-bg); color: var(--tab-weeklyreport-color); }
+  .nav-tab:not(.active-ixd):not(.active-vis):not(.active-refactor):not(.active-weekly):not(.active-weeklyreport) .tab-count {
     background: var(--bg-card); color: var(--text-muted);
   }
 
-  /* Stats */
-  .stats-row {
-    display: flex; gap: 16px; padding: 20px 0; flex-wrap: wrap;
-  }
-  .stat-card {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-sm);
-    padding: 12px 18px;
-    display: flex; align-items: center; gap: 12px;
-    min-width: 120px;
-  }
-  .stat-num { font-size: 24px; font-weight: 700; }
-  .stat-label { font-size: 13px; color: var(--text-secondary); }
-
   /* Filter Tabs */
   .filter-section {
-    padding: 0 0 16px;
+    padding: 12px 0 16px;
     display: flex; flex-direction: column; gap: 0;
   }
   .filter-label { font-size: 13px; color: var(--text-secondary); margin-right: 4px; }
@@ -236,7 +225,7 @@
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
-    padding: 18px 20px;
+    padding: 10px 16px;
     cursor: pointer;
     transition: all 0.2s;
     text-decoration: none; color: inherit;
@@ -267,29 +256,19 @@
   .doc-card.visited:hover { opacity: 0.85; }
   .card-top {
     display: flex; align-items: flex-start; justify-content: space-between;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
   }
   .card-title {
-    font-size: 15px; font-weight: 600;
-    display: flex; align-items: center; gap: 8px;
+    font-size: 14px; font-weight: 600;
+    display: flex; align-items: center;
   }
-  .card-title .figma-icon { color: #a259ff; font-size: 15px; }
-  .card-status {
-    font-size: 11px; padding: 3px 10px; border-radius: 12px; font-weight: 500;
-    white-space: nowrap;
-  }
-  .status-designing { background: rgba(240,136,62,0.15); color: var(--status-design); }
-  .status-review   { background: rgba(210,153,34,0.15); color: var(--status-review); }
-  .status-done     { background: rgba(63,185,80,0.15); color: var(--status-done); }
-  .status-paused   { background: rgba(137,87,229,0.15); color: var(--status-paused); }
 
   .card-desc {
-    font-size: 13px; color: var(--text-secondary);
-    margin-bottom: 14px;
-    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-    overflow: hidden;
+    font-size: 12px; color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.3;
   }
-  .card-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+  .card-tags { display: flex; gap: 6px; flex-wrap: wrap; margin: 4px 0 0; }
   .card-tag {
     font-size: 11px; padding: 2px 8px; border-radius: 4px;
     background: var(--tag-bg); color: var(--tag-text);
@@ -297,17 +276,8 @@
   .card-tag.phase { background: rgba(137,87,229,0.12); color: #a371f7; }
 
   .card-meta {
-    display: flex; align-items: center; justify-content: space-between;
-    font-size: 12px; color: var(--text-muted);
-    padding-top: 12px;
-    border-top: 1px solid var(--border-color);
-  }
-  .card-owner { display: flex; align-items: center; gap: 6px; }
-  .avatar {
-    width: 20px; height: 20px; border-radius: 50%;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 10px; color: white; font-weight: 600;
+    font-size: 11px; color: var(--text-muted);
+    padding-top: 2px;
   }
 
   /* Footer */
@@ -384,7 +354,7 @@
     <div class="search-bar">
       <span class="search-icon">🔍</span>
       <input type="text" class="search-input" id="searchInput"
-             placeholder="搜索文档名称、标签或负责人..." oninput="renderAll()">
+             placeholder="搜索文档名称或标签..." oninput="renderAll()">
     </div>
   </div>
 
@@ -392,9 +362,6 @@
   <nav class="nav-tabs" id="navTabs"></nav>
   </div>
 </header>
-
-<!-- Stats -->
-<div class="stats-row container" id="statsRow"></div>
 
 <!-- Filters -->
 <div class="filter-section container" id="filterSection"></div>
@@ -424,7 +391,8 @@
 var CHANNELS = [
   { key: 'ixd',       label: '✏️ 交互稿',     shortLabel: '交互稿',     colorClass: 'ixd',       icon: '✏️' },
   { key: 'refactor',  label: '🔧 重构落地',    shortLabel: '重构落地',    colorClass: 'refactor',  icon: '🔧' },
-  { key: 'weekly',    label: '📊 概念推导 & 周报', shortLabel: '概念/周报', colorClass: 'weekly',  icon: '📊' },
+  { key: 'concept',   label: '💡 概念推导',    shortLabel: '概念推导',    colorClass: 'weekly',    icon: '💡' },
+  { key: 'weekly',    label: '📊 周报',        shortLabel: '周报',        colorClass: 'weeklyreport', icon: '📊' },
 ];
 
 var activeChannel = 'ixd';   // 当前选中的职能 Tab
@@ -446,18 +414,42 @@ var appData = null;          // 当前职能的数据
       appData = { channels: {} };
       appData.channels['ixd'] = DOC_DATA;
       appData.channels['refactor'] = { title: 'CFH重构落地', subtitle: '', documents: [], updatedAt: '' };
-      appData.channels['weekly']   = { title: 'CFH概念推导 & 周报', subtitle: '', documents: [], updatedAt: '' };
+      appData.channels['concept']   = { title: 'CFH概念推导',   subtitle: '', documents: [], updatedAt: '' };
+      appData.channels['weekly']    = { title: 'CFH周报',        subtitle: '', documents: [], updatedAt: '' };
     } else if (typeof INDEX_DATA !== 'undefined' && !INDEX_DATA.channels) {
       appData = { channels: {} };
       appData.channels['ixd'] = INDEX_DATA;
       appData.channels['refactor'] = { title: 'CFH重构落地', subtitle: '', documents: [], updatedAt: '' };
-      appData.channels['weekly']   = { title: 'CFH概念推导 & 周报', subtitle: '', documents: [], updatedAt: '' };
+      appData.channels['concept']   = { title: 'CFH概念推导',   subtitle: '', documents: [], updatedAt: '' };
+      appData.channels['weekly']    = { title: 'CFH周报',        subtitle: '', documents: [], updatedAt: '' };
     } else {
       appData = typeof DOC_DATA !== 'undefined' ? DOC_DATA : INDEX_DATA;
+      // 兼容：如果有旧的 weekly channel，拆分 concept + weekly
+      if (appData.channels && appData.channels['weekly']) {
+        var oldWeekly = appData.channels['weekly'];
+        if (oldWeekly.documents && oldWeekly.documents.length > 0) {
+          var conceptDocs = [];
+          var weeklyDocs = [];
+          for (var wi = 0; wi < oldWeekly.documents.length; wi++) {
+            var wd = oldWeekly.documents[wi];
+            if ((wd.tags || []).some(function(t){ return t.indexOf('周报') >= 0; }) ||
+                (wd.name || '').indexOf('周报') >= 0) {
+              weeklyDocs.push(wd);
+            } else {
+              conceptDocs.push(wd);
+            }
+          }
+          appData.channels['concept'] = { title: 'CFH概念推导', subtitle: '', documents: conceptDocs, updatedAt: oldWeekly.updatedAt };
+          appData.channels['weekly']  = { title: 'CFH周报',     subtitle: '', documents: weeklyDocs,  updatedAt: oldWeekly.updatedAt };
+        }
+      }
     }
 
     renderNavTabs();
     switchChannel('ixd');
+    // 隐藏 loading
+    var loadingEl = document.querySelector('.loading');
+    if (loadingEl) loadingEl.style.display = 'none';
   } catch(e) {
     showError('❌ 页面初始化失败: ' + e.message);
   }
@@ -493,10 +485,8 @@ function switchChannel(channelKey) {
   // 重新渲染 Tab 以更新高亮和计数
   renderNavTabs();
 
-  // 获取当前通道的数据
-  appData = (typeof DOC_DATA !== 'undefined' ? DOC_DATA : INDEX_DATA);
-  // 兼容处理：如果是旧格式
-  if (!appData.channels) return;
+  // 获取当前通道的数据（使用已初始化的 appData，不要重新从 DOC_DATA 覆盖）
+  if (!appData || !appData.channels) return;
   var chData = appData.channels[channelKey] || { documents: [] };
 
   // 设置新文档标记集
@@ -514,11 +504,24 @@ function switchChannel(channelKey) {
 
 // ========== 主渲染函数 ==========
 function renderAll() {
-  // 兼容获取当前通道数据
-  var allData = (typeof DOC_DATA !== 'undefined' ? DOC_DATA : INDEX_DATA);
-  if (!allData) return;
-  var chData = allData.channels ? (allData.channels[activeChannel] || {}) : allData;
+  // 使用已初始化的 appData（不要重新从原始数据读取）
+  if (!appData || !appData.channels) return;
+  var chData = appData.channels[activeChannel] || {};
   var docs = chData.documents || [];
+
+  // 周报按时间排序（最新的在最前面），新人周报/视觉周报置底
+  if (activeChannel === 'weekly' && docs.length > 0) {
+    docs = docs.slice().sort(function(a, b) {
+      var na = (a.name || ''), nb = (b.name || '');
+      var aIsBottom = (na.indexOf('新人') >= 0 || na.indexOf('视觉') >= 0) ? 1 : 0;
+      var bIsBottom = (nb.indexOf('新人') >= 0 || nb.indexOf('视觉') >= 0) ? 1 : 0;
+      if (aIsBottom !== bIsBottom) return aIsBottom - bIsBottom;  // 置底的排后面
+      var ta = a.updatedAt || a.lastUpdated || '';
+      var tb = b.updatedAt || b.lastUpdated || '';
+      return ta < tb ? 1 : (ta > tb ? -1 : 0);
+    });
+  }
+
   var keyword = document.getElementById('searchInput').value.toLowerCase().trim();
 
   // 更新全局信息
@@ -534,12 +537,90 @@ function renderAll() {
   // 如果该 Tab 完全没有数据，显示空状态
   if (docs.length === 0) {
     renderEmptyTab(chInfo);
-    document.getElementById('statsRow').innerHTML = '';
     document.getElementById('filterSection').innerHTML = '';
     return;
   }
 
-  // 按 categoryKey 分组
+  // 周报：隐藏筛选，按年份分组
+  if (activeChannel === 'weekly') {
+    document.getElementById('filterSection').innerHTML = '';
+
+    // 模板关键词：新人/视觉
+    var templateKw = /新人|视觉/;
+    // 从文档名或 updatedAt 提取年份分组（排除模板类）
+    var templateDocs = [];
+    var yearGroups = {};
+    for (var wi = 0; wi < docs.length; wi++) {
+      var wd = docs[wi];
+      // 先检查是否为模板
+      if (templateKw.test(wd.name) || (wd.tags || []).some(function(t){ return templateKw.test(t); })) {
+        templateDocs.push(wd);
+        continue;
+      }
+      var year = '未知';
+      // 优先从名称中提取（如 "2026年xx周报"、"2025-..."）
+      var nameMatch = wd.name.match(/(20\d{2})/);
+      if (nameMatch) year = nameMatch[1];
+      // 其次从 updatedAt 提取
+      else if (wd.updatedAt) {
+        var dateMatch = wd.updatedAt.match(/(20\d{2})/);
+        if (dateMatch) year = dateMatch[1];
+      }
+      if (!yearGroups[year]) yearGroups[year] = [];
+      yearGroups[year].push(wd);
+    }
+
+    // 年份倒序排列（不含模板类）
+    var sortedYears = Object.keys(yearGroups).sort().reverse();
+
+    // 构建 filteredGrouped 格式供 renderContent 使用
+    var weeklyGrouped = {};
+    for (var yi = 0; yi < sortedYears.length; yi++) {
+      var yr = sortedYears[yi];
+      var yDocs = yearGroups[yr];
+      // 搜索过滤
+      if (keyword) {
+        yDocs = yDocs.filter(function(d) {
+          var h = (d.name || '') + ' ' + (d.tags || []).join(' ') + ' ' + (d.desc || '');
+          return h.toLowerCase().indexOf(keyword) !== -1;
+        });
+      }
+      if (yDocs.length > 0) {
+        weeklyGrouped['year_' + yr] = { category: yr + '年', docs: yDocs };
+      }
+    }
+
+    // 模板类周报（新人/视觉）单独一组，放在最底部
+    if (templateDocs.length > 0) {
+      var filteredTemplate = keyword
+        ? templateDocs.filter(function(d) {
+            var h = (d.name || '') + ' ' + (d.tags || []).join(' ') + ' ' + (d.desc || '');
+            return h.toLowerCase().indexOf(keyword) !== -1;
+          })
+        : templateDocs;
+      if (filteredTemplate.length > 0) {
+        weeklyGrouped['_template'] = { category: '📋 模板', docs: filteredTemplate };
+      }
+    }
+
+    renderContentWeekly(weeklyGrouped);
+    return;
+  }
+
+  // 概念推导：隐藏筛选，平铺展示所有卡片
+  if (activeChannel === 'concept') {
+    document.getElementById('filterSection').innerHTML = '';
+    var filteredConcept = keyword
+      ? docs.filter(function(d) {
+          var h = (d.name || '') + ' ' + (d.tags || []).join(' ') + ' ' + (d.desc || '');
+          return h.toLowerCase().indexOf(keyword) !== -1;
+        })
+      : docs;
+    renderContentWeekly({ '_all': { category: '', docs: filteredConcept } });
+    return;
+  }
+
+  // 按 categoryKey 分组（交互稿/重构落地等 Tab）
   var grouped = {};
   for (var i = 0; i < docs.length; i++) {
     var d = docs[i];
@@ -562,14 +643,8 @@ function renderAll() {
 
     var matched = catDocs.filter(function(d) {
       if (activeCategory !== 'all' && (d.categoryKey || 'other').toLowerCase() !== activeCategory) return false;
-      if (activeStatus !== 'all') {
-        var docStatus = normalizeStatus(d.status || 'unknown');
-        if (activeStatus === 'designing' && docStatus !== 'designing') return false;
-        if (activeStatus === 'review' && docStatus !== 'review') return false;
-        if (activeStatus === 'done' && docStatus !== 'done') return false;
-      }
       if (keyword) {
-        var haystack = (d.name || '') + ' ' + (d.tags || []).join(' ') + ' ' + (d.owner || '') + ' ' + (d.desc || '');
+        var haystack = (d.name || '') + ' ' + (d.tags || []).join(' ') + ' ' + (d.desc || '');
         if (haystack.toLowerCase().indexOf(keyword) === -1) return false;
       }
       return true;
@@ -581,49 +656,42 @@ function renderAll() {
   });
 
   // 渲染各部分
-  renderStats(filteredDocs, chInfo);
   renderFilters(grouped);
   renderContent(filteredGrouped, filteredDocs.length === 0 && keyword);
 }
 
-// ========== 统计栏 ==========
-function renderStats(docs, chInfo) {
-  var total = docs.length;
-  // 兼容多种状态命名
-  var s = { designing: 0, review: 0, done: 0, paused: 0 };
-  for (var i = 0; i < docs.length; i++) {
-    var st = normalizeStatus(docs[i].status || 'unknown');
-    if (s.hasOwnProperty(st)) s[st]++;
-  }
-  var iconColor = '#58a6ff';
-  if (chInfo) {
-    if (chInfo.colorClass === 'ixd')      iconColor = '#a259ff';
-    else if (chInfo.colorClass === 'vis')  iconColor = '#f24e1e';
-    else if (chInfo.colorClass === 'refactor') iconColor = '#00f2fe';
-    else if (chInfo.colorClass === 'weekly') iconColor = '#ff7262';
+// ========== 周报专用渲染（按年份分组）==========
+function renderContentWeekly(yearGrouped) {
+  var container = document.getElementById('mainContent');
+
+  var sortedYears = Object.keys(yearGrouped).sort().reverse();
+
+  if (sortedYears.length === 0) {
+    container.innerHTML =
+      '<div class="no-results">' +
+        '<div class="no-results-icon">🔍</div>' +
+        '<p>没有找到匹配的周报</p></div>';
+    return;
   }
 
-  var statLabel = (chInfo && chInfo.shortLabel) ? chInfo.shortLabel.replace(/&/g, '&') : '文档';
+  var html = '';
+  for (var yi = 0; yi < sortedYears.length; yi++) {
+    var catKey = sortedYears[yi];
+    var catInfo = yearGrouped[catKey];
+    var yearTitle = catInfo.category;
+    var catDocs = catInfo.docs;
 
-  var html =
-    '<div class="stat-card" onclick="filterByStatus(\'all\')" style="cursor:pointer;">' +
-      '<span style="color:' + iconColor + ';font-weight:700;font-size:20px;">' + (chInfo ? chInfo.icon : '📄') + '</span>' +
-      '<div><div class="stat-num">' + total + '</div><div class="stat-label">' + statLabel + '</div></div>' +
-    '</div>' +
-    '<div class="stat-card" onclick="filterByStatus(\'designing\')" style="cursor:pointer;">' +
-      '<span style="color:#f0883e;font-weight:700;font-size:20px;">✏️</span>' +
-      '<div><div class="stat-num">' + s.designing + '</div><div class="stat-label">新建</div></div>' +
-    '</div>' +
-    '<div class="stat-card" onclick="filterByStatus(\'review\')" style="cursor:pointer;">' +
-      '<span style="color:#d29922;font-weight:700;font-size:20px;">👀</span>' +
-      '<div><div class="stat-num">' + s.review + '</div><div class="stat-label">设计中</div></div>' +
-    '</div>' +
-    '<div class="stat-card" onclick="filterByStatus(\'done\')" style="cursor:pointer;">' +
-      '<span style="color:#3fb950;font-weight:700;font-size:20px;">✅</span>' +
-      '<div><div class="stat-num">' + s.done + '</div><div class="stat-label">已定稿</div></div>' +
-    '</div>';
-
-  document.getElementById('statsRow').innerHTML = html;
+    html += '<section class="section-group">';
+    if (yearTitle) {
+      html += '<h2 class="section-title">📅 ' + escapeHtml(yearTitle) + '</h2>';
+    }
+    html += '<div class="card-grid">';
+    for (var di = 0; di < catDocs.length; di++) {
+      html += renderCard(catDocs[di], di);
+    }
+    html += '</div></section>';
+  }
+  container.innerHTML = html;
 }
 
 // ========== 空状态（某 Tab 无数据时）==========
@@ -703,14 +771,6 @@ function setSection(btn, section) {
   renderAll();
 }
 
-// 设置状态筛选
-function filterByStatus(status) {
-  document.querySelectorAll('.stat-card').forEach(function(c) { c.style.opacity = '0.5'; });
-  event.currentTarget.style.opacity = '1';
-  activeStatus = status;
-  renderAll();
-}
-
 // ========== 内容区域（按板块分组渲染）==========
 function renderContent(grouped, showNoResults) {
   var container = document.getElementById('mainContent');
@@ -780,12 +840,8 @@ function renderContent(grouped, showNoResults) {
 
 // ========== 单个卡片 ==========
 function renderCard(doc, index) {
-  var statusInfo = getStatusInfo(doc.status);
   var isNew = newDocSet && !!(newDocSet[doc.url] || newDocSet[doc.name]);
   var newBadge = isNew ? '<span class="new-badge">新</span>' : '';
-  var ownerHtml = doc.owner
-    ? '<div class="card-owner"><div class="avatar" style="' + getAvatarColor(doc.owner) + '">' + doc.owner.charAt(0) + '</div> ' + escapeHtml(doc.owner) + '</div>'
-    : '<div class="card-owner"></div>';
   var updatedHtml = doc.updatedAt ? '<span>更新于 ' + doc.updatedAt + '</span>' : '';
 
   var visitedKey = 'visited_' + (doc.url || doc.name);
@@ -805,17 +861,17 @@ function renderCard(doc, index) {
     tagsHtml = '<div class="card-tags"></div>';
   }
 
+  var displayName = doc.name.replace(/^\s*【[^】]+】\s*/, '');
   return '<a class="doc-card' + visitedCls + '" href="' + escapeHtml(doc.url || '#') + '" target="_blank" rel="noopener"' +
     ' style="animation-delay:' + (index * 0.03) + 's"' +
     ' data-visit-key="' + escapeHtml(visitedKey) + '"' +
     ' onclick="markVisited(this)">' +
     '<div class="card-top">' +
-      '<span class="card-title"><span class="figma-icon">◉</span> ' + escapeHtml(doc.name) + newBadge + '</span>' +
-      '<span class="card-status ' + statusInfo.cls + '">' + statusInfo.label + '</span>' +
+      '<span class="card-title">' + escapeHtml(displayName) + newBadge + '</span>' +
     '</div>' +
     '<div class="card-desc">' + escapeHtml(doc.desc || '') + '</div>' +
     tagsHtml +
-    '<div class="card-meta">' + ownerHtml + updatedHtml + '</div>' +
+    '<div class="card-meta">' + updatedHtml + '</div>' +
     '</a>';
 }
 
@@ -827,61 +883,11 @@ function markVisited(el) {
 
 // ========== 工具函数 ==========
 
-/**
- * 将各种状态值归一化为标准四态
- */
-function normalizeStatus(status) {
-  var s = (status || 'unknown').toLowerCase();
-  if (['designing', 'wip', 'active', 'new'].indexOf(s) !== -1) return 'designing';
-  if (['review', 'reviewing', '评审中', '进行中'].indexOf(s) !== -1) return 'review';
-  if (['done', 'complete', 'finished', 'stable', '定稿', '已定稿'].indexOf(s) !== -1) return 'done';
-  if (['paused', 'suspended', 'archived', '暂缓', '延期'].indexOf(s) !== -1) return 'paused';
-  // 未知状态默认归入 designing
-  return 'designing';
-}
-
 function setFilter(btn, category) {
   document.querySelectorAll('.filter-tab').forEach(function(t) { t.classList.remove('active'); });
   btn.classList.add('active');
   activeCategory = category;
   renderAll();
-}
-
-function getStatusInfo(status) {
-  // 完整的状态映射（覆盖 Figma API 返回值 + 自定义状态）
-  var map = {
-    // 标准四态
-    designing: { label: '新建',     cls: 'status-designing' },
-    wip:       { label: '新建',     cls: 'status-designing' },
-    review:    { label: '评审中',   cls: 'status-review' },
-    reviewing: { label: '评审中',   cls: 'status-review' },
-    done:      { label: '已定稿',   cls: 'status-done' },
-    complete:  { label: '已定稿',   cls: 'status-done' },
-    finished:  { label: '已定稿',   cls: 'status-done' },
-    paused:    { label: '暂缓',     cls: 'status-paused' },
-    suspended: { label: '暂缓',     cls: 'status-paused' },
-    // Figma 文件常见状态
-    active:    { label: '进行中',   cls: 'status-designing' },
-    stable:    { label: '稳定版',   cls: 'status-done' },
-    archived:  { label: '已归档',   cls: 'status-paused' },
-    none:      { label: '',         cls: '' },
-    unknown:   { label: '',         cls: '' },
-  };
-  return map[(status || '').toLowerCase()] || { label: String(status || ''), cls: 'status-designing' };
-}
-
-function getAvatarColor(name) {
-  var colors = [
-    'background:linear-gradient(135deg,#667eea,#764ba2)',
-    'background:linear-gradient(135deg,#f093fb,#f5576c)',
-    'background:linear-gradient(135deg,#4facfe,#00f2fe)',
-    'background:linear-gradient(135deg,#fa709a,#fee140)',
-    'background:linear-gradient(135deg,#a8edea,#fed6e3)',
-    'background:linear-gradient(135deg,#d299c2,#fef9d7)',
-  ];
-  var hash = 0;
-  for (var i = 0; i < (name || '').length; i++) { hash = name.charCodeAt(i) + ((hash << 5) - hash); }
-  return colors[Math.abs(hash) % colors.length];
 }
 
 function escapeHtml(str) {
