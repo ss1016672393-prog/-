@@ -605,16 +605,35 @@ function renderAll() {
     return;
   }
 
-  // 概念推导：隐藏筛选，平铺展示所有卡片
+  // 概念推导：隐藏筛选，按类型分组（概念推导 / 世界观元素）
   if (activeChannel === 'concept') {
     document.getElementById('filterSection').innerHTML = '';
-    var filteredConcept = keyword
-      ? docs.filter(function(d) {
-          var h = (d.name || '') + ' ' + (d.tags || []).join(' ') + ' ' + (d.desc || '');
-          return h.toLowerCase().indexOf(keyword) !== -1;
-        })
-      : docs;
-    renderContentWeekly({ '_all': { category: '', docs: filteredConcept } });
+
+    var conceptDocs = [];   // 名称含"概念推导"
+    var worldDocs = [];     // 其余 = 世界观元素
+    for (var ci = 0; ci < docs.length; ci++) {
+      var cd = docs[ci];
+      if ((cd.name || '').indexOf('概念推导') >= 0) {
+        conceptDocs.push(cd);
+      } else {
+        worldDocs.push(cd);
+      }
+    }
+
+    // 搜索过滤
+    if (keyword) {
+      conceptDocs = conceptDocs.filter(function(d) {
+        return ((d.name || '') + ' ' + (d.tags || []).join(' ') + ' ' + (d.desc || '')).toLowerCase().indexOf(keyword) !== -1;
+      });
+      worldDocs = worldDocs.filter(function(d) {
+        return ((d.name || '') + ' ' + (d.tags || []).join(' ') + ' ' + (d.desc || '')).toLowerCase().indexOf(keyword) !== -1;
+      });
+    }
+
+    var conceptGrouped = {};
+    if (conceptDocs.length > 0) conceptGrouped['_concept']   = { category: '📐 概念推导', docs: conceptDocs };
+    if (worldDocs.length > 0)    conceptGrouped['_world']     = { category: '🌍 世界观元素', docs: worldDocs };
+    renderContentWeekly(conceptGrouped);
     return;
   }
 
