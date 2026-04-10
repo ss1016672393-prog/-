@@ -217,6 +217,9 @@
     grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
     gap: 16px;
   }
+  .card-grid .grid-spacer {
+    visibility: hidden;
+  }
 
   /* Doc Card */
   .doc-card {
@@ -682,6 +685,33 @@ function renderAll() {
   renderContent(filteredGrouped, filteredDocs.length === 0 && keyword);
 }
 
+// ========== 卡片网格自动补位（消除最后一行空缺）==========
+function fillGridGaps(container) {
+  if (!container) return;
+  var grids = container.querySelectorAll('.card-grid');
+  for (var gi = 0; gi < grids.length; gi++) {
+    var grid = grids[gi];
+    if (!grid.children || grid.children.length === 0) continue;
+    // 获取当前列数（从第一行的卡片宽度计算）
+    var firstCard = grid.children[0];
+    var gridWidth = grid.offsetWidth;
+    var cardWidth = firstCard.offsetWidth;
+    var gap = 16;
+    // 计算列数：容器宽度 / (卡片宽度 + gap) 向下取整
+    var cols = Math.max(1, Math.round((gridWidth + gap) / (cardWidth + gap)));
+    // 如果是 auto-fill 且窗口宽度变化，cols 可能不准，保守取 3
+    if (cols > 6) cols = 3; // fallback
+    var remainder = grid.children.length % cols;
+    if (remainder !== 0) {
+      for (var s = remainder; s < cols; s++) {
+        var sp = document.createElement('div');
+        sp.className = 'doc-card grid-spacer';
+        grid.appendChild(sp);
+      }
+    }
+  }
+}
+
 // ========== 周报专用渲染（按年份分组）==========
 function renderContentWeekly(yearGrouped) {
   var container = document.getElementById('mainContent');
@@ -714,6 +744,8 @@ function renderContentWeekly(yearGrouped) {
     html += '</div></section>';
   }
   container.innerHTML = html;
+  // 自动补位（等 DOM 渲染后计算）
+  setTimeout(function() { fillGridGaps(container); }, 0);
 }
 
 // ========== 空状态（某 Tab 无数据时）==========
