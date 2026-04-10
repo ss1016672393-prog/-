@@ -1,24 +1,38 @@
 name: Sync Figma Data
+
 on:
   schedule:
     - cron: '0 2 * * *
 '
   workflow_dispatch:
+
 permissions:
   contents: write
+
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
+      - name: List files (debug)
+        run: ls -la doc-index/ && echo "---" && ls -la .github/workflows/
+
       - name: Run sync.py
         env:
           FIGMA_TOKEN: ${{ secrets.FIGMA_TOKEN }}
-        run: python doc-index/sync.py --token "$FIGMA_TOKEN"
-      - name: Commit & Push
+        run: |
+          cd doc-index && python sync.py --token "$FIGMA_TOKEN"
+
+      - name: Commit & Push (if changed)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -26,4 +40,6 @@ jobs:
           if ! git diff --cached --quiet; then
             git commit -m "auto-sync"
             git push
+          else
+            echo "No changes to commit"
           fi
