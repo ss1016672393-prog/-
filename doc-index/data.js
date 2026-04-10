@@ -1,5 +1,5 @@
 // CFH 设计中心索引数据 | 多职能通道格式
-// 更新时间: 2026-04-10 14:56:20
+// 更新时间: 2026-04-10 16:35:21
 // 总计: 179 个文件 | 3 个通道
 
 var DOC_DATA = {
@@ -7,7 +7,7 @@ var DOC_DATA = {
     "ixd": {
       "title": "CFH交互稿索引",
       "subtitle": "Figma 交互设计文档",
-      "updatedAt": "2026-04-10 14:56:17",
+      "updatedAt": "2026-04-10 16:35:18",
       "totalDocuments": 78,
       "sections": [
             {
@@ -312,7 +312,7 @@ var DOC_DATA = {
                   "section": "局外",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-09T06:51:10Z"
+                  "lastModified": "2026-04-10T08:14:30Z"
             },
             {
                   "name": "【设计稿】自定义房间",
@@ -372,7 +372,7 @@ var DOC_DATA = {
                   "section": "局外",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-09T07:32:58Z"
+                  "lastModified": "2026-04-10T08:24:16Z"
             },
             {
                   "name": "【设计稿】角色系统MS3~MS8",
@@ -912,7 +912,7 @@ var DOC_DATA = {
                   "section": "局内",
                   "sectionOrder": 2,
                   "status": "active",
-                  "lastModified": "2026-04-10T04:03:41Z"
+                  "lastModified": "2026-04-10T08:20:25Z"
             },
             {
                   "name": "【设计稿】局内HUD-主机适配",
@@ -939,7 +939,7 @@ var DOC_DATA = {
     "refactor": {
       "title": "CFH重构落地",
       "subtitle": "重构与落地跟踪",
-      "updatedAt": "2026-04-10 14:56:18",
+      "updatedAt": "2026-04-10 16:35:19",
       "totalDocuments": 11,
       "sections": [
             {
@@ -1094,7 +1094,7 @@ var DOC_DATA = {
     "weekly": {
       "title": "CFH概念推导 & 周报",
       "subtitle": "概念推导、周报与汇报材料",
-      "updatedAt": "2026-04-10 14:56:20",
+      "updatedAt": "2026-04-10 16:35:21",
       "totalDocuments": 90,
       "sections": [
             {
@@ -1142,7 +1142,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T06:54:43Z"
+                  "lastModified": "2026-04-10T07:53:40Z"
             },
             {
                   "name": "PARKI1.0概念版",
@@ -1172,7 +1172,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T06:48:39Z"
+                  "lastModified": "2026-04-10T07:57:39Z"
             },
             {
                   "name": "luccy的概念推导",
@@ -1222,7 +1222,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T06:20:17Z"
+                  "lastModified": "2026-04-10T06:20:18Z"
             },
             {
                   "name": "【概念推导】C4-HUD UI概念推导",
@@ -1262,7 +1262,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T06:34:33Z"
+                  "lastModified": "2026-04-10T07:42:20Z"
             },
             {
                   "name": "【概念推导】Nina概念推导",
@@ -1272,7 +1272,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T06:54:40Z"
+                  "lastModified": "2026-04-10T08:07:22Z"
             },
             {
                   "name": "【概念推导】PVE界面问题讨论",
@@ -1302,7 +1302,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T06:55:21Z"
+                  "lastModified": "2026-04-10T07:21:33Z"
             },
             {
                   "name": "【概念推导】Zongshi概念推导",
@@ -1322,7 +1322,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T06:51:57Z"
+                  "lastModified": "2026-04-10T08:32:24Z"
             },
             {
                   "name": "【概念推导】loop概念推导",
@@ -1412,7 +1412,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T06:52:16Z"
+                  "lastModified": "2026-04-10T07:50:38Z"
             },
             {
                   "name": "【概念推导】图形元素拆解",
@@ -1542,7 +1542,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T06:48:52Z"
+                  "lastModified": "2026-04-10T08:32:59Z"
             },
             {
                   "name": "王慧概念推导",
@@ -1561,8 +1561,8 @@ var DOC_DATA = {
                   "categoryKey": "W01",
                   "section": "推导&周报",
                   "sectionOrder": 1,
-                  "status": "review",
-                  "lastModified": "2026-03-28T09:43:26Z"
+                  "status": "active",
+                  "lastModified": "2026-04-10T08:32:46Z"
             },
             {
                   "name": "2026-视觉BCD",
@@ -1942,7 +1942,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T06:55:00Z"
+                  "lastModified": "2026-04-10T07:46:15Z"
             },
             {
                   "name": "新人周报2026",
@@ -2012,7 +2012,7 @@ var DOC_DATA = {
                   "section": "其他",
                   "sectionOrder": 9,
                   "status": "active",
-                  "lastModified": "2026-04-10T06:50:24Z"
+                  "lastModified": "2026-04-10T06:56:43Z"
             },
             {
                   "name": "日报模板",
@@ -2032,7 +2032,7 @@ var DOC_DATA = {
                   "section": "其他",
                   "sectionOrder": 9,
                   "status": "active",
-                  "lastModified": "2026-04-10T04:36:59Z"
+                  "lastModified": "2026-04-10T08:18:19Z"
             }
       ]
 }
