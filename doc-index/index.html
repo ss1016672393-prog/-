@@ -947,6 +947,11 @@ function renderCard(doc, index) {
 function markVisited(el) {
   var key = el.getAttribute('data-visit-key');
   if (key) sessionStorage.setItem(key, '1');
+  var href = el.getAttribute('href');
+  if (href && href !== '#') {
+    window.open(href, '_blank');
+    return false;
+  }
 }
 
 // ========== 工具函数 ==========
