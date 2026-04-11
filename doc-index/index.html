@@ -337,6 +337,98 @@
     .nav-tab { padding: 8px 14px; font-size: 13px; }
   }
 
+  /* ===== 编辑模式样式 ===== */
+  .edit-btn {
+    padding: 6px 16px; font-size: 13px; font-weight: 600;
+    border: 1px solid var(--border-color); border-radius: var(--radius-sm);
+    background: var(--bg-primary); color: var(--text-secondary);
+    cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .edit-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .edit-btn.active {
+    background: rgba(88,166,255,0.12); color: var(--accent);
+    border-color: var(--accent);
+  }
+  body.edit-mode .doc-card { cursor: grab; }
+  body.edit-mode .doc-card:active { cursor: grabbing; }
+  body.edit-mode .doc-card:hover { transform: none; box-shadow: none; }
+  body.edit-mode .doc-card.dragging { opacity: 0.4; }
+  body.edit-mode .card-grid { min-height: 50px; transition: background 0.15s; }
+  body.edit-mode .card-grid.drag-over {
+    background: rgba(88,166,255,0.06); outline: 2px dashed var(--accent); border-radius: var(--radius-sm);
+  }
+  body.edit-mode .section-group.drag-over-section > .section-title {
+    color: var(--accent) !important; border-bottom-color: var(--accent) !important;
+  }
+  /* 卡片拖动手柄 + 分类选择 */
+  body.edit-mode .doc-card { position: relative; padding-right: 36px; }
+  body.edit-mode .card-drag-handle {
+    position: absolute; right: 8px; top: 10px;
+    width: 20px; height: 20px; cursor: grab;
+    color: var(--text-muted); font-size: 14px; text-align: center; line-height: 20px;
+    user-select: none; flex-shrink: 0;
+  }
+  body.edit-mode .card-drag-handle:hover { color: var(--text-primary); }
+  body.edit_mode .card-drag-handle:active { cursor: grabbing; }
+  body.edit-mode .card-cat-select {
+    position: absolute; right: 8px; bottom: 8px;
+    font-size: 11px; padding: 2px 6px; border-radius: 4px;
+    border: 1px solid var(--border-color); background: var(--bg-secondary);
+    color: var(--text-secondary); cursor: pointer; max-width: 100px;
+  }
+  body.edit-mode .card-cat-select:focus { border-color: var(--accent); outline: none; }
+  /* 编辑工具栏 */
+  .edit-toolbar {
+    position: fixed; bottom: 30px; right: 40px; z-index: 999;
+    display: flex; gap: 8px; align-items: center;
+    background: var(--bg-secondary); border: 1px solid var(--border-color);
+    border-radius: var(--radius); padding: 10px 14px; box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    animation: slideUp 0.3s ease-out;
+  }
+  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .toolbar-btn {
+    padding: 7px 14px; font-size: 13px; font-weight: 600; border-radius: 6px;
+    border: 1px solid transparent; cursor: pointer; transition: all 0.15s;
+  }
+  .toolbar-btn-save { background: #238636; color: #fff; }
+  .toolbar-btn-save:hover { background: #2ea043; }
+  .toolbar-btn-cancel { background: var(--bg-primary); color: var(--text-secondary); border-color: var(--border-color); }
+  .toolbar-btn-cancel:hover { color: var(--text-primary); border-color: var(--text-muted); }
+  .toolbar-btn-add { background: rgba(88,166,255,0.12); color: var(--accent); border-color: rgba(88,166,255,0.25); }
+  .toolbar-btn-add:hover { background: rgba(88,166,255,0.2); }
+  .toolbar-status { font-size: 12px; color: var(--text-muted); margin: 0 6px; }
+  .save-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000;
+    display: none; align-items: center; justify-content: center;
+  }
+  .save-overlay.show { display: flex; }
+  .save-dialog {
+    background: var(--bg-secondary); border: 1px solid var(--border-color);
+    border-radius: var(--radius); padding: 28px 32px; max-width: 420px; width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .save-dialog h3 { font-size: 18px; margin-bottom: 16px; }
+  .save-dialog p { font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5; }
+  .save-dialog-actions { display: flex; gap: 10px; justify-content: flex-end; }
+  .save-dialog-actions button { padding: 8px 20px; font-size: 14px; border-radius: 6px; cursor: pointer; font-weight: 600; }
+  .save-confirm { background: #238636; color: #fff; border: none; }
+  .save-confirm:hover { background: #2ea043; }
+  .save-cancel-btn { background: var(--bg-primary); color: var(--text-secondary); border: 1px solid var(--border-color); }
+  .save-cancel-btn:hover { color: var(--text-primary); }
+
+  /* 分类管理 */
+  body.edit-mode .section-title::after {
+    content: ' ✏️'; font-size: 13px; margin-left: 8px; cursor: pointer; opacity: 0.5;
+  }
+  body.edit-mode .section-title:hover::after { opacity: 1; }
+  .cat-inline-add {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 12px; font-size: 12px; border-radius: 20px;
+    border: 1px dashed var(--border-color); color: var(--text-muted);
+    cursor: pointer; margin-left: 10px; vertical-align: middle;
+  }
+  .cat-inline-add:hover { border-color: var(--accent); color: var(--accent); }
+
   /* Scrollbar */
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -362,6 +454,9 @@
       <input type="text" class="search-input" id="searchInput"
              placeholder="搜索文档名称或标签..." oninput="renderAll()">
     </div>
+    <button class="edit-btn" id="editToggleBtn" onclick="toggleEditMode()">
+      ✏️ 编辑
+    </button>
   </div>
 
   <!-- 职能 Tab 导航 -->
@@ -378,6 +473,26 @@
 </main>
 
 <!-- Footer -->
+<!-- Edit Toolbar (编辑模式时显示) -->
+<div class="edit-toolbar" id="editToolbar" style="display:none;">
+  <span class="toolbar-status" id="toolbarStatus">拖拽卡片排序 · 选择分类</span>
+  <button class="toolbar-btn toolbar-btn-add" onclick="showAddCategoryDialog()">+ 新增分类</button>
+  <button class="toolbar-btn toolbar-btn-cancel" onclick="cancelEdit()">取消</button>
+  <button class="toolbar-btn toolbar-btn-save" onclick="showSaveDialog()">💾 保存发布</button>
+</div>
+
+<!-- Save Overlay -->
+<div class="save-overlay" id="saveOverlay">
+  <div class="save-dialog">
+    <h3>📤 保存更改到 GitHub</h3>
+    <p>将当前的分类调整、卡片顺序等改动保存到服务器，所有访客将看到更新后的内容。</p>
+    <div class="save-dialog-actions">
+      <button class="save-cancel-btn" onclick="hideSaveDialog()">取消</button>
+      <button class="save-confirm" onclick="saveToGitHub()">确认保存</button>
+    </div>
+  </div>
+</div>
+
 <footer class="footer">
   <p id="footerText">📋 CFH设计中心 · 最后更新中...</p>
 </footer>
@@ -930,10 +1045,24 @@ function renderCard(doc, index) {
   }
 
   var displayName = doc.name.replace(/^\s*【[^】]+】\s*/, '');
+  var catKey = (doc.categoryKey || '').toLowerCase();
+
+  // 编辑模式额外元素
+  var editExtra = '';
+  if (isEditMode) {
+    editExtra =
+      '<div class="card-drag-handle" title="拖拽排序">⠿</div>' +
+      '<select class="card-cat-select" onchange="changeCardCategory(\'' + escapeHtml(doc.url) + '\', this.value)" title="更改分类">' +
+      getCategoryOptions(catKey) +
+      '</select>';
+  }
+
   return '<a class="doc-card' + visitedCls + '" href="' + escapeHtml(doc.url || '#') + '" target="_blank" rel="noopener"' +
     ' style="animation-delay:' + (index * 0.03) + 's"' +
     ' data-visit-key="' + escapeHtml(visitedKey) + '"' +
-    ' onclick="markVisited(this)">' +
+    ' data-doc-url="' + escapeHtml(doc.url || '') + '"' +
+    ' onclick="markVisited(this);return false;">' +
+    editExtra +
     '<div class="card-top">' +
       '<span class="card-title">' + escapeHtml(displayName) + newBadge + '</span>' +
     '</div>' +
@@ -952,6 +1081,284 @@ function markVisited(el) {
     window.open(href, '_blank');
     return false;
   }
+}
+
+// ========== 编辑模式功能 ==========
+var isEditMode = false;
+var editOriginalDocs = null; // 进入编辑时备份原始数据
+
+function toggleEditMode() {
+  isEditMode = !isEditMode;
+  var btn = document.getElementById('editToggleBtn');
+  var toolbar = document.getElementById('editToolbar');
+  if (isEditMode) {
+    btn.className = 'edit-btn active'; btn.textContent = '👁️ 预览';
+    toolbar.style.display = 'flex';
+    document.body.classList.add('edit-mode');
+    // 备份当前数据
+    editOriginalDocs = JSON.stringify(appData.channels[activeChannel].documents);
+    renderAll();
+    // 绑定拖拽事件
+    setTimeout(bindDragEvents, 100);
+  } else {
+    btn.className = 'edit-btn'; btn.textContent = '✏️ 编辑';
+    toolbar.style.display = 'none';
+    document.body.classList.remove('edit-mode');
+    renderAll();
+  }
+}
+
+function cancelEdit() {
+  if (editOriginalDocs && !confirm('确定放弃所有修改？')) return;
+  isEditMode = false;
+  var btn = document.getElementById('editToggleBtn'); btn.className = 'edit-btn'; btn.textContent = '✏️ 编辑';
+  document.getElementById('editToolbar').style.display = 'none';
+  document.body.classList.remove('edit-mode');
+  // 恢复原始数据
+  if (editOriginalDocs) appData.channels[activeChannel].documents = JSON.parse(editOriginalDocs);
+  editOriginalDocs = null;
+  renderAll();
+}
+
+// ---------- 拖拽排序 ----------
+var dragSrcEl = null;
+
+function bindDragEvents() {
+  var cards = document.querySelectorAll('.doc-card');
+  for (var i = 0; i < cards.length; i++) {
+    cards[i].setAttribute('draggable', 'true');
+    cards[i].addEventListener('dragstart', onDragStart, false);
+    cards[i].addEventListener('dragenter', onDragEnter, false);
+    cards[i].addEventListener('dragover', onDragOver, false);
+    cards[i].addEventListener('dragleave', onDragLeave, false);
+    cards[i].addEventListener('drop', onDrop, false);
+    cards[i].addEventListener('dragend', onDragEnd, false);
+  }
+  // grid drop zone
+  var grids = document.querySelectorAll('.card-grid');
+  for (var g = 0; g < grids.length; g++) {
+    grids[g].addEventListener('dragover', function(e) { e.preventDefault(); this.classList.add('drag-over'); });
+    grids[g].addEventListener('dragleave', function() { this.classList.remove('drag-over'); });
+    grids[g].addEventListener('drop', function() { this.classList.remove('drag-over'); });
+  }
+}
+
+function onDragStart(e) {
+  dragSrcEl = this;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', '');
+  this.classList.add('dragging');
+}
+
+function onDragEnter(e) { e.preventDefault(); this.classList.add('drag-over'); }
+function onDragLeave(e) { this.classList.remove('drag-over'); }
+
+function onDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; return false; }
+
+function onDrop(e) {
+  e.stopPropagation();
+  if (dragSrcEl !== this) {
+    var parent = this.parentNode;
+    var allCards = Array.from(parent.querySelectorAll('.doc-card'));
+    var fromIdx = allCards.indexOf(dragSrcEl);
+    var toIdx = allCards.indexOf(this);
+    if (fromIdx < toIdx) {
+      parent.insertBefore(dragSrcEl, this.nextSibling);
+    } else {
+      parent.insertBefore(dragSrcEl, this);
+    }
+    updateDocOrderFromDOM();
+  }
+  this.classList.remove('drag-over');
+  return false;
+}
+
+function onDragEnd() {
+  this.classList.remove('dragging');
+  document.querySelectorAll('.doc-card').forEach(function(c) { c.classList.remove('drag-over'); });
+  document.querySelectorAll('.card-grid').forEach(function(g) { g.classList.remove('drag-over'); });
+}
+
+// 从 DOM 更新 documents 数组顺序
+function updateDocOrderFromDOM() {
+  var chData = appData.channels[activeChannel];
+  var newOrder = [];
+  var seenUrls = {};
+  document.querySelectorAll('.card-grid').forEach(function(grid) {
+    grid.querySelectorAll('.doc-card').forEach(function(card) {
+      var url = card.getAttribute('data-doc-url') || '';
+      if (!url || seenUrls[url]) return;
+      seenUrls[url] = true;
+      newOrder.push(url);
+    });
+  });
+  // 按 newOrder 重排 documents
+  if (newOrder.length > 0) {
+    var urlMap = {};
+    chData.documents.forEach(function(d) { urlMap[d.url] = d; });
+    var reordered = [];
+    newOrder.forEach(function(u) { if (urlMap[u]) reordered.push(urlMap[u]); });
+    // 加上不在 DOM 中显示的（被搜索过滤掉的）
+    chData.documents.forEach(function(d) {
+      if (reordered.indexOf(d) === -1) reordered.push(d);
+    });
+    chData.documents = reordered;
+  }
+}
+
+// ---------- 分类选择器 ----------
+function changeCardCategory(docUrl, newCatKey) {
+  var docs = appData.channels[activeChannel].documents;
+  for (var i = 0; i < docs.length; i++) {
+    if (docs[i].url === docUrl) {
+      // 找新分类的名称和 section
+      var catInfo = findCategoryInfo(newCatKey);
+      if (catInfo) {
+        docs[i].category = catInfo.name;
+        docs[i].categoryKey = newCatKey;
+        docs[i].section = catInfo.section;
+        docs[i].sectionOrder = catInfo.sectionOrder;
+      } else {
+        // 新分类 key，直接设值
+        docs[i].category = newCatKey;
+        docs[i].categoryKey = newCatKey;
+      }
+      break;
+    }
+  }
+  renderAll();
+  setTimeout(bindDragEvents, 100);
+}
+
+function findCategoryInfo(catKey) {
+  var docs = appData.channels[activeChannel].documents;
+  for (var i = 0; i < docs.length; i++) {
+    if ((docs[i].categoryKey || '').toLowerCase() === catKey.toLowerCase()) {
+      return { name: docs[i].category, section: docs[i].section, sectionOrder: docs[i].sectionOrder };
+    }
+  }
+  return null;
+}
+
+// 获取当前 channel 的所有分类列表（用于下拉选择）
+function getCategoryOptions(currentCatKey) {
+  var cats = [];
+  var seen = {};
+  var docs = appData.channels[activeChannel].documents;
+  for (var i = 0; i < docs.length; i++) {
+    var k = (docs[i].categoryKey || '').toLowerCase();
+    if (!k || seen[k]) continue;
+    seen[k] = true;
+    var n = docs[i].category || k;
+    cats.push({ key: k, name: n });
+  }
+  var html = '';
+  for (var j = 0; j < cats.length; j++) {
+    var selected = cats[j].key === currentCatKey ? ' selected' : '';
+    html += '<option value="' + escapeHtml(cats[j].key) + '"' + selected + '>' + escapeHtml(cats[j].name) + '</option>';
+  }
+  return html;
+}
+
+// ---------- 增删分类 ----------
+function showAddCategoryDialog() {
+  var name = prompt('输入新分类名称：');
+  if (!name || !name.trim()) return;
+  var catKey = name.trim().replace(/\s+/g, '_').toLowerCase();
+  alert('分类「' + name + '」已创建！\n现在可以在卡片上选择该分类来移动文档。');
+  // 标记这个分类存在（后续保存时会处理）
+  if (!appData._pendingCategories) appData._pendingCategories = [];
+  appData._pendingCategories.push({ key: catKey, name: name.trim(), section: activeSection || '通用' });
+  renderAll();
+  setTimeout(bindDragEvents, 100);
+}
+
+// ---------- 保存到 GitHub ----------
+function showSaveDialog() {
+  document.getElementById('saveOverlay').classList.add('show');
+}
+function hideSaveDialog() {
+  document.getElementById('saveOverlay').classList.remove('show');
+}
+
+function saveToGitHub() {
+  hideSaveDialog();
+  var statusEl = document.getElementById('toolbarStatus');
+  
+  var token = prompt('请输入 GitHub Token 以保存更改：', '');
+  if (!token || !token.trim()) { statusEl.textContent = '❌ 已取消'; return; }
+  
+  statusEl.textContent = '⏳ 正在保存...';
+
+    function btoaSafe(s) {
+      var u8 = unescape(encodeURIComponent(s));
+      var bin = '';
+      for (var i = 0; i < u8.length; i++) bin += String.fromCharCode(u8.charCodeAt(i));
+      return window.btoa(bin);
+    }
+    var contentB64 = btoaSafe(dataStr);
+
+    // 先获取 SHA
+    fetch('https://api.github.com/repos/' + repo + '/contents/' + path, {
+      headers: { 'Authorization': 'token ' + token }
+    }).then(function(r) { return r.json(); }).then(function(fileData) {
+      var sha = fileData.sha;
+      fetch('https://api.github.com/repos/' + repo + '/contents/' + path, {
+        method: 'PUT',
+        headers: { 'Authorization': 'token ' + token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: 'update: 编辑模式调整分类和顺序',
+          content: contentB64,
+          sha: sha
+        })
+      }).then(function(r2) {
+        if (r2.ok) {
+          statusEl.textContent = '✅ 保存成功！';
+          setTimeout(function() { toggleEditMode(); }, 1000);
+        } else {
+          r2.json().then(function(err) { statusEl.textContent = '❌ 保存失败: ' + (err.message || ''); });
+        }
+      }).catch(function(err) { statusEl.textContent = '❌ 网络错误: ' + err.message; });
+    }).catch(function(err) { statusEl.textContent = '❌ 获取SHA失败: ' + err.message; });
+
+  } catch(e) { statusEl.textContent = '❌ 错误: ' + e.message; }
+}
+
+// 将当前 appData 重新序列化为 data.js 字符串格式
+function buildDataJsString() {
+  // 简化版本：直接用 JSON 格式输出
+  var channels = appData.channels;
+  var lines = [
+    '// CFH 设计中心索引数据 | 多职能通道格式',
+    '// 更新时间: ' + new Date().toLocaleString('zh-CN'),
+    '',
+    'var DOC_DATA = {',
+    '  "channels": {'
+  ];
+  Object.keys(channels).forEach(function(chKey) {
+    var ch = channels[chKey];
+    lines.push('    "' + chKey + '": {');
+    lines.push('      "title": ' + JSON.stringify(ch.title) + ',');
+    lines.push('      "subtitle": ' + JSON.stringify(ch.subtitle || '') + ',');
+    lines.push('      "updatedAt": ' + JSON.stringify(ch.updatedAt || '') + ',');
+    lines.push('      "totalDocuments": ' + (ch.documents || []).length + ',');
+    // sections/categories 简化输出
+    lines.push('      "sections": [],');
+    lines.push('      "categories": [],');
+    lines.push('      "documents": [');
+    var docs = ch.documents || [];
+    docs.forEach(function(d, di) {
+      var docJson = JSON.stringify(d, null, 6);
+      docJson = docJson.replace(/\n/g, '\n        ');
+      var comma = di < docs.length - 1 ? ',' : '';
+      lines.push('        ' + docJson + comma);
+    });
+    lines.push('      ]');
+    lines.push('    }' + (Object.keys(channels).indexOf(chKey) < Object.keys(channels).length - 1 ? ',' : ''));
+  });
+  lines.push('  }');
+  lines.push('};');
+  return lines.join('\n');
 }
 
 // ========== 工具函数 ==========
