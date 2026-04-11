@@ -378,7 +378,16 @@
     color: var(--text-secondary); cursor: pointer; max-width: 100px;
   }
   body.edit-mode .card-cat-select:focus { border-color: var(--accent); outline: none; }
-  /* 编辑工具栏 */
+  .toolbar-btn-add-circle {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 1.5px solid var(--accent); background: rgba(88,166,255,0.08);
+    color: var(--accent); font-size: 20px; line-height: 28px;
+    text-align: center; cursor: pointer; flex-shrink: 0;
+    transition: all 0.2s; padding: 0; display: inline-flex; align-items: center; justify-content: center;
+  }
+  .toolbar-btn-add-circle:hover {
+    background: rgba(88,166,255,0.2); transform: scale(1.1);
+  }
   .edit-toolbar {
     position: fixed; bottom: 30px; right: 40px; z-index: 999;
     display: flex; gap: 8px; align-items: center;
@@ -476,8 +485,8 @@
 <!-- Footer -->
 <!-- Edit Toolbar (编辑模式时显示) -->
 <div class="edit-toolbar" id="editToolbar" style="display:none;">
-  <span class="toolbar-status" id="toolbarStatus">拖拽卡片排序 · 选择分类</span>
-  <button class="toolbar-btn toolbar-btn-add" onclick="showAddCategoryDialog()">+ 新增分类</button>
+  <button class="toolbar-btn-add-circle" onclick="showAddCategoryDialog()" title="新增分类">+</button>
+  <span class="toolbar-status" id="toolbarStatus">拖拽卡片排序</span>
   <button class="toolbar-btn toolbar-btn-cancel" onclick="cancelEdit()">取消</button>
   <button class="toolbar-btn toolbar-btn-save" onclick="showSaveDialog()">💾 保存发布</button>
 </div>
