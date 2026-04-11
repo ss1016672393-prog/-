@@ -478,19 +478,49 @@
 // 内联诊断 - 不依赖任何外部JS
 (function(){
   var dbg = document.getElementById('debugInfo');
-  setTimeout(function() {
-    var info = [];
-    info.push('🔍 <b>诊断时间:</b> ' + new Date().toLocaleTimeString());
-    info.push('📦 <b>DOC_DATA 存在:</b> ' + (typeof DOC_DATA !== 'undefined' ? '✅ (' + Object.keys(DOC_DATA).length + ' keys)' : '❌ 未定义'));
-    if(typeof DOC_DATA !== 'undefined') { try{info.push('📊 <b>channels 数量:</b> ' + Object.keys(DOC_DATA.channels||{}).length);}catch(ex){}}
-    info.push('⏱️ <b>Loading 可见性:</b> ' + (document.querySelector('.loading')?.style.display || 'visible'));
-    info.push('🌐 <b>当前URL:</b> ' + location.href);
-    dbg.innerHTML = info.join('<br>');
-    dbg.style.display = 'block';
-    // 隐藏loading
-    var ld = document.querySelector('.loading');
-    if(ld) ld.style.display = 'none';
-  }, 3000);
+  
+  // 立即检查
+  dbg.innerHTML += '⏰ <b>脚本立即执行:</b> ' + new Date().toLocaleTimeString() + '<br>';
+  dbg.innerHTML += '📦 <b>data.js 加载前 DOC_DATA:</b> ' + (typeof DOC_DATA !== 'undefined' ? '✅已加载' : '❌未定义') + '<br>';
+  
+  // 监听 init 结果
+  var _origShowError = typeof window.showError === 'function' ? window.showError : null;
+  var _initDone = false;
+  var _initError = null;
+  
+  // 拦截 showError 来捕获错误信息
+  if (_origShowError) {
+    window.showError = function(msg) {
+      dbg.innerHTML += '<br>🚨 <b>showError 被调用:</b><br>' + msg + '<br><br>';
+      _initError = msg;
+      return _origShowError.apply(this, arguments);
+    };
+  }
+  
+  // 多个时间点检查状态
+  [1000, 3000, 5000].forEach(function(delay) {
+    setTimeout(function() {
+      var info = [];
+      info.push('<hr style="border-color:#333">');
+      info.push('⏱️ <b>' + delay/1000 + '秒后检查</b> (' + new Date().toLocaleTimeString() + ')');
+      info.push('📦 DOC_DATA: ' + (typeof DOC_DATA !== 'undefined' ? '✅' : '❌'));
+      info.push('📊 appData: ' + (appData && appData.channels ? '✅ (' + Object.keys(appData.channels).length + ')' : '❌未设置'));
+      
+      var nav = document.querySelector('.nav-tabs');
+      info.push('🧭 NavTabs HTML: ' + (nav ? nav.innerHTML.substring(0, 80) + '...' : '❌不存在'));
+      
+      var content = document.getElementById('contentArea');
+      info.push('📄 ContentArea: ' + (content ? '存在(子节点=' + content.children.length + ')' : '❌不存在'));
+      
+      var ld = document.querySelector('.loading');
+      info.push('⏳ Loading display: ' + (ld ? ld.style.display : '?'));
+      
+      info.push('🐛 _initError: ' + (_initError ? '有错误' : '无'));
+      
+      dbg.innerHTML += info.join('<br>');
+      dbg.style.display = 'block';
+    }, delay);
+  });
 })();
 </script>
 
