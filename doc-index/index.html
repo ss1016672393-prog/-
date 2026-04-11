@@ -1058,11 +1058,7 @@ function renderCard(doc, index) {
   // 编辑模式额外元素
   var editExtra = '';
   if (isEditMode) {
-    editExtra =
-      '<div class="card-drag-handle" title="拖拽排序">⠿</div>' +
-      '<select class="card-cat-select" onchange="changeCardCategory(\'' + escapeHtml(doc.url) + '\', this.value)" title="更改分类">' +
-      getCategoryOptions(catKey) +
-      '</select>';
+    editExtra = '<div class="card-drag-handle" title="拖拽排序">⠿</div>';
   }
 
   return '<a class="doc-card' + visitedCls + '" href="' + escapeHtml(doc.url || '#') + '" target="_blank" rel="noopener"' +
