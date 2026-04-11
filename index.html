@@ -554,28 +554,31 @@ var appData = null;          // 当前职能的数据
 
 // ========== 初始化 ==========
 (function init() {
+  var dbg = document.getElementById('debugInfo');
   try {
+    dbg.innerHTML += '📍 Step 0: 检查数据...<br>';
     if (typeof DOC_DATA === 'undefined' && typeof INDEX_DATA === 'undefined') {
-      var err = '⚠️ 数据文件加载失败，请确认 data.js 存在<br><br>路径: <b>doc-index/data.js</b><br>DOC_DATA 类型: <b>' + (typeof DOC_DATA) + '</b><br>INDEX_DATA 类型: <b>' + (typeof INDEX_DATA) + '</b>';
-      showError(err);
+      dbg.innerHTML += '❌ 数据文件未定义!<br>';
       return;
     }
-    // 兼容旧格式：如果 DOC_DATA 是单对象，包装为多通道格式
+    dbg.innerHTML += '✅ 数据存在<br>';
+
+    // 兼容旧格式
+    dbg.innerHTML += '📍 Step 1: 处理数据格式...<br>';
     if (typeof DOC_DATA !== 'undefined' && !DOC_DATA.channels) {
       appData = { channels: {} };
       appData.channels['ixd'] = DOC_DATA;
       appData.channels['refactor'] = { title: 'CFH重构落地', subtitle: '', documents: [], updatedAt: '' };
-      appData.channels['concept']   = { title: 'CFH概念推导',   subtitle: '', documents: [], updatedAt: '' };
-      appData.channels['weekly']    = { title: 'CFH周报',        subtitle: '', documents: [], updatedAt: '' };
+      appData.channels['concept']   = { title: 'CFH概念推导', subtitle: '', documents: [], updatedAt: '' };
+      appData.channels['weekly']    = { title: 'CFH周报',     subtitle: '', documents: [], updatedAt: '' };
     } else if (typeof INDEX_DATA !== 'undefined' && !INDEX_DATA.channels) {
       appData = { channels: {} };
       appData.channels['ixd'] = INDEX_DATA;
       appData.channels['refactor'] = { title: 'CFH重构落地', subtitle: '', documents: [], updatedAt: '' };
-      appData.channels['concept']   = { title: 'CFH概念推导',   subtitle: '', documents: [], updatedAt: '' };
-      appData.channels['weekly']    = { title: 'CFH周报',        subtitle: '', documents: [], updatedAt: '' };
+      appData.channels['concept']   = { title: 'CFH概念推导', subtitle: '', documents: [], updatedAt: '' };
+      appData.channels['weekly']    = { title: 'CFH周报',     subtitle: '', documents: [], updatedAt: '' };
     } else {
       appData = typeof DOC_DATA !== 'undefined' ? DOC_DATA : INDEX_DATA;
-      // 兼容：如果有旧的 weekly channel，拆分 concept + weekly
       if (appData.channels && appData.channels['weekly']) {
         var oldWeekly = appData.channels['weekly'];
         if (oldWeekly.documents && oldWeekly.documents.length > 0) {
@@ -595,15 +598,26 @@ var appData = null;          // 当前职能的数据
         }
       }
     }
+    dbg.innerHTML += '✅ 格式处理完成, channels=' + Object.keys(appData.channels).join(',') + '<br>';
 
+    dbg.innerHTML += '📍 Step 2: 渲染导航Tab...<br>';
     renderNavTabs();
+    dbg.innerHTML += '✅ 导航渲染完成<br>';
+
+    dbg.innerHTML += '📍 Step 3: 切换到ixd通道...<br>';
     switchChannel('ixd');
+    dbg.innerHTML += '✅ 通道切换完成<br>';
+
     // 隐藏 loading
     var loadingEl = document.querySelector('.loading');
     if (loadingEl) loadingEl.style.display = 'none';
+    dbg.innerHTML += '✅ 全部初始化成功！隐藏Loading<br>';
+
   } catch(e) {
-    var detail = '❌ 页面初始化失败<br><br>错误信息: <b>' + e.message + '</b><br>行号: <b>' + (e.lineNumber || e.line || '?') + '</b><br><pre style="text-align:left;color:#f66;background:#222;padding:10px;border-radius:6px">' + (e.stack || '无堆栈信息') + '</pre>';
-    showError(detail);
+    dbg.innerHTML += '<br>❌❌❌ <b>异常捕获:</b><br>';
+    dbg.innerHTML += '消息: ' + e.message + '<br>';
+    dbg.innerHTML += '行号: ' + (e.lineNumber || e.line || '?') + '<br>';
+    dbg.innerHTML += '堆栈: <pre style="background:#222;padding:10px;color:#f88;">' + (e.stack||'无') + '</pre><br>';
   }
 })();
 
