@@ -1,0 +1,932 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Syntax Test</title></head>
+<body style="background:#111;color:#0f8;font:14px/1.6 monospace;padding:20px">
+<h2>JS Syntax Check</h2>
+<div id="out">Running...</div>
+<script src="doc-index/data.js"></script>
+<script>
+try {
+
+/**
+ * ============================================================
+ * 🎮 CFH 设计中心 - 多职能索引页
+ * ============================================================
+ * 支持多个职能 Tab：交互稿 / 视觉稿 / 重构落地 / 概念推导&周报
+ * 每个 Tab 独立展示对应的文档集合
+ */
+
+// 调试：立即检查数据是否加载成功
+window.__dataLoadError = null;
+if (typeof DOC_DATA === 'undefined' && typeof INDEX_DATA === 'undefined') {
+  window.__dataLoadError = 'data.js 未加载：DOC_DATA 和 INDEX_DATA 都不存在';
+  console.error(window.__dataLoadError);
+}
+
+// ========== 职能定义 ==========
+// 每个 Tab 对应 data.js 中的一套独立数据（通过 channel 字段区分）
+var CHANNELS = [
+  { key: 'ixd',       label: '✏️ 交互稿',     shortLabel: '交互稿',     colorClass: 'ixd',       icon: '✏️' },
+  { key: 'concept',   label: '💡 概念推导',    shortLabel: '概念推导',    colorClass: 'weekly',    icon: '💡' },
+  { key: 'refactor',  label: '🔧 重构落地',    shortLabel: '重构落地',    colorClass: 'refactor',  icon: '🔧' },
+  { key: 'weekly',    label: '📊 周报',        shortLabel: '周报',        colorClass: 'weeklyreport', icon: '📊' },
+];
+
+var activeChannel = 'ixd';   // 当前选中的职能 Tab
+var activeCategory = 'all';
+var activeSection = 'all';   // 板块筛选
+var activeStatus = 'all';    // 状态筛选
+var newDocSet = null;        // 随机标记"新"的文档 URL 集合
+var appData = null;          // 当前职能的数据
+
+// ========== 初始化 ==========
+(function init() {
+  var dbg = document.getElementById('debugInfo');
+  try {
+    dbg.innerHTML += '📍 Step 0: 检查数据...<br>';
+    if (typeof DOC_DATA === 'undefined' && typeof INDEX_DATA === 'undefined') {
+      dbg.innerHTML += '❌ 数据文件未定义!<br>';
+      return;
+    }
+    dbg.innerHTML += '✅ 数据存在<br>';
+
+    // 兼容旧格式
+    dbg.innerHTML += '📍 Step 1: 处理数据格式...<br>';
+    if (typeof DOC_DATA !== 'undefined' && !DOC_DATA.channels) {
+      appData = { channels: {} };
+      appData.channels['ixd'] = DOC_DATA;
+      appData.channels['refactor'] = { title: 'CFH重构落地', subtitle: '', documents: [], updatedAt: '' };
+      appData.channels['concept']   = { title: 'CFH概念推导', subtitle: '', documents: [], updatedAt: '' };
+      appData.channels['weekly']    = { title: 'CFH周报',     subtitle: '', documents: [], updatedAt: '' };
+    } else if (typeof INDEX_DATA !== 'undefined' && !INDEX_DATA.channels) {
+      appData = { channels: {} };
+      appData.channels['ixd'] = INDEX_DATA;
+      appData.channels['refactor'] = { title: 'CFH重构落地', subtitle: '', documents: [], updatedAt: '' };
+      appData.channels['concept']   = { title: 'CFH概念推导', subtitle: '', documents: [], updatedAt: '' };
+      appData.channels['weekly']    = { title: 'CFH周报',     subtitle: '', documents: [], updatedAt: '' };
+    } else {
+      appData = typeof DOC_DATA !== 'undefined' ? DOC_DATA : INDEX_DATA;
+      if (appData.channels && appData.channels['weekly']) {
+        var oldWeekly = appData.channels['weekly'];
+        if (oldWeekly.documents && oldWeekly.documents.length > 0) {
+          var conceptDocs = [];
+          var weeklyDocs = [];
+          for (var wi = 0; wi < oldWeekly.documents.length; wi++) {
+            var wd = oldWeekly.documents[wi];
+            if ((wd.tags || []).some(function(t){ return t.indexOf('周报') >= 0; }) ||
+                (wd.name || '').indexOf('周报') >= 0) {
+              weeklyDocs.push(wd);
+            } else {
+              conceptDocs.push(wd);
+            }
+          }
+          appData.channels['concept'] = { title: 'CFH概念推导', subtitle: '', documents: conceptDocs, updatedAt: oldWeekly.updatedAt };
+          appData.channels['weekly']  = { title: 'CFH周报',     subtitle: '', documents: weeklyDocs,  updatedAt: oldWeekly.updatedAt };
+        }
+      }
+    }
+    dbg.innerHTML += '✅ 格式处理完成, channels=' + Object.keys(appData.channels).join(',') + '<br>';
+
+    dbg.innerHTML += '📍 Step 2: 渲染导航Tab...<br>';
+    renderNavTabs();
+    dbg.innerHTML += '✅ 导航渲染完成<br>';
+
+    dbg.innerHTML += '📍 Step 3: 切换到ixd通道...<br>';
+    switchChannel('ixd');
+    dbg.innerHTML += '✅ 通道切换完成<br>';
+
+    // 隐藏 loading
+    var loadingEl = document.querySelector('.loading');
+    if (loadingEl) loadingEl.style.display = 'none';
+    dbg.innerHTML += '✅ 全部初始化成功！隐藏Loading<br>';
+
+  } catch(e) {
+    dbg.innerHTML += '<br>❌❌❌ <b>异常捕获:</b><br>';
+    dbg.innerHTML += '消息: ' + e.message + '<br>';
+    dbg.innerHTML += '行号: ' + (e.lineNumber || e.line || '?') + '<br>';
+    dbg.innerHTML += '堆栈: <pre style="background:#222;padding:10px;color:#f88;">' + (e.stack||'无') + '</pre><br>';
+  }
+})();
+
+// ========== 渲染职能导航 Tab ==========
+function renderNavTabs() {
+  var html = '';
+  for (var i = 0; i < CHANNELS.length; i++) {
+    var ch = CHANNELS[i];
+    var chData = (appData.channels && appData.channels[ch.key]) || {};
+    var docs = chData.documents || [];
+    var count = docs.length;
+    var activeCls = activeChannel === ch.key ? ' active-' + ch.colorClass : '';
+    html += '<button class="nav-tab' + activeCls + '" onclick="switchChannel(\'' + ch.key + '\')">' +
+            ch.label + '<span class="tab-count">' + count + '</span></button>';
+  }
+  document.getElementById('navTabs').innerHTML = html;
+}
+
+// ========== 切换职能 Tab ==========
+function switchChannel(channelKey) {
+  activeChannel = channelKey;
+  activeCategory = 'all';
+  activeSection = 'all';
+  activeStatus = 'all';
+
+  // 更新 Tab 高亮
+  var tabs = document.querySelectorAll('.nav-tab');
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].className = 'nav-tab';
+  }
+  // 重新渲染 Tab 以更新高亮和计数
+  renderNavTabs();
+
+  // 获取当前通道的数据（使用已初始化的 appData，不要重新从 DOC_DATA 覆盖）
+  if (!appData || !appData.channels) return;
+  var chData = appData.channels[channelKey] || { documents: [] };
+
+  // 设置新文档标记集
+  var docs = chData.documents || [];
+  var urls = docs.map(function(d) { return d.url || d.name; });
+  var shuffled = urls.slice().sort(function() { return Math.random() - 0.5; });
+  var pickCount = Math.min(Math.max(4, Math.floor(docs.length * 0.1)), 8);
+  newDocSet = {};
+  for (var j = 0; j < pickCount && j < shuffled.length; j++) {
+    newDocSet[shuffled[j]] = true;
+  }
+
+  renderAll();
+}
+
+// ========== 主渲染函数 ==========
+function renderAll() {
+  // 使用已初始化的 appData（不要重新从原始数据读取）
+  if (!appData || !appData.channels) return;
+  var chData = appData.channels[activeChannel] || {};
+  var docs = chData.documents || [];
+
+  // 周报按时间排序（最新的在最前面），新人周报/视觉周报置底
+  if (activeChannel === 'weekly' && docs.length > 0) {
+    docs = docs.slice().sort(function(a, b) {
+      var na = (a.name || ''), nb = (b.name || '');
+      var aIsBottom = (na.indexOf('新人') >= 0 || na.indexOf('视觉') >= 0) ? 1 : 0;
+      var bIsBottom = (nb.indexOf('新人') >= 0 || nb.indexOf('视觉') >= 0) ? 1 : 0;
+      if (aIsBottom !== bIsBottom) return aIsBottom - bIsBottom;  // 置底的排后面
+      var ta = a.updatedAt || a.lastUpdated || '';
+      var tb = b.updatedAt || b.lastUpdated || '';
+      return ta < tb ? 1 : (ta > tb ? -1 : 0);
+    });
+  }
+
+  var keyword = document.getElementById('searchInput').value.toLowerCase().trim();
+
+  // 更新全局信息
+  var chInfo = CHANNELS.find(function(c) { return c.key === activeChannel; });
+  var chLabel = chInfo ? chInfo.shortLabel : '文档';
+  document.getElementById('pageTitle').textContent = '🎮 CFH设计中心 · ' + chLabel;
+  document.getElementById('logoTitle').textContent = 'CFH设计中心';
+  document.getElementById('logoSub').textContent = (chInfo ? chInfo.label : '') + (chData.subtitle ? ' · ' + chData.subtitle : '');
+  // 显示最后更新日期
+  var updateTimeEl = document.getElementById('updateTime');
+  if (updateTimeEl) {
+    updateTimeEl.textContent = '🕐 最后更新: ' + (chData.updatedAt || chData.lastUpdated || new Date().toLocaleDateString('zh-CN'));
+  }
+  var chInfo = CHANNELS.find(function(c) { return c.key === activeChannel; });
+  // 如果该 Tab 完全没有数据，显示空状态
+  if (docs.length === 0) {
+    renderEmptyTab(chInfo);
+    document.getElementById('filterSection').innerHTML = '';
+    return;
+  }
+
+  // 周报：隐藏筛选，按年份分组
+  if (activeChannel === 'weekly') {
+    document.getElementById('filterSection').innerHTML = '';
+
+    // 模板关键词：新人/视觉
+    var templateKw = /新人|视觉/;
+    // 从文档名或 updatedAt 提取年份分组（排除模板类）
+    var templateDocs = [];
+    var yearGroups = {};
+    for (var wi = 0; wi < docs.length; wi++) {
+      var wd = docs[wi];
+      // 先检查是否为模板
+      if (templateKw.test(wd.name) || (wd.tags || []).some(function(t){ return templateKw.test(t); })) {
+        templateDocs.push(wd);
+        continue;
+      }
+      var year = '未知';
+      // 优先从名称中提取（如 "2026年xx周报"、"2025-..."）
+      var nameMatch = wd.name.match(/(20\d{2})/);
+      if (nameMatch) year = nameMatch[1];
+      // 其次从 updatedAt 提取
+      else if (wd.updatedAt) {
+        var dateMatch = wd.updatedAt.match(/(20\d{2})/);
+        if (dateMatch) year = dateMatch[1];
+      }
+      if (!yearGroups[year]) yearGroups[year] = [];
+      yearGroups[year].push(wd);
+    }
+
+    // 年份倒序排列（不含模板类）
+    var sortedYears = Object.keys(yearGroups).sort().reverse();
+
+    // 构建 filteredGrouped 格式供 renderContent 使用
+    var weeklyGrouped = {};
+    for (var yi = 0; yi < sortedYears.length; yi++) {
+      var yr = sortedYears[yi];
+      var yDocs = yearGroups[yr];
+      // 搜索过滤
+      if (keyword) {
+        yDocs = yDocs.filter(function(d) {
+          var h = (d.name || '') + ' ' + (d.tags || []).join(' ') + ' ' + (d.desc || '');
+          return h.toLowerCase().indexOf(keyword) !== -1;
+        });
+      }
+      if (yDocs.length > 0) {
+        weeklyGrouped['year_' + yr] = { category: yr + '年', docs: yDocs };
+      }
+    }
+
+    // 模板类周报（新人/视觉）单独一组，放在最底部
+    if (templateDocs.length > 0) {
+      var filteredTemplate = keyword
+        ? templateDocs.filter(function(d) {
+            var h = (d.name || '') + ' ' + (d.tags || []).join(' ') + ' ' + (d.desc || '');
+            return h.toLowerCase().indexOf(keyword) !== -1;
+          })
+        : templateDocs;
+      if (filteredTemplate.length > 0) {
+        weeklyGrouped['_template'] = { category: '📋 模板', docs: filteredTemplate };
+      }
+    }
+
+    renderContentWeekly(weeklyGrouped);
+    return;
+  }
+
+  // 概念推导：隐藏筛选，按类型分组（概念推导 / BCD系列 / 世界观元素）
+  if (activeChannel === 'concept') {
+    document.getElementById('filterSection').innerHTML = '';
+
+    var conceptDocs = [];   // 纯"XXX概念推导"格式
+    var bcdDocs = [];       // 名称包含 BCD
+    var worldDocs = [];     // 其余 = 世界观元素
+    for (var ci = 0; ci < docs.length; ci++) {
+      var cd = docs[ci];
+      var name = cd.name || '';
+      var cleaned = name.replace(/^\s*【[^】]+】\s*/, '');
+      var isBCD = name.indexOf('BCD') >= 0;
+      var isConcept = /^[^【】\d]{2,15}概念推导$/.test(cleaned);
+      if (isBCD) {
+        bcdDocs.push(cd);
+      } else if (isConcept) {
+        conceptDocs.push(cd);
+      } else {
+        worldDocs.push(cd);
+      }
+    }
+
+    // 搜索过滤
+    if (keyword) {
+      conceptDocs = conceptDocs.filter(function(d) {
+        return ((d.name || '') + ' ' + (d.tags || []).join(' ') + ' ' + (d.desc || '')).toLowerCase().indexOf(keyword) !== -1;
+      });
+      bcdDocs = bcdDocs.filter(function(d) {
+        return ((d.name || '') + ' ' + (d.tags || []).join(' ') + ' ' + (d.desc || '')).toLowerCase().indexOf(keyword) !== -1;
+      });
+      worldDocs = worldDocs.filter(function(d) {
+        return ((d.name || '') + ' ' + (d.tags || []).join(' ') + ' ' + (d.desc || '')).toLowerCase().indexOf(keyword) !== -1;
+      });
+    }
+
+    var conceptGrouped = {};
+    if (conceptDocs.length > 0)  conceptGrouped['_concept']   = { category: '📐 概念推导',     docs: conceptDocs };
+    if (bcdDocs.length > 0)      conceptGrouped['_bcd']       = { category: '🔷 BCD系列',     docs: bcdDocs };
+    if (worldDocs.length > 0)    conceptGrouped['_world']     = { category: '🌍 世界观元素',  docs: worldDocs };
+    renderContentWeekly(conceptGrouped);
+    return;
+  }
+
+  // 按 categoryKey 分组（交互稿/重构落地等 Tab）
+  var grouped = {};
+  for (var i = 0; i < docs.length; i++) {
+    var d = docs[i];
+    var catKey = (d.categoryKey || 'other').toLowerCase();
+    if (!grouped[catKey]) grouped[catKey] = [];
+    grouped[catKey].push(d);
+  }
+
+  // 筛选
+  var filteredDocs = [];
+  var filteredGrouped = {};
+  Object.keys(grouped).forEach(function(catKey) {
+    var catDocs = grouped[catKey];
+    var firstDoc = catDocs[0] || null;
+    if (!firstDoc) return;
+    var docSec = (firstDoc.section || '其他');
+
+    // 板块过滤
+    if (activeSection !== 'all' && docSec !== activeSection) return;
+
+    var matched = catDocs.filter(function(d) {
+      if (activeCategory !== 'all' && (d.categoryKey || 'other').toLowerCase() !== activeCategory) return false;
+      if (keyword) {
+        var haystack = (d.name || '') + ' ' + (d.tags || []).join(' ') + ' ' + (d.desc || '');
+        if (haystack.toLowerCase().indexOf(keyword) === -1) return false;
+      }
+      return true;
+    });
+    if (matched.length > 0) {
+      filteredGrouped[catKey] = { category: matched[0].category || catKey, docs: matched };
+      filteredDocs = filteredDocs.concat(matched);
+    }
+  });
+
+  // 渲染各部分
+  renderFilters(grouped);
+  renderContent(filteredGrouped, filteredDocs.length === 0 && keyword);
+}
+
+// ========== 卡片网格自动补位（消除最后一行空缺）==========
+function fillGridGaps(container) {
+  if (!container) return;
+  var grids = container.querySelectorAll('.card-grid');
+  for (var gi = 0; gi < grids.length; gi++) {
+    var grid = grids[gi];
+    if (!grid.children || grid.children.length === 0) continue;
+    // 获取当前列数（从第一行的卡片宽度计算）
+    var firstCard = grid.children[0];
+    var gridWidth = grid.offsetWidth;
+    var cardWidth = firstCard.offsetWidth;
+    var gap = 16;
+    // 计算列数：容器宽度 / (卡片宽度 + gap) 向下取整
+    var cols = Math.max(1, Math.round((gridWidth + gap) / (cardWidth + gap)));
+    // 如果是 auto-fill 且窗口宽度变化，cols 可能不准，保守取 3
+    if (cols > 6) cols = 3; // fallback
+    var remainder = grid.children.length % cols;
+    if (remainder !== 0) {
+      for (var s = remainder; s < cols; s++) {
+        var sp = document.createElement('div');
+        sp.className = 'doc-card grid-spacer';
+        grid.appendChild(sp);
+      }
+    }
+  }
+}
+
+// ========== 周报专用渲染（按年份分组）==========
+function renderContentWeekly(yearGrouped) {
+  var container = document.getElementById('mainContent');
+
+  var sortedYears = Object.keys(yearGrouped).sort().reverse();
+
+  if (sortedYears.length === 0) {
+    container.innerHTML =
+      '<div class="no-results">' +
+        '<div class="no-results-icon">🔍</div>' +
+        '<p>没有找到匹配的周报</p></div>';
+    return;
+  }
+
+  var html = '';
+  for (var yi = 0; yi < sortedYears.length; yi++) {
+    var catKey = sortedYears[yi];
+    var catInfo = yearGrouped[catKey];
+    var yearTitle = catInfo.category;
+    var catDocs = catInfo.docs;
+
+    html += '<section class="section-group">';
+    if (yearTitle) {
+      var titlePrefix = /^[\p{Emoji_Presentation}\p{Extended_Pictographic}]/u.test(yearTitle) ? '' : '📅 ';
+      html += '<h2 class="section-title">' + titlePrefix + escapeHtml(yearTitle) + '</h2>';
+    }
+    html += '<div class="card-grid">';
+    for (var di = 0; di < catDocs.length; di++) {
+      html += renderCard(catDocs[di], di);
+    }
+    html += '</div></section>';
+  }
+  container.innerHTML = html;
+  // 自动补位（等 DOM 渲染后计算）
+  setTimeout(function() { fillGridGaps(container); }, 0);
+}
+
+// ========== 空状态（某 Tab 无数据时）==========
+function renderEmptyTab(chInfo) {
+  var container = document.getElementById('mainContent');
+  var iconName = chInfo ? chInfo.icon : '📭';
+  var tabName = chInfo ? chInfo.label : '此分类';
+  container.innerHTML =
+    '<div class="empty-tab">' +
+      '<div class="empty-tab-icon">' + iconName + '</div>' +
+      '<h3>' + escapeHtml(tabName) + ' 整理中…</h3>' +
+      '<p>该分类暂无内容，敬请期待！<br>后续会陆续添加相关文档。</p>' +
+    '</div>';
+}
+
+// ========== 分类筛选标签（板块 + 子分类两层）==========
+function renderFilters(grouped) {
+  var sections = {};
+
+  Object.keys(grouped).forEach(function(catKey) {
+    var catInfo = grouped[catKey];
+    var doc = Array.isArray(catInfo) ? catInfo[0] : (catInfo.docs && catInfo.docs.length ? catInfo.docs[0] : null);
+    if (!doc) return;
+    var sec = doc.section || '其他';
+    var catName = catInfo.category || doc.category || catKey;
+    var count = Array.isArray(catInfo) ? catInfo.length : (catInfo.docs ? catInfo.docs.length : 0);
+
+    if (!sections[sec]) sections[sec] = { total: 0, cats: [] };
+    sections[sec].total += count;
+    sections[sec].cats.push({ key: catKey, name: catName, count: count, sectionOrder: doc.sectionOrder || 99 });
+  });
+
+  var sectionOrder = ['局外', '局内', '主机相关', '通用'];
+  var sortedSections = Object.keys(sections).sort(function(a, b) {
+    var ai = sectionOrder.indexOf(a), bi = sectionOrder.indexOf(b);
+    return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+  });
+
+  // 第一行：板块按钮
+  var sectionHtml = '<button class="filter-tab section-tab' + (activeSection === 'all' ? ' active' : '') +
+                 '" onclick="setSection(this, \'all\')">📋 全部</button>';
+
+  for (var si = 0; si < sortedSections.length; si++) {
+    var secName = sortedSections[si];
+    var secData = sections[secName];
+    sectionHtml += '<button class="filter-tab section-tab' + (activeSection === secName ? ' active' : '') +
+                   '" onclick="setSection(this, \'' + escapeHtml(secName) + '\')">' +
+                   '📂 ' + escapeHtml(secName) + ' (' + secData.total + ')</button>';
+  }
+
+  // 第二行：子分类标签
+  var categoryHtml = '';
+  categoryHtml += '<button class="filter-tab cat-tab' + (activeCategory === 'all' ? ' active' : '') + '" onclick="setFilter(this, \'all\')">全部</button>';
+
+  var showCats = (activeSection === 'all')
+    ? sortedSections.map(function(s) { return sections[s].cats; }).reduce(function(a, b) { return a.concat(b); }, [])
+    : (sections[activeSection] ? sections[activeSection].cats : []);
+
+  showCats.sort(function(a, b) { return (a.sectionOrder || 0) - (b.sectionOrder || 0); });
+  for (var i = 0; i < showCats.length; i++) {
+    var c = showCats[i];
+    categoryHtml += '<button class="filter-tab cat-tab' + (activeCategory === c.key ? ' active' : '') +
+                    '" onclick="setFilter(this,\'' + c.key + '\')">📦 ' + c.name + ' (' + c.count + ')</button>';
+  }
+
+  document.getElementById('filterSection').innerHTML =
+    '<div class="filter-row-section">' + sectionHtml + '</div>' +
+    '<div class="filter-row-cat">' + categoryHtml + '</div>';
+}
+
+// 设置板块筛选
+function setSection(btn, section) {
+  document.querySelectorAll('.section-tab').forEach(function(t) { t.classList.remove('active'); });
+  btn.classList.add('active');
+  activeSection = section;
+  activeCategory = 'all';
+  renderAll();
+}
+
+// ========== 内容区域（按板块分组渲染）==========
+function renderContent(grouped, showNoResults) {
+  var container = document.getElementById('mainContent');
+
+  if (showNoResults) {
+    container.innerHTML =
+      '<div class="no-results">' +
+        '<div class="no-results-icon">🔍</div>' +
+        '<p>没有找到匹配的文档</p>' +
+        '<p style="font-size:13px;margin-top:4px;color:var(--text-muted);">试试其他关键词</p>' +
+      '</div>';
+    return;
+  }
+
+  // 按 section 分组
+  var sections = {};
+  Object.keys(grouped).forEach(function(catKey) {
+    var catInfo = grouped[catKey];
+    if (!catInfo || !catInfo.docs) return;
+    var doc = catInfo.docs.length ? catInfo.docs[0] : null;
+    if (!doc) return;
+    var sec = doc.section || '其他';
+    if (!sections[sec]) sections[sec] = { docs: {}, order: doc.sectionOrder || 99 };
+    sections[sec].docs[catKey] = catInfo;
+  });
+
+  var sectionOrder = ['局外', '局内', '主机相关', '通用'];
+  var sortedSecs = Object.keys(sections).sort(function(a, b) {
+    var ai = sectionOrder.indexOf(a), bi = sectionOrder.indexOf(b);
+    return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+  });
+
+  var html = '';
+
+  for (var si = 0; si < sortedSecs.length; si++) {
+    var secName = sortedSecs[si];
+    var secData = sections[secName];
+
+    html += '<section class="section-group">';
+    html += '<h2 class="section-title">' + escapeHtml(secName) + '</h2>';
+
+    var catKeys = Object.keys(secData.docs).sort();
+    for (var ci = 0; ci < catKeys.length; ci++) {
+      var catKey = catKeys[ci];
+      var catInfo = grouped[catKey];
+      var catName = catInfo.category || catKey;
+      var catDocs = catInfo.docs;
+
+      html += '<div class="category-section" data-category="' + catKey + '">' +
+        '<div class="category-header">' +
+          '<span class="category-title">' + escapeHtml(catName) + '</span>' +
+          '<span class="category-count">' + catDocs.length + '</span>' +
+        '</div>' +
+        '<div class="card-grid">';
+
+      for (var di = 0; di < catDocs.length; di++) {
+        html += renderCard(catDocs[di], di);
+      }
+
+      html += '</div></div>';
+    }
+    html += '</section>';
+  }
+
+  container.innerHTML = html;
+}
+
+// ========== 单个卡片 ==========
+function renderCard(doc, index) {
+  var isNew = newDocSet && !!(newDocSet[doc.url] || newDocSet[doc.name]);
+  var newBadge = isNew ? '<span class="new-badge">新</span>' : '';
+  var updatedHtml = doc.updatedAt ? '<span>更新于 ' + doc.updatedAt + '</span>' : '';
+
+  var visitedKey = 'visited_' + (doc.url || doc.name);
+  var isVisited = sessionStorage.getItem(visitedKey) === '1';
+  var visitedCls = isVisited ? ' visited' : '';
+
+  var tagsHtml = '';
+  if (doc.tags && doc.tags.length > 0) {
+    tagsHtml = '<div class="card-tags">';
+    for (var ti = 0; ti < doc.tags.length; ti++) {
+      var tag = doc.tags[ti];
+      var isPhase = /^v?\d/.test(tag);
+      tagsHtml += '<span class="card-tag' + (isPhase ? ' phase' : '') + '">' + escapeHtml(tag) + '</span>';
+    }
+    tagsHtml += '</div>';
+  } else {
+    tagsHtml = '<div class="card-tags"></div>';
+  }
+
+  var displayName = doc.name.replace(/^\s*【[^】]+】\s*/, '');
+  var catKey = (doc.categoryKey || '').toLowerCase();
+
+  // 编辑模式额外元素
+  var editExtra = '';
+  if (isEditMode) {
+    editExtra =
+      '<div class="card-drag-handle" title="拖拽排序">⠿</div>' +
+      '<select class="card-cat-select" onchange="changeCardCategory(\'' + escapeHtml(doc.url) + '\', this.value)" title="更改分类">' +
+      getCategoryOptions(catKey) +
+      '</select>';
+  }
+
+  return '<a class="doc-card' + visitedCls + '" href="' + escapeHtml(doc.url || '#') + '" target="_blank" rel="noopener"' +
+    ' style="animation-delay:' + (index * 0.03) + 's"' +
+    ' data-visit-key="' + escapeHtml(visitedKey) + '"' +
+    ' data-doc-url="' + escapeHtml(doc.url || '') + '"' +
+    ' onclick="markVisited(this);return false;">' +
+    editExtra +
+    '<div class="card-top">' +
+      '<span class="card-title">' + escapeHtml(displayName) + newBadge + '</span>' +
+    '</div>' +
+    '<div class="card-desc">' + escapeHtml(doc.desc || '') + '</div>' +
+    tagsHtml +
+    '<div class="card-meta">' + updatedHtml + '</div>' +
+    '</a>';
+}
+
+// 标记为已访问（sessionStorage：刷新页面后自动重置）
+function markVisited(el) {
+  var key = el.getAttribute('data-visit-key');
+  if (key) sessionStorage.setItem(key, '1');
+  var href = el.getAttribute('href');
+  if (href && href !== '#') {
+    window.open(href, '_blank');
+    return false;
+  }
+}
+
+// ========== 编辑模式功能 ==========
+var isEditMode = false;
+var editOriginalDocs = null; // 进入编辑时备份原始数据
+
+function toggleEditMode() {
+  isEditMode = !isEditMode;
+  var btn = document.getElementById('editToggleBtn');
+  var toolbar = document.getElementById('editToolbar');
+  if (isEditMode) {
+    btn.className = 'edit-btn active'; btn.textContent = '👁️ 预览';
+    toolbar.style.display = 'flex';
+    document.body.classList.add('edit-mode');
+    // 备份当前数据
+    editOriginalDocs = JSON.stringify(appData.channels[activeChannel].documents);
+    renderAll();
+    // 绑定拖拽事件
+    setTimeout(bindDragEvents, 100);
+  } else {
+    btn.className = 'edit-btn'; btn.textContent = '✏️ 编辑';
+    toolbar.style.display = 'none';
+    document.body.classList.remove('edit-mode');
+    renderAll();
+  }
+}
+
+function cancelEdit() {
+  if (editOriginalDocs && !confirm('确定放弃所有修改？')) return;
+  isEditMode = false;
+  var btn = document.getElementById('editToggleBtn'); btn.className = 'edit-btn'; btn.textContent = '✏️ 编辑';
+  document.getElementById('editToolbar').style.display = 'none';
+  document.body.classList.remove('edit-mode');
+  // 恢复原始数据
+  if (editOriginalDocs) appData.channels[activeChannel].documents = JSON.parse(editOriginalDocs);
+  editOriginalDocs = null;
+  renderAll();
+}
+
+// ---------- 拖拽排序 ----------
+var dragSrcEl = null;
+
+function bindDragEvents() {
+  var cards = document.querySelectorAll('.doc-card');
+  for (var i = 0; i < cards.length; i++) {
+    cards[i].setAttribute('draggable', 'true');
+    cards[i].addEventListener('dragstart', onDragStart, false);
+    cards[i].addEventListener('dragenter', onDragEnter, false);
+    cards[i].addEventListener('dragover', onDragOver, false);
+    cards[i].addEventListener('dragleave', onDragLeave, false);
+    cards[i].addEventListener('drop', onDrop, false);
+    cards[i].addEventListener('dragend', onDragEnd, false);
+  }
+  // grid drop zone
+  var grids = document.querySelectorAll('.card-grid');
+  for (var g = 0; g < grids.length; g++) {
+    grids[g].addEventListener('dragover', function(e) { e.preventDefault(); this.classList.add('drag-over'); });
+    grids[g].addEventListener('dragleave', function() { this.classList.remove('drag-over'); });
+    grids[g].addEventListener('drop', function() { this.classList.remove('drag-over'); });
+  }
+}
+
+function onDragStart(e) {
+  dragSrcEl = this;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', '');
+  this.classList.add('dragging');
+}
+
+function onDragEnter(e) { e.preventDefault(); this.classList.add('drag-over'); }
+function onDragLeave(e) { this.classList.remove('drag-over'); }
+
+function onDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; return false; }
+
+function onDrop(e) {
+  e.stopPropagation();
+  if (dragSrcEl !== this) {
+    var parent = this.parentNode;
+    var allCards = Array.from(parent.querySelectorAll('.doc-card'));
+    var fromIdx = allCards.indexOf(dragSrcEl);
+    var toIdx = allCards.indexOf(this);
+    if (fromIdx < toIdx) {
+      parent.insertBefore(dragSrcEl, this.nextSibling);
+    } else {
+      parent.insertBefore(dragSrcEl, this);
+    }
+    updateDocOrderFromDOM();
+  }
+  this.classList.remove('drag-over');
+  return false;
+}
+
+function onDragEnd() {
+  this.classList.remove('dragging');
+  document.querySelectorAll('.doc-card').forEach(function(c) { c.classList.remove('drag-over'); });
+  document.querySelectorAll('.card-grid').forEach(function(g) { g.classList.remove('drag-over'); });
+}
+
+// 从 DOM 更新 documents 数组顺序
+function updateDocOrderFromDOM() {
+  var chData = appData.channels[activeChannel];
+  var newOrder = [];
+  var seenUrls = {};
+  document.querySelectorAll('.card-grid').forEach(function(grid) {
+    grid.querySelectorAll('.doc-card').forEach(function(card) {
+      var url = card.getAttribute('data-doc-url') || '';
+      if (!url || seenUrls[url]) return;
+      seenUrls[url] = true;
+      newOrder.push(url);
+    });
+  });
+  // 按 newOrder 重排 documents
+  if (newOrder.length > 0) {
+    var urlMap = {};
+    chData.documents.forEach(function(d) { urlMap[d.url] = d; });
+    var reordered = [];
+    newOrder.forEach(function(u) { if (urlMap[u]) reordered.push(urlMap[u]); });
+    // 加上不在 DOM 中显示的（被搜索过滤掉的）
+    chData.documents.forEach(function(d) {
+      if (reordered.indexOf(d) === -1) reordered.push(d);
+    });
+    chData.documents = reordered;
+  }
+}
+
+// ---------- 分类选择器 ----------
+function changeCardCategory(docUrl, newCatKey) {
+  var docs = appData.channels[activeChannel].documents;
+  for (var i = 0; i < docs.length; i++) {
+    if (docs[i].url === docUrl) {
+      // 找新分类的名称和 section
+      var catInfo = findCategoryInfo(newCatKey);
+      if (catInfo) {
+        docs[i].category = catInfo.name;
+        docs[i].categoryKey = newCatKey;
+        docs[i].section = catInfo.section;
+        docs[i].sectionOrder = catInfo.sectionOrder;
+      } else {
+        // 新分类 key，直接设值
+        docs[i].category = newCatKey;
+        docs[i].categoryKey = newCatKey;
+      }
+      break;
+    }
+  }
+  renderAll();
+  setTimeout(bindDragEvents, 100);
+}
+
+function findCategoryInfo(catKey) {
+  var docs = appData.channels[activeChannel].documents;
+  for (var i = 0; i < docs.length; i++) {
+    if ((docs[i].categoryKey || '').toLowerCase() === catKey.toLowerCase()) {
+      return { name: docs[i].category, section: docs[i].section, sectionOrder: docs[i].sectionOrder };
+    }
+  }
+  return null;
+}
+
+// 获取当前 channel 的所有分类列表（用于下拉选择）
+function getCategoryOptions(currentCatKey) {
+  var cats = [];
+  var seen = {};
+  var docs = appData.channels[activeChannel].documents;
+  for (var i = 0; i < docs.length; i++) {
+    var k = (docs[i].categoryKey || '').toLowerCase();
+    if (!k || seen[k]) continue;
+    seen[k] = true;
+    var n = docs[i].category || k;
+    cats.push({ key: k, name: n });
+  }
+  var html = '';
+  for (var j = 0; j < cats.length; j++) {
+    var selected = cats[j].key === currentCatKey ? ' selected' : '';
+    html += '<option value="' + escapeHtml(cats[j].key) + '"' + selected + '>' + escapeHtml(cats[j].name) + '</option>';
+  }
+  return html;
+}
+
+// ---------- 增删分类 ----------
+function showAddCategoryDialog() {
+  var name = prompt('输入新分类名称：');
+  if (!name || !name.trim()) return;
+  var catKey = name.trim().replace(/\s+/g, '_').toLowerCase();
+  alert('分类「' + name + '」已创建！\n现在可以在卡片上选择该分类来移动文档。');
+  // 标记这个分类存在（后续保存时会处理）
+  if (!appData._pendingCategories) appData._pendingCategories = [];
+  appData._pendingCategories.push({ key: catKey, name: name.trim(), section: activeSection || '通用' });
+  renderAll();
+  setTimeout(bindDragEvents, 100);
+}
+
+// ---------- 保存到 GitHub ----------
+function showSaveDialog() {
+  document.getElementById('saveOverlay').classList.add('show');
+}
+function hideSaveDialog() {
+  document.getElementById('saveOverlay').classList.remove('show');
+}
+
+function saveToGitHub() {
+  hideSaveDialog();
+  var statusEl = document.getElementById('toolbarStatus');
+  
+  var token = prompt('请输入 GitHub Token 以保存更改：', '');
+  if (!token || !token.trim()) { statusEl.textContent = '❌ 已取消'; return; }
+  
+  statusEl.textContent = '⏳ 正在保存...';
+
+  try {
+    function btoaSafe(s) {
+      var u8 = unescape(encodeURIComponent(s));
+      var bin = '';
+      for (var i = 0; i < u8.length; i++) bin += String.fromCharCode(u8.charCodeAt(i));
+      return window.btoa(bin);
+    }
+    var contentB64 = btoaSafe(dataStr);
+
+    // 先获取 SHA
+    fetch('https://api.github.com/repos/' + repo + '/contents/' + path, {
+      headers: { 'Authorization': 'token ' + token }
+    }).then(function(r) { return r.json(); }).then(function(fileData) {
+      var sha = fileData.sha;
+      fetch('https://api.github.com/repos/' + repo + '/contents/' + path, {
+        method: 'PUT',
+        headers: { 'Authorization': 'token ' + token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: 'update: 编辑模式调整分类和顺序',
+          content: contentB64,
+          sha: sha
+        })
+      }).then(function(r2) {
+        if (r2.ok) {
+          statusEl.textContent = '✅ 保存成功！';
+          setTimeout(function() { toggleEditMode(); }, 1000);
+        } else {
+          r2.json().then(function(err) { statusEl.textContent = '❌ 保存失败: ' + (err.message || ''); });
+        }
+      }).catch(function(err) { statusEl.textContent = '❌ 网络错误: ' + err.message; });
+    }).catch(function(err) { statusEl.textContent = '❌ 获取SHA失败: ' + err.message; });
+
+  } catch(e) { statusEl.textContent = '❌ 错误: ' + e.message; }
+}
+
+// 将当前 appData 重新序列化为 data.js 字符串格式
+function buildDataJsString() {
+  // 简化版本：直接用 JSON 格式输出
+  var channels = appData.channels;
+  var lines = [
+    '// CFH 设计中心索引数据 | 多职能通道格式',
+    '// 更新时间: ' + new Date().toLocaleString('zh-CN'),
+    '',
+    'var DOC_DATA = {',
+    '  "channels": {'
+  ];
+  Object.keys(channels).forEach(function(chKey) {
+    var ch = channels[chKey];
+    lines.push('    "' + chKey + '": {');
+    lines.push('      "title": ' + JSON.stringify(ch.title) + ',');
+    lines.push('      "subtitle": ' + JSON.stringify(ch.subtitle || '') + ',');
+    lines.push('      "updatedAt": ' + JSON.stringify(ch.updatedAt || '') + ',');
+    lines.push('      "totalDocuments": ' + (ch.documents || []).length + ',');
+    // sections/categories 简化输出
+    lines.push('      "sections": [],');
+    lines.push('      "categories": [],');
+    lines.push('      "documents": [');
+    var docs = ch.documents || [];
+    docs.forEach(function(d, di) {
+      var docJson = JSON.stringify(d, null, 6);
+      docJson = docJson.replace(/\n/g, '\n        ');
+      var comma = di < docs.length - 1 ? ',' : '';
+      lines.push('        ' + docJson + comma);
+    });
+    lines.push('      ]');
+    lines.push('    }' + (Object.keys(channels).indexOf(chKey) < Object.keys(channels).length - 1 ? ',' : ''));
+  });
+  lines.push('  }');
+  lines.push('};');
+  return lines.join('\n');
+}
+
+// ========== 工具函数 ==========
+
+function setFilter(btn, category) {
+  document.querySelectorAll('.filter-tab').forEach(function(t) { t.classList.remove('active'); });
+  btn.classList.add('active');
+  activeCategory = category;
+  renderAll();
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  var div = document.createElement('div');
+  div.appendChild(document.createTextNode(str));
+  return div.innerHTML;
+}
+
+function showError(msg) {
+  document.getElementById('mainContent').innerHTML =
+    '<div class="no-results"><div class="no-results-icon">⚠️</div><p>' + msg + '</p></div>';
+}
+
+// 快捷键: / 聚焦搜索框
+document.addEventListener('keydown', function(e) {
+  if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+    e.preventDefault();
+    document.getElementById('searchInput').focus();
+  }
+});
+
+  document.getElementById('out').innerHTML = '<span style="color:#0f8;font-size:24px;">✅ JS executed successfully!</span>';
+} catch(e) {
+  document.getElementById('out').innerHTML = 
+    '<span style="color:#f66;font-size:18px;">❌ ERROR: ' + e.message + '</span>' +
+    '<pre style="color:#f88;background:#222;padding:15px;margin-top:10px;border-radius:8px;white-space:pre-wrap;">' +
+    (e.stack || 'no stack') + '</pre>';
+}
+</script>
+</body></html>
