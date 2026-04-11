@@ -389,6 +389,21 @@
   .toolbar-btn-add-circle:hover {
     background: rgba(88,166,255,0.2); transform: scale(1.1);
   }
+  /* 鼠标跟随拖拽 */
+  .drag-ghost {
+    opacity: 0.9; box-shadow: 0 8px 30px rgba(0,0,0,0.5), 0 0 20px rgba(88,166,255,0.3) !important;
+    border-color: var(--accent) !important; transform: rotate(2deg);
+    transition: none !important;
+  }
+  .drag-placeholder {
+    background: rgba(88,166,255,0.06); border: 2px dashed var(--accent);
+    border-radius: var(--radius-sm); min-height: 52px;
+    transition: all 0.15s ease;
+  }
+  .doc-card.drag-target {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 10px rgba(88,166,255,0.25) !important;
+  }
   .edit-toolbar {
     position: fixed; bottom: 30px; right: 40px; z-index: 999;
     display: flex; gap: 8px; align-items: center;
@@ -1148,68 +1163,110 @@ function cancelEdit() {
   renderAll();
 }
 
-// ---------- 拖拽排序 ----------
-var dragSrcEl = null;
+// ---------- 鼠标跟随式拖拽（实时预览） ----------
+var _dragEl = null, _ghostEl = null, _placeholder = null;
+var _dragStartX = 0, _dragStartY = 0;
 
 function bindDragEvents() {
-  var cards = document.querySelectorAll('.doc-card');
-  for (var i = 0; i < cards.length; i++) {
-    cards[i].setAttribute('draggable', 'true');
-    cards[i].addEventListener('dragstart', onDragStart, false);
-    cards[i].addEventListener('dragenter', onDragEnter, false);
-    cards[i].addEventListener('dragover', onDragOver, false);
-    cards[i].addEventListener('dragleave', onDragLeave, false);
-    cards[i].addEventListener('drop', onDrop, false);
-    cards[i].addEventListener('dragend', onDragEnd, false);
+  var handles = document.querySelectorAll('.card-drag-handle');
+  for (var h = 0; h < handles.length; h++) {
+    (function(handle) {
+      handle.addEventListener('mousedown', function(e) {
+        if (!isEditMode || e.button !== 0) return;
+        e.preventDefault();
+        var card = this.closest('.doc-card');
+        if (!card) return;
+        startMouseDrag(card, e.clientX, e.clientY);
+      });
+    })(handles[h]);
   }
-  // grid drop zone
-  var grids = document.querySelectorAll('.card-grid');
-  for (var g = 0; g < grids.length; g++) {
-    grids[g].addEventListener('dragover', function(e) { e.preventDefault(); this.classList.add('drag-over'); });
-    grids[g].addEventListener('dragleave', function() { this.classList.remove('drag-over'); });
-    grids[g].addEventListener('drop', function() { this.classList.remove('drag-over'); });
-  }
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
 }
 
-function onDragStart(e) {
-  dragSrcEl = this;
-  e.dataTransfer.effectAllowed = 'move';
-  e.dataTransfer.setData('text/plain', '');
-  this.classList.add('dragging');
+function startMouseDrag(card, x, y) {
+  _dragEl = card;
+  _dragStartX = x - card.getBoundingClientRect().left;
+  _dragStartY = y - card.getBoundingClientRect().top;
+
+  // 创建 ghost（跟随鼠标的副本）
+  _ghostEl = card.cloneNode(true);
+  _ghostEl.className = 'doc-card drag-ghost';
+  _ghostEl.style.position = 'fixed';
+  _ghostEl.style.zIndex = '10000';
+  _ghostEl.style.pointerEvents = 'none';
+  _ghostEl.style.width = card.offsetWidth + 'px';
+  _ghostEl.style.left = (x - _dragStartX) + 'px';
+  _ghostEl.style.top = (y - _dragStartY) + 'px';
+  document.body.appendChild(_ghostEl);
+
+  // 原卡片变为占位
+  _placeholder = document.createElement('div');
+  _placeholder.className = 'doc-card drag-placeholder';
+  _placeholder.style.height = card.offsetHeight + 'px';
+  card.parentNode.insertBefore(_placeholder, card);
+
+  card.style.opacity = '0';
+  card.setAttribute('data-dragging', '1');
 }
 
-function onDragEnter(e) { e.preventDefault(); }
-function onDragLeave(e) {}
+function onMouseMove(e) {
+  if (!_ghostEl || !_dragEl) return;
+  e.preventDefault();
 
-function onDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; return false; }
+  // 移动 ghost
+  _ghostEl.style.left = (e.clientX - _dragStartX) + 'px';
+  _ghostEl.style.top = (e.clientY - _dragStartY) + 'px';
 
-function onDrop(e) {
-  e.stopPropagation();
-  if (dragSrcEl !== this) {
-    // 跨容器拖拽：把 dragSrcEl 移到目标卡片所在的容器里
-    var targetParent = this.parentNode;
-    var srcParent = dragSrcEl.parentNode;
-    
-    var allCards = Array.from(targetParent.querySelectorAll('.doc-card'));
-    var toIdx = allCards.indexOf(this);
-    // 先从原父节点移除，再插入到新位置
-    dragSrcEl.remove();
-    allCards = Array.from(targetParent.querySelectorAll('.doc-card')); // 重新获取
-    if (toIdx >= allCards.length) {
-      targetParent.appendChild(dragSrcEl);
-    } else {
-      targetParent.insertBefore(dragSrcEl, allCards[toIdx]);
-    }
-    updateDocOrderFromDOM();
+  // 找到鼠标下方的目标卡片
+  _ghostEl.style.display = 'none';
+  var below = document.elementFromPoint(e.clientX, e.clientY);
+  _ghostEl.style.display = '';
+
+  if (!below) return;
+  var targetCard = below.closest('.doc-card[data-dragging!="1"]');
+  if (!targetCard) return;
+
+  // 实时移动 placeholder 到新位置
+  var targetGrid = targetCard.closest('.card-grid');
+  if (!targetGrid) return;
+
+  var allCards = Array.from(targetGrid.querySelectorAll('.doc-card[data-dragging!="1"]'));
+  var rect = targetCard.getBoundingClientRect();
+  var midY = rect.top + rect.height / 2;
+
+  if (e.clientY < midY) {
+    targetGrid.insertBefore(_placeholder, targetCard);
+  } else {
+    targetGrid.insertBefore(_placeholder, targetCard.nextSibling);
   }
-  this.classList.remove('drag-over');
-  return false;
+
+  // 高亮当前目标位置
+  document.querySelectorAll('.doc-card.drag-target').forEach(function(c) { c.classList.remove('drag-target'); });
+  targetCard.classList.add('drag-target');
 }
 
-function onDragEnd() {
-  this.classList.remove('dragging');
-  document.querySelectorAll('.doc-card').forEach(function(c) { c.classList.remove('drag-over'); });
-  document.querySelectorAll('.card-grid').forEach(function(g) { g.classList.remove('drag-over'); });
+function onMouseUp() {
+  if (!_ghostEl) return;
+
+  // 清理高亮
+  document.querySelectorAll('.doc-card.drag-target').forEach(function(c) { c.classList.remove('drag-target'); });
+
+  // 把原卡片放到 placeholder 的位置
+  if (_placeholder && _placeholder.parentNode) {
+    _placeholder.parentNode.insertBefore(_dragEl, _placeholder.nextSibling);
+    _placeholder.remove();
+  }
+  _dragEl.style.opacity = '';
+  _dragEl.removeAttribute('data-dragging');
+
+  // 移除 ghost
+  _ghostEl.remove();
+
+  // 更新数据
+  if (_dragEl) updateDocOrderFromDOM();
+
+  _ghostEl = null; _dragEl = null; _placeholder = null;
 }
 
 // 从 DOM 更新 documents 数组顺序 + 跨分类移动
