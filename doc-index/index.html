@@ -359,9 +359,6 @@
   body.edit-mode .doc-card:hover { transform: none; box-shadow: none; }
   body.edit-mode .doc-card.dragging { opacity: 0.4; }
   body.edit-mode .card-grid { min-height: 50px; transition: background 0.15s; }
-  body.edit-mode .card-grid.drag-over {
-    background: rgba(88,166,255,0.06); outline: 2px dashed var(--accent); border-radius: var(--radius-sm);
-  }
   body.edit-mode .section-group.drag-over-section > .section-title {
     color: var(--accent) !important; border-bottom-color: var(--accent) !important;
   }
@@ -1169,8 +1166,8 @@ function onDragStart(e) {
   this.classList.add('dragging');
 }
 
-function onDragEnter(e) { e.preventDefault(); this.classList.add('drag-over'); }
-function onDragLeave(e) { this.classList.remove('drag-over'); }
+function onDragEnter(e) { e.preventDefault(); }
+function onDragLeave(e) {}
 
 function onDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; return false; }
 
@@ -1189,6 +1186,7 @@ function onDrop(e) {
     updateDocOrderFromDOM();
   }
   this.classList.remove('drag-over');
+  document.querySelectorAll('.doc-card').forEach(function(c) { c.classList.remove('drag-over'); });
   return false;
 }
 
