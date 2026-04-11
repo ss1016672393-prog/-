@@ -1061,7 +1061,7 @@ function renderCard(doc, index) {
     editExtra = '<div class="card-drag-handle" title="拖拽排序">⠿</div>';
   }
 
-  return '<a class="doc-card' + visitedCls + '" href="' + escapeHtml(doc.url || '#') + '" target="_blank" rel="noopener"' +
+  return '<a class="doc-card' + visitedCls + '" href="' + (isEditMode ? '#' : escapeHtml(doc.url || '#')) + '"' + (isEditMode ? '' : ' target="_blank" rel="noopener"') +
     ' style="animation-delay:' + (index * 0.03) + 's"' +
     ' data-visit-key="' + escapeHtml(visitedKey) + '"' +
     ' data-doc-url="' + escapeHtml(doc.url || '') + '"' +
