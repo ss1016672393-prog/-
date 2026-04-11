@@ -615,20 +615,22 @@ function renderAll() {
     return;
   }
 
-  // 概念推导：隐藏筛选，按类型分组（概念推导 / 世界观元素）
+  // 概念推导：隐藏筛选，按类型分组（概念推导 / BCD系列 / 世界观元素）
   if (activeChannel === 'concept') {
     document.getElementById('filterSection').innerHTML = '';
 
     var conceptDocs = [];   // 纯"XXX概念推导"格式
+    var bcdDocs = [];       // 名称包含 BCD
     var worldDocs = [];     // 其余 = 世界观元素
     for (var ci = 0; ci < docs.length; ci++) {
       var cd = docs[ci];
-      // 严格匹配：名称以"概念推导"结尾，且前面没有额外描述性文字
       var name = cd.name || '';
-      // 去掉前缀后判断：必须是简洁的"人名/项目名+概念推导"格式
       var cleaned = name.replace(/^\s*【[^】]+】\s*/, '');
-      // 匹配模式：短名称 + 以"概念推导"结尾，不含其他业务关键词
-      if (/^[^【】\d]{2,15}概念推导$/.test(cleaned)) {
+      var isBCD = name.indexOf('BCD') >= 0;
+      var isConcept = /^[^【】\d]{2,15}概念推导$/.test(cleaned);
+      if (isBCD) {
+        bcdDocs.push(cd);
+      } else if (isConcept) {
         conceptDocs.push(cd);
       } else {
         worldDocs.push(cd);
@@ -640,14 +642,18 @@ function renderAll() {
       conceptDocs = conceptDocs.filter(function(d) {
         return ((d.name || '') + ' ' + (d.tags || []).join(' ') + ' ' + (d.desc || '')).toLowerCase().indexOf(keyword) !== -1;
       });
+      bcdDocs = bcdDocs.filter(function(d) {
+        return ((d.name || '') + ' ' + (d.tags || []).join(' ') + ' ' + (d.desc || '')).toLowerCase().indexOf(keyword) !== -1;
+      });
       worldDocs = worldDocs.filter(function(d) {
         return ((d.name || '') + ' ' + (d.tags || []).join(' ') + ' ' + (d.desc || '')).toLowerCase().indexOf(keyword) !== -1;
       });
     }
 
     var conceptGrouped = {};
-    if (conceptDocs.length > 0) conceptGrouped['_concept']   = { category: '📐 概念推导', docs: conceptDocs };
-    if (worldDocs.length > 0)    conceptGrouped['_world']     = { category: '🌍 世界观元素', docs: worldDocs };
+    if (worldDocs.length > 0)    conceptGrouped['_world']     = { category: '🌍 世界观元素',  docs: worldDocs };
+    if (bcdDocs.length > 0)      conceptGrouped['_bcd']       = { category: '🔷 BCD系列',     docs: bcdDocs };
+    if (conceptDocs.length > 0)  conceptGrouped['_concept']   = { category: '📐 概念推导',     docs: conceptDocs };
     renderContentWeekly(conceptGrouped);
     return;
   }
@@ -742,7 +748,8 @@ function renderContentWeekly(yearGrouped) {
 
     html += '<section class="section-group">';
     if (yearTitle) {
-      html += '<h2 class="section-title">📅 ' + escapeHtml(yearTitle) + '</h2>';
+      var titlePrefix = /^[\p{Emoji_Presentation}\p{Extended_Pictographic}]/u.test(yearTitle) ? '' : '📅 ';
+      html += '<h2 class="section-title">' + titlePrefix + escapeHtml(yearTitle) + '</h2>';
     }
     html += '<div class="card-grid">';
     for (var di = 0; di < catDocs.length; di++) {
