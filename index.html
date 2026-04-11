@@ -80,6 +80,10 @@
   }
   .logo-text { font-size: 20px; font-weight: 700; }
   .logo-sub { font-size: 12px; color: var(--text-secondary); }
+  .update-time {
+    font-size: 11px; color: var(--text-muted);
+    margin-top: 2px;
+  }
 
   /* Search */
   .search-bar { position: relative; max-width: 460px; width: 100%; }
@@ -350,6 +354,7 @@
       <div>
         <div class="logo-text" id="logoTitle">CFH设计中心</div>
         <div class="logo-sub" id="logoSub">CFH Design Hub</div>
+        <div class="update-time" id="updateTime"></div>
       </div>
     </div>
     <div class="search-bar">
@@ -391,8 +396,8 @@
 // 每个 Tab 对应 data.js 中的一套独立数据（通过 channel 字段区分）
 var CHANNELS = [
   { key: 'ixd',       label: '✏️ 交互稿',     shortLabel: '交互稿',     colorClass: 'ixd',       icon: '✏️' },
-  { key: 'refactor',  label: '🔧 重构落地',    shortLabel: '重构落地',    colorClass: 'refactor',  icon: '🔧' },
   { key: 'concept',   label: '💡 概念推导',    shortLabel: '概念推导',    colorClass: 'weekly',    icon: '💡' },
+  { key: 'refactor',  label: '🔧 重构落地',    shortLabel: '重构落地',    colorClass: 'refactor',  icon: '🔧' },
   { key: 'weekly',    label: '📊 周报',        shortLabel: '周报',        colorClass: 'weeklyreport', icon: '📊' },
 ];
 
@@ -531,10 +536,12 @@ function renderAll() {
   document.getElementById('pageTitle').textContent = '🎮 CFH设计中心 · ' + chLabel;
   document.getElementById('logoTitle').textContent = 'CFH设计中心';
   document.getElementById('logoSub').textContent = (chInfo ? chInfo.label : '') + (chData.subtitle ? ' · ' + chData.subtitle : '');
-  document.getElementById('footerText').innerHTML =
-    '🎮 CFH设计中心 · ' + chLabel +
-    ' · 最后更新 ' + (chData.updatedAt || chData.lastUpdated || new Date().toLocaleDateString('zh-CN'));
-
+  // 显示最后更新日期
+  var updateTimeEl = document.getElementById('updateTime');
+  if (updateTimeEl) {
+    updateTimeEl.textContent = '🕐 最后更新: ' + (chData.updatedAt || chData.lastUpdated || new Date().toLocaleDateString('zh-CN'));
+  }
+  var chInfo = CHANNELS.find(function(c) { return c.key === activeChannel; });
   // 如果该 Tab 完全没有数据，显示空状态
   if (docs.length === 0) {
     renderEmptyTab(chInfo);
@@ -899,7 +906,7 @@ function renderCard(doc, index) {
   var updatedHtml = doc.updatedAt ? '<span>更新于 ' + doc.updatedAt + '</span>' : '';
 
   var visitedKey = 'visited_' + (doc.url || doc.name);
-  var isVisited = localStorage.getItem(visitedKey) === '1';
+  var isVisited = sessionStorage.getItem(visitedKey) === '1';
   var visitedCls = isVisited ? ' visited' : '';
 
   var tagsHtml = '';
@@ -929,10 +936,10 @@ function renderCard(doc, index) {
     '</a>';
 }
 
-// 标记为已访问
+// 标记为已访问（sessionStorage：刷新页面后自动重置）
 function markVisited(el) {
   var key = el.getAttribute('data-visit-key');
-  if (key) localStorage.setItem(key, '1');
+  if (key) sessionStorage.setItem(key, '1');
 }
 
 // ========== 工具函数 ==========
