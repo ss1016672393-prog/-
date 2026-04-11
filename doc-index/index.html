@@ -471,7 +471,28 @@
 <!-- Main Content -->
 <main class="main container" id="mainContent">
   <div class="loading"><span class="loading-spinner"></span>正在加载数据...</div>
+  <div id="debugInfo" style="display:none;text-align:left;padding:20px;background:#1a1a2e;border-radius:8px;margin:20px 0;color:#f66;font-size:13px;line-height:1.8;"></div>
 </main>
+
+<script>
+// 内联诊断 - 不依赖任何外部JS
+(function(){
+  var dbg = document.getElementById('debugInfo');
+  setTimeout(function() {
+    var info = [];
+    info.push('🔍 <b>诊断时间:</b> ' + new Date().toLocaleTimeString());
+    info.push('📦 <b>DOC_DATA 存在:</b> ' + (typeof DOC_DATA !== 'undefined' ? '✅ (' + Object.keys(DOC_DATA).length + ' keys)' : '❌ 未定义'));
+    if(typeof DOC_DATA !== 'undefined') { try{info.push('📊 <b>channels 数量:</b> ' + Object.keys(DOC_DATA.channels||{}).length);}catch(ex){}}
+    info.push('⏱️ <b>Loading 可见性:</b> ' + (document.querySelector('.loading')?.style.display || 'visible'));
+    info.push('🌐 <b>当前URL:</b> ' + location.href);
+    dbg.innerHTML = info.join('<br>');
+    dbg.style.display = 'block';
+    // 隐藏loading
+    var ld = document.querySelector('.loading');
+    if(ld) ld.style.display = 'none';
+  }, 3000);
+})();
+</script>
 
 <!-- Footer -->
 <!-- Edit Toolbar (编辑模式时显示) -->
