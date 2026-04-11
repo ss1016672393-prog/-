@@ -1,5 +1,5 @@
 // CFH 设计中心索引数据 | 多职能通道格式
-// 更新时间: 2026-04-10 16:45:20
+// 更新时间: 2026-04-11 13:48:19
 // 总计: 179 个文件 | 3 个通道
 
 var DOC_DATA = {
@@ -7,7 +7,7 @@ var DOC_DATA = {
     "ixd": {
       "title": "CFH交互稿索引",
       "subtitle": "Figma 交互设计文档",
-      "updatedAt": "2026-04-10 16:45:17",
+      "updatedAt": "2026-04-11 13:48:16",
       "totalDocuments": 78,
       "sections": [
             {
@@ -222,7 +222,7 @@ var DOC_DATA = {
                   "section": "通用",
                   "sectionOrder": 0,
                   "status": "active",
-                  "lastModified": "2026-04-10T05:50:17Z"
+                  "lastModified": "2026-04-11T04:04:16Z"
             },
             {
                   "name": "【设计稿】入局Loading",
@@ -262,7 +262,7 @@ var DOC_DATA = {
                   "section": "局外",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-09T09:06:29Z"
+                  "lastModified": "2026-04-11T04:04:25Z"
             },
             {
                   "name": "【设计稿】开局流程",
@@ -281,7 +281,7 @@ var DOC_DATA = {
                   "categoryKey": "B01",
                   "section": "局外",
                   "sectionOrder": 1,
-                  "status": "active",
+                  "status": "review",
                   "lastModified": "2026-04-02T12:58:44Z"
             },
             {
@@ -292,7 +292,7 @@ var DOC_DATA = {
                   "section": "局外",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-09T07:20:12Z"
+                  "lastModified": "2026-04-09T07:20:13Z"
             },
             {
                   "name": "【设计稿】登录流程",
@@ -322,7 +322,7 @@ var DOC_DATA = {
                   "section": "局外",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T05:07:05Z"
+                  "lastModified": "2026-04-11T04:22:45Z"
             },
             {
                   "name": "【设计稿】设置",
@@ -372,7 +372,7 @@ var DOC_DATA = {
                   "section": "局外",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T08:24:16Z"
+                  "lastModified": "2026-04-11T02:40:59Z"
             },
             {
                   "name": "【设计稿】角色系统MS3~MS8",
@@ -591,7 +591,7 @@ var DOC_DATA = {
                   "categoryKey": "B07",
                   "section": "局外",
                   "sectionOrder": 1,
-                  "status": "active",
+                  "status": "review",
                   "lastModified": "2026-04-02T09:03:07Z"
             },
             {
@@ -602,7 +602,7 @@ var DOC_DATA = {
                   "section": "局外",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T08:40:27Z"
+                  "lastModified": "2026-04-10T13:05:30Z"
             },
             {
                   "name": "【设计稿】派遣 MS8",
@@ -781,7 +781,7 @@ var DOC_DATA = {
                   "categoryKey": "C02",
                   "section": "局内",
                   "sectionOrder": 2,
-                  "status": "active",
+                  "status": "review",
                   "lastModified": "2026-04-03T03:04:07Z"
             },
             {
@@ -821,7 +821,7 @@ var DOC_DATA = {
                   "categoryKey": "C02",
                   "section": "局内",
                   "sectionOrder": 2,
-                  "status": "active",
+                  "status": "review",
                   "lastModified": "2026-04-02T12:44:20Z"
             },
             {
@@ -902,7 +902,7 @@ var DOC_DATA = {
                   "section": "局内",
                   "sectionOrder": 2,
                   "status": "active",
-                  "lastModified": "2026-04-10T04:21:03Z"
+                  "lastModified": "2026-04-10T04:21:04Z"
             },
             {
                   "name": "【设计稿】背包配装 MS10",
@@ -912,7 +912,7 @@ var DOC_DATA = {
                   "section": "局内",
                   "sectionOrder": 2,
                   "status": "active",
-                  "lastModified": "2026-04-10T08:38:20Z"
+                  "lastModified": "2026-04-11T04:05:11Z"
             },
             {
                   "name": "【设计稿】局内HUD-主机适配",
@@ -939,7 +939,7 @@ var DOC_DATA = {
     "refactor": {
       "title": "CFH重构落地",
       "subtitle": "重构与落地跟踪",
-      "updatedAt": "2026-04-10 16:45:18",
+      "updatedAt": "2026-04-11 13:48:17",
       "totalDocuments": 11,
       "sections": [
             {
@@ -1094,7 +1094,7 @@ var DOC_DATA = {
     "weekly": {
       "title": "CFH概念推导 & 周报",
       "subtitle": "概念推导、周报与汇报材料",
-      "updatedAt": "2026-04-10 16:45:20",
+      "updatedAt": "2026-04-11 13:48:19",
       "totalDocuments": 90,
       "sections": [
             {
@@ -1142,17 +1142,17 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T08:45:04Z"
+                  "lastModified": "2026-04-10T12:20:12Z"
             },
             {
-                  "name": "PARKI1.0概念版",
+                  "name": "PARKI1.0概念推导",
                   "url": "https://www.figma.com/file/SHw1vBAyAYvB4n9UCj7ARJ",
                   "category": "概念推导",
                   "categoryKey": "W01",
                   "section": "推导&周报",
                   "sectionOrder": 1,
-                  "status": "stable",
-                  "lastModified": "2026-01-27T09:03:13Z"
+                  "status": "active",
+                  "lastModified": "2026-04-11T03:00:44Z"
             },
             {
                   "name": "PC主机UI迭代视觉验证",
@@ -1165,14 +1165,14 @@ var DOC_DATA = {
                   "lastModified": "2025-10-21T06:34:40Z"
             },
             {
-                  "name": "Parki",
+                  "name": "Parki概念推导",
                   "url": "https://www.figma.com/file/aYwfbK9gw06Opoo2HNGHd9",
                   "category": "概念推导",
                   "categoryKey": "W01",
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T07:57:39Z"
+                  "lastModified": "2026-04-11T03:00:29Z"
             },
             {
                   "name": "luccy的概念推导",
@@ -1182,7 +1182,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-09T23:25:13Z"
+                  "lastModified": "2026-04-11T01:59:52Z"
             },
             {
                   "name": "【概念推导】20230718基调对齐的内容-临时使用",
@@ -1222,7 +1222,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T06:20:18Z"
+                  "lastModified": "2026-04-11T03:36:26Z"
             },
             {
                   "name": "【概念推导】C4-HUD UI概念推导",
@@ -1262,7 +1262,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T07:42:20Z"
+                  "lastModified": "2026-04-11T04:06:56Z"
             },
             {
                   "name": "【概念推导】Nina概念推导",
@@ -1272,7 +1272,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T08:43:12Z"
+                  "lastModified": "2026-04-11T03:31:09Z"
             },
             {
                   "name": "【概念推导】PVE界面问题讨论",
@@ -1302,7 +1302,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T08:42:13Z"
+                  "lastModified": "2026-04-11T05:04:28Z"
             },
             {
                   "name": "【概念推导】Zongshi概念推导",
@@ -1322,7 +1322,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T08:42:42Z"
+                  "lastModified": "2026-04-10T13:31:42Z"
             },
             {
                   "name": "【概念推导】loop概念推导",
@@ -1412,7 +1412,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T07:50:38Z"
+                  "lastModified": "2026-04-10T10:15:17Z"
             },
             {
                   "name": "【概念推导】图形元素拆解",
@@ -1492,7 +1492,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T04:57:37Z"
+                  "lastModified": "2026-04-10T09:51:05Z"
             },
             {
                   "name": "【概念推导】背景_环境标尺",
@@ -1512,7 +1512,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-09T10:52:57Z"
+                  "lastModified": "2026-04-11T05:02:59Z"
             },
             {
                   "name": "【概念推导】进出局流程概念",
@@ -1542,7 +1542,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T08:43:33Z"
+                  "lastModified": "2026-04-11T02:43:41Z"
             },
             {
                   "name": "王慧概念推导",
@@ -1552,7 +1552,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T08:45:07Z"
+                  "lastModified": "2026-04-11T02:50:31Z"
             },
             {
                   "name": "蛋挞概念推导",
@@ -1562,7 +1562,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T08:32:46Z"
+                  "lastModified": "2026-04-10T10:26:54Z"
             },
             {
                   "name": "2026-视觉BCD",
@@ -1571,7 +1571,7 @@ var DOC_DATA = {
                   "categoryKey": "W02",
                   "section": "推导&周报",
                   "sectionOrder": 1,
-                  "status": "active",
+                  "status": "review",
                   "lastModified": "2026-04-02T15:16:01Z"
             },
             {
@@ -1942,7 +1942,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-10T07:46:15Z"
+                  "lastModified": "2026-04-10T12:40:17Z"
             },
             {
                   "name": "新人周报2026",
@@ -1992,7 +1992,7 @@ var DOC_DATA = {
                   "section": "其他",
                   "sectionOrder": 9,
                   "status": "active",
-                  "lastModified": "2026-04-10T06:30:31Z"
+                  "lastModified": "2026-04-10T09:32:07Z"
             },
             {
                   "name": "世界观主流程",
@@ -2012,7 +2012,7 @@ var DOC_DATA = {
                   "section": "其他",
                   "sectionOrder": 9,
                   "status": "active",
-                  "lastModified": "2026-04-10T06:56:43Z"
+                  "lastModified": "2026-04-10T12:51:41Z"
             },
             {
                   "name": "日报模板",
@@ -2032,7 +2032,7 @@ var DOC_DATA = {
                   "section": "其他",
                   "sectionOrder": 9,
                   "status": "active",
-                  "lastModified": "2026-04-10T08:18:19Z"
+                  "lastModified": "2026-04-11T03:26:13Z"
             }
       ]
 }
