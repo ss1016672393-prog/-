@@ -11,7 +11,7 @@ var DOC_DATA = {
                               "categories": [
                                     {
                                           "name": "主流程",
-                                          "count": 6
+                                          "count": 11
                                     },
                                     {
                                           "name": "通用系统",
@@ -23,7 +23,7 @@ var DOC_DATA = {
                                     },
                                     {
                                           "name": "角色系统",
-                                          "count": 9
+                                          "count": 8
                                     },
                                     {
                                           "name": "社交",
@@ -31,11 +31,11 @@ var DOC_DATA = {
                                     },
                                     {
                                           "name": "商业化",
-                                          "count": 7
+                                          "count": 4
                                     },
                                     {
                                           "name": "其他",
-                                          "count": 6
+                                          "count": 5
                                     }
                               ]
                         },
@@ -44,7 +44,11 @@ var DOC_DATA = {
                               "categories": [
                                     {
                                           "name": "主要玩法",
-                                          "count": 11
+                                          "count": 7
+                                    },
+                                    {
+                                          "name": "辅助功能",
+                                          "count": 5
                                     },
                                     {
                                           "name": "局内系统",
@@ -52,7 +56,7 @@ var DOC_DATA = {
                                     },
                                     {
                                           "name": "局内HUD",
-                                          "count": 11
+                                          "count": 12
                                     }
                               ]
                         },
@@ -69,7 +73,15 @@ var DOC_DATA = {
                                     },
                                     {
                                           "name": "规范",
-                                          "count": 3
+                                          "count": 2
+                                    },
+                                    {
+                                          "name": "底层规则",
+                                          "count": 1
+                                    },
+                                    {
+                                          "name": "仓库/背包",
+                                          "count": 2
                                     }
                               ]
                         }
@@ -223,7 +235,7 @@ var DOC_DATA = {
                               "name": "【设计稿】升级",
                               "url": "https://www.figma.com/file/eZDhj9lXuPayUE81ZjDYz2",
                               "category": "角色系统",
-                              "categoryKey": "L04",
+                              "categoryKey": "B02",
                               "section": "局外",
                               "sectionOrder": 0,
                               "status": "stable",
@@ -233,7 +245,7 @@ var DOC_DATA = {
                               "name": "【设计稿】大厅",
                               "url": "https://www.figma.com/file/cuuMa2iWZCGf2odz8wbuj2",
                               "category": "角色系统",
-                              "categoryKey": "L04",
+                              "categoryKey": "B02",
                               "section": "局外",
                               "sectionOrder": 0,
                               "status": "active",
@@ -373,7 +385,7 @@ var DOC_DATA = {
                               "name": "【设计稿】怪物HUD",
                               "url": "https://www.figma.com/file/dOe0Nai7dM4D70RqdGR6QW",
                               "category": "局内HUD",
-                              "categoryKey": "M03",
+                              "categoryKey": "M04",
                               "section": "局内",
                               "sectionOrder": 1,
                               "status": "active",
@@ -382,8 +394,8 @@ var DOC_DATA = {
                         {
                               "name": "【设计稿】怪物扮演",
                               "url": "https://www.figma.com/file/Q30U9L1vB7pehROzymOUh6",
-                              "category": "通用系统",
-                              "categoryKey": "L02",
+                              "category": "其他",
+                              "categoryKey": "Z99",
                               "section": "局外",
                               "sectionOrder": 0,
                               "status": "review",
@@ -502,8 +514,8 @@ var DOC_DATA = {
                         {
                               "name": "【设计稿】标记系统",
                               "url": "https://www.figma.com/file/W37xPr6ljbJ8LRdy5lTcJr",
-                              "category": "主要玩法",
-                              "categoryKey": "M01",
+                              "category": "辅助功能",
+                              "categoryKey": "M02",
                               "section": "局内",
                               "sectionOrder": 1,
                               "status": "active",
@@ -602,8 +614,8 @@ var DOC_DATA = {
                         {
                               "name": "【设计稿】crafting",
                               "url": "https://www.figma.com/file/T1l2yH71wcmwoo36qH3k9P",
-                              "category": "商业化",
-                              "categoryKey": "L06",
+                              "category": "主要玩法",
+                              "categoryKey": "M01",
                               "section": "局外",
                               "sectionOrder": 0,
                               "status": "stable",
@@ -672,8 +684,8 @@ var DOC_DATA = {
                         {
                               "name": "【设计稿】局内倒地观战（转移到死亡倒地）",
                               "url": "https://www.figma.com/file/jxnKsgpgGqcQuonULCSBeW",
-                              "category": "主要玩法",
-                              "categoryKey": "M01",
+                              "category": "辅助功能",
+                              "categoryKey": "M02",
                               "section": "局内",
                               "sectionOrder": 1,
                               "status": "review",
@@ -682,8 +694,8 @@ var DOC_DATA = {
                         {
                               "name": "【设计稿】局内死亡倒地",
                               "url": "https://www.figma.com/file/15rwM2dVG02E7O79AHLLg2",
-                              "category": "主要玩法",
-                              "categoryKey": "M01",
+                              "category": "辅助功能",
+                              "categoryKey": "M02",
                               "section": "局内",
                               "sectionOrder": 1,
                               "status": "review",
@@ -692,8 +704,8 @@ var DOC_DATA = {
                         {
                               "name": "【设计稿】局内玩法规则",
                               "url": "https://www.figma.com/file/tf2ZrCBNrqD3M9L6l5xTkf",
-                              "category": "主要玩法",
-                              "categoryKey": "M01",
+                              "category": "辅助功能",
+                              "categoryKey": "M02",
                               "section": "局内",
                               "sectionOrder": 1,
                               "status": "stable",
@@ -702,8 +714,8 @@ var DOC_DATA = {
                         {
                               "name": "【设计稿】局内聊天",
                               "url": "https://www.figma.com/file/JfYIqAkneasw0wjr61iN4X",
-                              "category": "主要玩法",
-                              "categoryKey": "M01",
+                              "category": "辅助功能",
+                              "categoryKey": "M02",
                               "section": "局内",
                               "sectionOrder": 1,
                               "status": "stable",
@@ -743,7 +755,7 @@ var DOC_DATA = {
                               "name": "【设计稿】人类HUD-准星",
                               "url": "https://www.figma.com/file/Lj0dXpql8U2q2XNfF6baCk",
                               "category": "局内HUD",
-                              "categoryKey": "M03",
+                              "categoryKey": "M04",
                               "section": "局内",
                               "sectionOrder": 1,
                               "status": "stable",
@@ -753,7 +765,7 @@ var DOC_DATA = {
                               "name": "【设计稿】人类HUD-命中和受击反馈",
                               "url": "https://www.figma.com/file/5jq3WbYvmMfCsbz7d3d20I",
                               "category": "局内HUD",
-                              "categoryKey": "M03",
+                              "categoryKey": "M04",
                               "section": "局内",
                               "sectionOrder": 1,
                               "status": "active",
@@ -763,7 +775,7 @@ var DOC_DATA = {
                               "name": "【设计稿】人类HUD-局内玩法/任务",
                               "url": "https://www.figma.com/file/1TtNzCOBrZPA8tHKxP7ySO",
                               "category": "局内HUD",
-                              "categoryKey": "M03",
+                              "categoryKey": "M04",
                               "section": "局内",
                               "sectionOrder": 1,
                               "status": "active",
@@ -773,7 +785,7 @@ var DOC_DATA = {
                               "name": "【设计稿】人类HUD-屏幕效果",
                               "url": "https://www.figma.com/file/N0h07LwCF7rkzXcmvKspNQ",
                               "category": "局内HUD",
-                              "categoryKey": "M03",
+                              "categoryKey": "M04",
                               "section": "局内",
                               "sectionOrder": 1,
                               "status": "stable",
@@ -783,7 +795,7 @@ var DOC_DATA = {
                               "name": "【设计稿】人类HUD-技能装备栏",
                               "url": "https://www.figma.com/file/356IHKIdtEw5AJuSyuX7QQ",
                               "category": "局内HUD",
-                              "categoryKey": "M03",
+                              "categoryKey": "M04",
                               "section": "局内",
                               "sectionOrder": 1,
                               "status": "active",
@@ -793,7 +805,7 @@ var DOC_DATA = {
                               "name": "【设计稿】人类HUD-血条",
                               "url": "https://www.figma.com/file/OGmy9Dh5Xs0oAGj1Q4kCWx",
                               "category": "局内HUD",
-                              "categoryKey": "M03",
+                              "categoryKey": "M04",
                               "section": "局内",
                               "sectionOrder": 1,
                               "status": "active",
@@ -803,7 +815,7 @@ var DOC_DATA = {
                               "name": "【设计稿】人类HUD-轮盘",
                               "url": "https://www.figma.com/file/pTIdsDDmjLf6GhdBVIqOVt",
                               "category": "局内HUD",
-                              "categoryKey": "M03",
+                              "categoryKey": "M04",
                               "section": "局内",
                               "sectionOrder": 1,
                               "status": "stable",
@@ -813,7 +825,7 @@ var DOC_DATA = {
                               "name": "【设计稿】人类HUD-通用提示",
                               "url": "https://www.figma.com/file/bGL7ZnO3CbqhJONU3Otrxd",
                               "category": "局内HUD",
-                              "categoryKey": "M03",
+                              "categoryKey": "M04",
                               "section": "局内",
                               "sectionOrder": 1,
                               "status": "active",
@@ -823,7 +835,7 @@ var DOC_DATA = {
                               "name": "【设计稿】人类HUD-队友状态",
                               "url": "https://www.figma.com/file/9zKxurzifpBZ0ZVZ3rJsB1",
                               "category": "局内HUD",
-                              "categoryKey": "M03",
+                              "categoryKey": "M04",
                               "section": "局内",
                               "sectionOrder": 1,
                               "status": "stable",
@@ -832,9 +844,9 @@ var DOC_DATA = {
                         {
                               "name": "【设计稿】仓库",
                               "url": "https://www.figma.com/file/PG2MkNVwy54lHzFKTgUJSJ",
-                              "category": "通用系统",
-                              "categoryKey": "L02",
-                              "section": "局外",
+                              "category": "仓库/背包",
+                              "categoryKey": "X01",
+                              "section": "通用",
                               "sectionOrder": 0,
                               "status": "stable",
                               "lastModified": "2026-02-27T02:08:45Z"
@@ -843,7 +855,7 @@ var DOC_DATA = {
                               "name": "【设计稿】局内商店",
                               "url": "https://www.figma.com/file/CNkYlsHF6IJbcnj1IivVAn",
                               "category": "局内系统",
-                              "categoryKey": "M02",
+                              "categoryKey": "M03",
                               "section": "局内",
                               "sectionOrder": 1,
                               "status": "review",
@@ -853,7 +865,7 @@ var DOC_DATA = {
                               "name": "【设计稿】局内外背包（手游）",
                               "url": "https://www.figma.com/file/snuYRzxPVjpSUpiadgrrZ4",
                               "category": "局内系统",
-                              "categoryKey": "M02",
+                              "categoryKey": "M03",
                               "section": "局内",
                               "sectionOrder": 1,
                               "status": "stable",
@@ -863,7 +875,7 @@ var DOC_DATA = {
                               "name": "【设计稿】局内技能教学",
                               "url": "https://www.figma.com/file/RWMrGO2SU0JpurM8auRccx",
                               "category": "局内系统",
-                              "categoryKey": "M02",
+                              "categoryKey": "M03",
                               "section": "局内",
                               "sectionOrder": 1,
                               "status": "review",
@@ -873,7 +885,7 @@ var DOC_DATA = {
                               "name": "【设计稿】局内背包",
                               "url": "https://www.figma.com/file/XaJCAvMDsrOvgs5KR1tC72",
                               "category": "局内系统",
-                              "categoryKey": "M02",
+                              "categoryKey": "M03",
                               "section": "局内",
                               "sectionOrder": 1,
                               "status": "active",
@@ -882,9 +894,9 @@ var DOC_DATA = {
                         {
                               "name": "【设计稿】背包配装 MS10",
                               "url": "https://www.figma.com/file/pp6wbBujWQ7pYDEBhvcXlv",
-                              "category": "角色系统",
-                              "categoryKey": "L04",
-                              "section": "局外",
+                              "category": "仓库/背包",
+                              "categoryKey": "X01",
+                              "section": "通用",
                               "sectionOrder": 0,
                               "status": "active",
                               "lastModified": "2026-04-10T04:03:41Z"
@@ -893,7 +905,7 @@ var DOC_DATA = {
                               "name": "【设计稿】局内HUD-主机适配",
                               "url": "https://www.figma.com/file/2ILuCRfjOLHXazg7BETScK",
                               "category": "局内HUD",
-                              "categoryKey": "M03",
+                              "categoryKey": "M04",
                               "section": "局内",
                               "sectionOrder": 1,
                               "status": "active",
