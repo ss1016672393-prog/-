@@ -651,9 +651,9 @@ function renderAll() {
     }
 
     var conceptGrouped = {};
-    if (worldDocs.length > 0)    conceptGrouped['_world']     = { category: '🌍 世界观元素',  docs: worldDocs };
-    if (bcdDocs.length > 0)      conceptGrouped['_bcd']       = { category: '🔷 BCD系列',     docs: bcdDocs };
     if (conceptDocs.length > 0)  conceptGrouped['_concept']   = { category: '📐 概念推导',     docs: conceptDocs };
+    if (bcdDocs.length > 0)      conceptGrouped['_bcd']       = { category: '🔷 BCD系列',     docs: bcdDocs };
+    if (worldDocs.length > 0)    conceptGrouped['_world']     = { category: '🌍 世界观元素',  docs: worldDocs };
     renderContentWeekly(conceptGrouped);
     return;
   }
