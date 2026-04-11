@@ -498,7 +498,7 @@
   <p id="footerText">📋 CFH设计中心 · 最后更新中...</p>
 </footer>
 
-<script src="doc-index/data.js"></script>
+<script src="doc-index/data.js?v=2"></script>
 <script>
 /**
  * ============================================================
@@ -507,6 +507,13 @@
  * 支持多个职能 Tab：交互稿 / 视觉稿 / 重构落地 / 概念推导&周报
  * 每个 Tab 独立展示对应的文档集合
  */
+
+// 调试：立即检查数据是否加载成功
+window.__dataLoadError = null;
+if (typeof DOC_DATA === 'undefined' && typeof INDEX_DATA === 'undefined') {
+  window.__dataLoadError = 'data.js 未加载：DOC_DATA 和 INDEX_DATA 都不存在';
+  console.error(window.__dataLoadError);
+}
 
 // ========== 职能定义 ==========
 // 每个 Tab 对应 data.js 中的一套独立数据（通过 channel 字段区分）
@@ -528,7 +535,8 @@ var appData = null;          // 当前职能的数据
 (function init() {
   try {
     if (typeof DOC_DATA === 'undefined' && typeof INDEX_DATA === 'undefined') {
-      showError('⚠️ 数据文件加载失败，请确认 data.js 存在');
+      var err = '⚠️ 数据文件加载失败，请确认 data.js 存在<br><br>路径: <b>doc-index/data.js</b><br>DOC_DATA 类型: <b>' + (typeof DOC_DATA) + '</b><br>INDEX_DATA 类型: <b>' + (typeof INDEX_DATA) + '</b>';
+      showError(err);
       return;
     }
     // 兼容旧格式：如果 DOC_DATA 是单对象，包装为多通道格式
@@ -573,7 +581,8 @@ var appData = null;          // 当前职能的数据
     var loadingEl = document.querySelector('.loading');
     if (loadingEl) loadingEl.style.display = 'none';
   } catch(e) {
-    showError('❌ 页面初始化失败: ' + e.message);
+    var detail = '❌ 页面初始化失败<br><br>错误信息: <b>' + e.message + '</b><br>行号: <b>' + (e.lineNumber || e.line || '?') + '</b><br><pre style="text-align:left;color:#f66;background:#222;padding:10px;border-radius:6px">' + (e.stack || '无堆栈信息') + '</pre>';
+    showError(detail);
   }
 })();
 
