@@ -86,7 +86,11 @@
   }
 
   /* Search */
-  .search-bar { position: relative; max-width: 360px; width: 100%; flex-shrink: 1; }
+  .header-right {
+    display: flex; align-items: center; gap: 10px;
+    flex: 1; justify-content: flex-end; max-width: 520px;
+  }
+  .search-bar { position: relative; width: 100%; flex-shrink: 1; }
   .search-input {
     width: 100%;
     padding: 10px 16px 10px 42px;
@@ -455,18 +459,20 @@
       <div class="logo-icon">🎮</div>
       <div>
         <div class="logo-text" id="logoTitle">CFH设计中心</div>
-        <div class="logo-sub" id="logoSub">CFH Design Hub</div>
+        <div class="logo-sub" id="logoSub">CFH Design Hub · 访客可编辑</div>
         <div class="update-time" id="updateTime"></div>
       </div>
     </div>
-    <div class="search-bar">
-      <span class="search-icon">🔍</span>
-      <input type="text" class="search-input" id="searchInput"
-             placeholder="搜索文档名称或标签..." oninput="renderAll()">
+    <div class="header-right">
+      <div class="search-bar" style="flex:1;max-width:none;">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" id="searchInput"
+               placeholder="搜索文档名称或标签..." oninput="renderAll()">
+      </div>
+      <button class="edit-btn" id="editToggleBtn" onclick="toggleEditMode()">
+        ✏️ 编辑
+      </button>
     </div>
-    <button class="edit-btn" id="editToggleBtn" onclick="toggleEditMode()">
-      ✏️ 编辑
-    </button>
   </div>
 
   <!-- 职能 Tab 导航 -->
