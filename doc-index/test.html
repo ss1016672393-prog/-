@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>CFH 数据加载测试</title>
+<style>body{background:#111;color:#0f8;font:14px/1.6 monospace;padding:20px}</style>
+</head><body>
+<h2>🔍 CFH 数据加载测试</h2>
+<div id="out"></div>
+
+<script src="data.js"></script>
+<script>
+var o=document.getElementById('out');
+function log(msg){o.innerHTML+=msg+'<br>';}
+
+log('⏰ 脚本开始执行: '+new Date().toLocaleTimeString());
+log('📦 DOC_DATA 类型: '+(typeof DOC_DATA));
+if(typeof DOC_DATA!=='undefined'){
+  log('✅ DOC_DATA 加载成功!');
+  log('📊 keys: '+Object.keys(DOC_DATA).join(', '));
+  if(DOC_DATA.channels){
+    log('📂 channels: '+Object.keys(DOC_DATA.channels).join(', '));
+    var ixd=DOC_DATA.channels.ixd;
+    if(ixd) log('✏️ ixd 文档数: '+(ixd.documents?ixd.documents.length:0));
+  }
+}else{
+  log('❌ DOC_DATA 未定义! data.js 可能加载失败或路径错误');
+}
+</script></body></html>
