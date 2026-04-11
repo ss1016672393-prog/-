@@ -1,10 +1,8 @@
-<!doctype html><html><head><meta charset="utf-8"><title>Syntax Test</title></head>
+<!doctype html><html><head><meta charset=utf-8><title>Syntax Check</title></head>
 <body style="background:#111;color:#0f8;font:14px/1.6 monospace;padding:20px">
-<h2>JS Syntax Check</h2>
-<div id="out">Running...</div>
-<script src="doc-index/data.js"></script>
-<script>
-try {
+<h2>JS Syntax Check</h2><div id="out">Running...</div>
+<script src=data.js></script>
+<script>try{
 
 /**
  * ============================================================
@@ -39,17 +37,12 @@ var appData = null;          // 当前职能的数据
 
 // ========== 初始化 ==========
 (function init() {
-  var dbg = document.getElementById('debugInfo');
   try {
-    dbg.innerHTML += '📍 Step 0: 检查数据...<br>';
     if (typeof DOC_DATA === 'undefined' && typeof INDEX_DATA === 'undefined') {
-      dbg.innerHTML += '❌ 数据文件未定义!<br>';
+      showError('⚠️ 数据文件加载失败，请确认 data.js 存在');
       return;
     }
-    dbg.innerHTML += '✅ 数据存在<br>';
-
-    // 兼容旧格式
-    dbg.innerHTML += '📍 Step 1: 处理数据格式...<br>';
+    // 兼容旧格式：如果 DOC_DATA 是单对象，包装为多通道格式
     if (typeof DOC_DATA !== 'undefined' && !DOC_DATA.channels) {
       appData = { channels: {} };
       appData.channels['ixd'] = DOC_DATA;
@@ -64,6 +57,7 @@ var appData = null;          // 当前职能的数据
       appData.channels['weekly']    = { title: 'CFH周报',     subtitle: '', documents: [], updatedAt: '' };
     } else {
       appData = typeof DOC_DATA !== 'undefined' ? DOC_DATA : INDEX_DATA;
+      // 兼容：如果有旧的 weekly channel，拆分 concept + weekly
       if (appData.channels && appData.channels['weekly']) {
         var oldWeekly = appData.channels['weekly'];
         if (oldWeekly.documents && oldWeekly.documents.length > 0) {
@@ -83,26 +77,14 @@ var appData = null;          // 当前职能的数据
         }
       }
     }
-    dbg.innerHTML += '✅ 格式处理完成, channels=' + Object.keys(appData.channels).join(',') + '<br>';
 
-    dbg.innerHTML += '📍 Step 2: 渲染导航Tab...<br>';
     renderNavTabs();
-    dbg.innerHTML += '✅ 导航渲染完成<br>';
-
-    dbg.innerHTML += '📍 Step 3: 切换到ixd通道...<br>';
     switchChannel('ixd');
-    dbg.innerHTML += '✅ 通道切换完成<br>';
-
     // 隐藏 loading
     var loadingEl = document.querySelector('.loading');
     if (loadingEl) loadingEl.style.display = 'none';
-    dbg.innerHTML += '✅ 全部初始化成功！隐藏Loading<br>';
-
   } catch(e) {
-    dbg.innerHTML += '<br>❌❌❌ <b>异常捕获:</b><br>';
-    dbg.innerHTML += '消息: ' + e.message + '<br>';
-    dbg.innerHTML += '行号: ' + (e.lineNumber || e.line || '?') + '<br>';
-    dbg.innerHTML += '堆栈: <pre style="background:#222;padding:10px;color:#f88;">' + (e.stack||'无') + '</pre><br>';
+    showError('❌ 页面初始化失败: ' + e.message);
   }
 })();
 
@@ -921,12 +903,6 @@ document.addEventListener('keydown', function(e) {
   }
 });
 
-  document.getElementById('out').innerHTML = '<span style="color:#0f8;font-size:24px;">✅ JS executed successfully!</span>';
-} catch(e) {
-  document.getElementById('out').innerHTML = 
-    '<span style="color:#f66;font-size:18px;">❌ ERROR: ' + e.message + '</span>' +
-    '<pre style="color:#f88;background:#222;padding:15px;margin-top:10px;border-radius:8px;white-space:pre-wrap;">' +
-    (e.stack || 'no stack') + '</pre>';
-}
-</script>
-</body></html>
+document.getElementById("out").innerHTML="<span style=color:#0f8;font-size:24px>OK!</span>";
+}catch(e){document.getElementById("out").innerHTML="<span style=color:#f66;font-size:18px>ERROR: "+e.message+"</span>"<pre style=color:#f88;background:#222;padding:15px;margin-top:10px;border-radius:8px;white-space:pre-wrap>"+(e.stack||"none")+"</pre>"}
+</script></body></html>
