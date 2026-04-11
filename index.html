@@ -588,6 +588,18 @@ var appData = null;          // 当前职能的数据
 
     renderNavTabs();
     switchChannel('ixd');
+    
+    // 更新底部时间
+    var latest = '';
+    if (appData.channels) {
+      for (var ck in appData.channels) {
+        var cu = (appData.channels[ck] || {}).updatedAt;
+        if (cu && (!latest || cu > latest)) latest = cu;
+      }
+    }
+    var ft = document.getElementById('footerText');
+    if (ft) ft.textContent = '📋 CFH设计中心 · 最后更新: ' + (latest || new Date().toLocaleDateString('zh-CN'));
+    
     // 隐藏 loading
     var loadingEl = document.querySelector('.loading');
     if (loadingEl) loadingEl.style.display = 'none';
