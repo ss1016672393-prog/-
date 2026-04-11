@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>CFH 初始化步骤测试</title>
+<style>body{background:#111;color:#0f8;font:14px/1.6 monospace;padding:20px} .err{color:#f66}.ok{color:#0f8}</style>
+</head><body>
+<h2>🔍 CFH 初始化逐步测试</h2>
+<div id="out"></div>
+
+<!-- 复制 index.html 中所有必要的函数和样式 -->
+<script src="data.js"></script>
+
+<script>
+var o=document.getElementById('out');
+function log(msg,cls){o.innerHTML+='<span class="'+(cls||'')+'">'+msg+'</span><br>';}
+
+try {
+  // Step 0: 数据检查
+  log('Step 0: 检查 DOC_DATA...');
+  if(typeof DOC_DATA==='undefined') throw 'DOC_DATA未定义';
+  log('  ✅ DOC_DATA 存在','ok');
+  
+  // Step 1: 格式处理
+  log('Step 1: 处理数据格式...');
+  var appData;
+  if(typeof DOC_DATA!=='undefined' && !DOC_DATA.channels) {
+    appData={channels:{}};
+    appData.channels['ixd']=DOC_DATA;
+    appData.channels['refactor']={title:'',subtitle:'',documents:[],updatedAt:''};
+    appData.channels['concept']={title:'',subtitle:'',documents:[],updatedAt:''};
+    appData.channels['weekly']={title:'',subtype:'',documents:[],updatedAt:''};
+  } else {
+    appData=DOC_DATA;
+    if(appData.channels&&appData.channels['weekly']){
+      var oldW=appData.channels.weekly;
+      if(oldW.documents&&oldW.documents.length>0){
+        var cDocs=[],wDocs=[];
+        for(var wi=0;wi<oldW.documents.length;wi++){
+          var wd=oldW.documents[wi];
+          var isWeekly=((wd.tags||[]).some(function(t){return t.indexOf('周报')>=0})||(wd.name||'').indexOf('周报')>=0);
+          if(isWeekly) wDocs.push(wd); else cDocs.push(wd);
+        }
+        appData.channels['concept']={title:'CFH概念推导',subtitle:'',documents:cDocs,updatedAt:oldW.updatedAt};
+        appData.channels['weekly'] ={title:'CFH周报',     subtype:'',documents:wDocs, updatedAt:oldW.updatedAt};
+      }
+    }
+  }
+  log('  ✅ channels: '+Object.keys(appData.channels).join(', ')+' ('+Object.keys(appData.channels).length+')','ok');
+  
+  // Step 2: CHANNELS 定义
+  log('Step 2: 定义 CHANNELS...');
+  var CHANNELS=[
+    {key:'ixd',label:'✏️ 交互稿',shortLabel:'交互稿',colorClass:'ixd',icon:'✏️'},
+    {key:'concept',label:'💡 概念推导',shortLabel:'概念推导',colorClass:'weekly',icon:'💡'},
+    {key:'refactor',label:'🔧 重构落地',shortLabel:'重构落地',colorClass:'refactor',icon:'🔧'},
+    {key:'weekly',label:'📊 周报',shortLabel:'周报',colorClass:'weeklyreport',icon:'📊'},
+  ];
+  log('  ✅ CHANNELS 定义完成','ok');
+  
+  // Step 3: 渲染导航
+  log('Step 3: 模拟 renderNavTabs()...');
+  var navHtml='';
+  for(var i=0;i<CHANNELS.length;i++){
+    var ch=CHANNELS[i];
+    var count=appData.channels[ch.key]?((appData.channels[ch.key].documents||[]).length):0;
+    var active=(i===0)?' active':'';
+    navHtml+='<button class="nav-tab'+active+'" onclick="alert(\''+ch.key+'\')" data-channel="'+ch.key+'">';
+    navHtml+=ch.icon+' '+ch.shortLabel;
+    if(count>0) navHtml+=' <span class="badge">'+count+'</span>';
+    navHtml+='</button>';
+  }
+  log('  ✅ 导航HTML长度: '+navHtml.length,'ok');
+  o.innerHTML+='<div style="background:#1a1a2e;padding:10px;border-radius:6px;margin:5px 0">'+navHtml+'</div>';
+  
+  log('<b>✅ 所有步骤通过！index.html 初始化应该能正常运行。</b>','ok');
+  
+}catch(e){
+  log('<br>❌❌❌ <b>异常:</b> '+e.message,'err');
+  log('堆栈: <pre style="background:#222;padding:8px;">'+(e.stack||'无')+'</pre>','err');
+}
+</script></body></html>
