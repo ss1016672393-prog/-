@@ -1186,19 +1186,23 @@ function onDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move';
 function onDrop(e) {
   e.stopPropagation();
   if (dragSrcEl !== this) {
-    var parent = this.parentNode;
-    var allCards = Array.from(parent.querySelectorAll('.doc-card'));
-    var fromIdx = allCards.indexOf(dragSrcEl);
+    // 跨容器拖拽：把 dragSrcEl 移到目标卡片所在的容器里
+    var targetParent = this.parentNode;
+    var srcParent = dragSrcEl.parentNode;
+    
+    var allCards = Array.from(targetParent.querySelectorAll('.doc-card'));
     var toIdx = allCards.indexOf(this);
-    if (fromIdx < toIdx) {
-      parent.insertBefore(dragSrcEl, this.nextSibling);
+    // 先从原父节点移除，再插入到新位置
+    dragSrcEl.remove();
+    allCards = Array.from(targetParent.querySelectorAll('.doc-card')); // 重新获取
+    if (toIdx >= allCards.length) {
+      targetParent.appendChild(dragSrcEl);
     } else {
-      parent.insertBefore(dragSrcEl, this);
+      targetParent.insertBefore(dragSrcEl, allCards[toIdx]);
     }
     updateDocOrderFromDOM();
   }
   this.classList.remove('drag-over');
-  document.querySelectorAll('.doc-card').forEach(function(c) { c.classList.remove('drag-over'); });
   return false;
 }
 
@@ -1208,31 +1212,60 @@ function onDragEnd() {
   document.querySelectorAll('.card-grid').forEach(function(g) { g.classList.remove('drag-over'); });
 }
 
-// 从 DOM 更新 documents 数组顺序
+// 从 DOM 更新 documents 数组顺序 + 跨分类移动
 function updateDocOrderFromDOM() {
   var chData = appData.channels[activeChannel];
-  var newOrder = [];
   var seenUrls = {};
   document.querySelectorAll('.card-grid').forEach(function(grid) {
+    // 从 section-title 的 data-cat 获取目标分类
+    var catKey = '';
+    var titleEl = grid.previousElementSibling;
+    while(titleEl && !titleEl.classList.contains('section-title')) {
+      titleEl = titleEl.previousElementSibling;
+    }
+    if(titleEl) catKey = titleEl.getAttribute('data-cat') || '';
+
     grid.querySelectorAll('.doc-card').forEach(function(card) {
       var url = card.getAttribute('data-doc-url') || '';
       if (!url || seenUrls[url]) return;
       seenUrls[url] = true;
-      newOrder.push(url);
+
+      // 找到对应文档并更新
+      for(var di=0;di<chData.documents.length;di++) {
+        if(chData.documents[di].url === url) {
+          // 如果分类变了，更新 tags 中的分类
+          if(catKey) {
+            var doc = chData.documents[di];
+            var cats = doc.categories || [];
+            if(cats.indexOf(catKey)===-1 && cats.length>0) {
+              // 替换第一个分类为新分类（简化处理）
+              cats[0] = catKey;
+              doc.category = catKey;
+              doc.categories = cats;
+            } else if(cats.length===0){
+              doc.category = catKey;
+              doc.categories=[catKey];
+            }
+          }
+          break;
+        }
+      }
     });
   });
-  // 按 newOrder 重排 documents
-  if (newOrder.length > 0) {
-    var urlMap = {};
-    chData.documents.forEach(function(d) { urlMap[d.url] = d; });
-    var reordered = [];
-    newOrder.forEach(function(u) { if (urlMap[u]) reordered.push(urlMap[u]); });
-    // 加上不在 DOM 中显示的（被搜索过滤掉的）
-    chData.documents.forEach(function(d) {
-      if (reordered.indexOf(d) === -1) reordered.push(d);
+
+  // 按当前 DOM 顺序重排 documents
+  var urlMap = {};
+  chData.documents.forEach(function(d) { urlMap[d.url] = d; });
+  var reordered = [];
+  document.querySelectorAll('.card-grid').forEach(function(grid) {
+    grid.querySelectorAll('.doc-card').forEach(function(card) {
+      var url = card.getAttribute('data-doc-url')||'';
+      if(urlMap[url]) reordered.push(urlMap[url]);
+      delete urlMap[url];
     });
-    chData.documents = reordered;
-  }
+  });
+  Object.values(urlMap).forEach(function(d){reordered.push(d);});
+  chData.documents = reordered;
 }
 
 // ---------- 分类选择器 ----------
