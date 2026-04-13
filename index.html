@@ -541,7 +541,7 @@
   <p id="footerText">📋 CFH设计中心 · 最后更新中...</p>
 </footer>
 
-<script src="doc-index/data.js?v=2"></script>
+<script src="doc-index/data.js?v=20260413"></script>
 <script>
 /**
  * ============================================================
@@ -1043,7 +1043,8 @@ function renderContent(grouped, showNoResults) {
     var secIcon = SECTION_ICONS[secName] || '📁';
     html += '<h2 class="section-title">' + secIcon + ' ' + escapeHtml(secName) + '</h2>';
 
-    // 分类排序：推导&周报板块用自定义顺序，其他板块按字母序
+    // 分类排序：推导&周报板块用自定义顺序，其他板块按 sectionOrder 排序
+    var catKeys = Object.keys(secData.docs);
     var catOrderMap = {
       '推导&周报': ['概念推导', '视觉推导', '周报']
     };
@@ -1059,7 +1060,11 @@ function renderContent(grouped, showNoResults) {
         return catA.localeCompare(catB);
       });
     } else {
-      catKeys.sort();
+      catKeys.sort(function(a, b) {
+        var docA = (secData.docs[a] || {}).docs ? (secData.docs[a].docs[0]||{}) : {};
+        var docB = (secData.docs[b] || {}).docs ? (secData.docs[b].docs[0]||{}) : {};
+        return (docA.sectionOrder || 99) - (docB.sectionOrder || 99);
+      });
     }
     for (var ci = 0; ci < catKeys.length; ci++) {
       var catKey = catKeys[ci];
