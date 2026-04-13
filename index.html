@@ -608,11 +608,13 @@ var SECTION_ICONS = {
         for (var si = 0; si < (srcWeekly.documents || []).length; si++) {
           var sd = srcWeekly.documents[si];
           var sn = sd.name || '';
-          // 概念推导判定：名称含"推导"/"概念"/"KOTO"/"PARKI"/"体验优化"/"世界观主流程"/"口味FIGMA"/"风格测试"/"PC主机"
+          // 概念推导判定：名称含"推导"/"概念"/"KOTO"/"PARKI"/"PC主机"/
+          // "体验优化"/"世界观主流程"/"口味FIGMA"/"风格测试"/"视觉BCD"/"HUD专题"
           if (sn.indexOf('推导') >= 0 || sn.indexOf('概念') >= 0 ||
               sn.indexOf('KOTO') >= 0 || sn.indexOf('PARKI') >= 0 || sn.indexOf('PC主机') >= 0 ||
               sn.indexOf('体验优化') >= 0 || sn.indexOf('世界观主流程') >= 0 ||
-              sn.indexOf('口味FIGMA') >= 0 || sn.indexOf('风格测试') >= 0) { cDocs.push(sd); }
+              sn.indexOf('口味FIGMA') >= 0 || sn.indexOf('风格测试') >= 0 ||
+              sn.indexOf('视觉BCD') >= 0 || sn.indexOf('HUD专题') >= 0) { cDocs.push(sd); }
           else { rDocs.push(sd); }
         }
         appData.channels['weekly'] = {
@@ -750,11 +752,13 @@ function renderAll() {
     for (var ci = 0; ci < docs.length; ci++) {
       var cd = docs[ci];
       var name = cd.name || '';
-      // 同 init() 的拆分规则
+      // 同 init() 的拆分规则：含"推导"/"概念"/"KOTO"/"PARKI"/"PC主机"/
+      // "体验优化"/"世界观主流程"/"口味FIGMA"/"风格测试"/"视觉BCD"/"HUD专题"
       if (name.indexOf('推导') >= 0 || name.indexOf('概念') >= 0 ||
           name.indexOf('KOTO') >= 0 || name.indexOf('PARKI') >= 0 || name.indexOf('PC主机') >= 0 ||
           name.indexOf('体验优化') >= 0 || name.indexOf('世界观主流程') >= 0 ||
-          name.indexOf('口味FIGMA') >= 0 || name.indexOf('风格测试') >= 0) {
+          name.indexOf('口味FIGMA') >= 0 || name.indexOf('风格测试') >= 0 ||
+          name.indexOf('视觉BCD') >= 0 || name.indexOf('HUD专题') >= 0) {
         conceptDocs.push(cd);
       } else {
         worldDocs.push(cd);
