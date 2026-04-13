@@ -975,7 +975,7 @@ function renderFilters(grouped) {
     sections[sec].cats.push({ key: catKey, name: catName, count: count, sectionOrder: doc.sectionOrder || 99 });
   });
 
-  var sectionOrder = ['局外', '局内', '主机相关', '通用'];
+  var sectionOrder = ['局外', '局内', '主机相关', '通用', '推导&周报', '重构跟踪', '其他'];
   var sortedSections = Object.keys(sections).sort(function(a, b) {
     var ai = sectionOrder.indexOf(a), bi = sectionOrder.indexOf(b);
     return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
@@ -1064,7 +1064,24 @@ function renderContent(grouped, showNoResults) {
     var secIcon = SECTION_ICONS[secName] || '📁';
     html += '<h2 class="section-title">' + secIcon + ' ' + escapeHtml(secName) + '</h2>';
 
-    var catKeys = Object.keys(secData.docs).sort();
+    // 分类排序：推导&周报板块用自定义顺序，其他板块按字母序
+    var catOrderMap = {
+      '推导&周报': ['概念推导', '视觉推导', '周报']
+    };
+    var secCatOrder = catOrderMap[secName] || null;
+    if (secCatOrder) {
+      catKeys.sort(function(a, b) {
+        var catA = (grouped[a] || {}).category || a;
+        var catB = (grouped[b] || {}).category || b;
+        var ai = secCatOrder.indexOf(catA), bi = secCatOrder.indexOf(catB);
+        if (ai !== -1 && bi !== -1) return ai - bi;
+        if (ai !== -1) return -1;
+        if (bi !== -1) return 1;
+        return catA.localeCompare(catB);
+      });
+    } else {
+      catKeys.sort();
+    }
     for (var ci = 0; ci < catKeys.length; ci++) {
       var catKey = catKeys[ci];
       var catInfo = grouped[catKey];
