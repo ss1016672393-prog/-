@@ -391,14 +391,14 @@
   }
   /* 鼠标跟随拖拽 - 实体嵌入 */
   .doc-card.drag-active {
-    box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 25px rgba(88,166,255,0.35) !important;
-    border-color: var(--accent) !important; transform: scale(1.02) rotate(1deg);
-    transition: none !important; cursor: grabbing !important;
-    opacity: 0.95 !important;
+    opacity: 0.25 !important; border-color: var(--accent) !important;
+    transition: opacity 0.15s ease !important;
+    cursor: grabbing !important;
   }
-  .drag-placeholder {
-    background: rgba(88,166,255,0.06); border: 2px dashed rgba(88,166,255,0.4) !important;
-    border-radius: var(--radius-sm); transition: all 0.15s ease; pointer-events: none;
+  .drag-ghost {
+    opacity: 0.9; box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 25px rgba(88,166,255,0.35) !important;
+    border: 2px solid var(--accent) !important; transform: scale(1.03) rotate(2deg);
+    transition: none !important; pointer-events: none !important;
   }
   .doc-card.drag-target {
     border-color: var(--accent) !important;
@@ -1174,7 +1174,7 @@ function bindDragEvents() {
     (function(handle) {
       handle.addEventListener('mousedown', function(e) {
         if (!isEditMode || e.button !== 0) return;
-        e.preventDefault();
+        e.preventDefault(); e.stopPropagation();
         var card = this.closest('.doc-card');
         if (!card) return;
         startEmbedDrag(card, e.clientX, e.clientY);
@@ -1185,96 +1185,84 @@ function bindDragEvents() {
   document.addEventListener('mouseup', onEmbedMouseUp);
 }
 
+// ===== 实体嵌入拖拽系统 =====
 function startEmbedDrag(card, x, y) {
-  _dragEl = card;
   var rect = card.getBoundingClientRect();
-  _dragOffsetX = x - rect.left;
-  _dragOffsetY = y - rect.top;
 
-  // 卡片脱离文档流，跟随鼠标
-  card.classList.add('drag-active');
-  card.style.position = 'fixed';
-  card.style.zIndex = '10000';
-  card.style.width = rect.width + 'px';
-  card.style.left = (x - _dragOffsetX) + 'px';
-  card.style.top = (y - _dragOffsetY) + 'px';
+  // 创建跟随鼠标的 ghost 副本（不是原卡片）
+  _ghost = card.cloneNode(true);
+  _ghost.className = 'doc-card drag-ghost';
+  _ghost.id = '';
+  _ghost.style.position = 'fixed';
+  _ghost.style.zIndex = '10000';
+  _ghost.style.pointerEvents = 'none';
+  _ghost.style.margin = '0';
+  _ghost.style.width = rect.width + 'px';
+  _ghost.style.left = (x - rect.width * 0.15) + 'px';
+  _ghost.style.top = (y - 10) + 'px';
+  document.body.appendChild(_ghost);
 
-  // 占位符留在原位置
-  _placeholder = document.createElement('div');
-  _placeholder.className = 'doc-card drag-placeholder';
-  _placeholder.style.height = rect.height + 'px';
-  card.parentNode.insertBefore(_placeholder, card);
+  // 原卡片变半透明留在原位
+  _dragEl = card;
+  _dragEl.classList.add('drag-active');
+  _dragEl.style.opacity = '0.25';
+  _dragOffsetX = x; _dragOffsetY = y;
 }
 
 function onEmbedMouseMove(e) {
-  if (!_dragEl) return;
+  if (!_ghost || !_dragEl) return;
   e.preventDefault();
 
-  // 跟随鼠标
-  _dragEl.style.left = (e.clientX - _dragOffsetX) + 'px';
-  _dragEl.style.top = (e.clientY - _dragOffsetY) + 'px';
+  // Ghost 跟随鼠标
+  var rect = _dragEl.getBoundingClientRect();
+  _ghost.style.left = (e.clientX - rect.width * 0.15) + 'px';
+  _ghost.style.top = (e.clientY - 10) + 'px';
 
-  // 找到鼠标下方的目标位置
-  _dragEl.style.display = 'none';
+  // 隐藏 ghost 找下方元素
+  _ghost.style.display = 'none';
   var below = document.elementFromPoint(e.clientX, e.clientY);
-  _dragEl.style.display = '';
+  _ghost.style.display = '';
 
-  if (!below || !below.closest('.content-area')) return;
+  if (!below || !below.closest('#mainContent')) return;
 
-  var targetCard = below.closest('.doc-card:not(.drag-active):not(.drag-placeholder)');
-  if (!targetCard) return;
+  var targetCard = below.closest('.doc-card:not(.drag-active)');
+  if (!targetCard || targetCard === _dragEl) return;
 
-  // 判断插入位置：上半部分→前面，下半部分→后面
-  var tRect = targetCard.getBoundingClientRect();
-  var insertBefore = (e.clientY < tRect.top + tRect.height / 2);
+  // 判断插入方向
+  var tR = targetCard.getBoundingClientRect();
+  var insertBefore = (e.clientY < tR.top + tR.height / 2);
+
+  // 移动原卡片到目标位置
   var parentGrid = targetCard.parentNode;
-
-  // 移动占位符到新位置（触发其他卡片实时位移）
-  if (_placeholder.parentNode !== parentGrid || 
-      (insertBefore && _placeholder.nextSibling !== targetCard) ||
-      (!insertBefore && _placeholder.nextSibling !== targetCard.nextSibling)) {
+  if (_dragEl.parentNode !== parentGrid ||
+      (insertBefore && _dragEl.previousSibling !== targetCard) ||
+      (!insertBefore && _dragEl.nextSibling !== targetCard)) {
     if (insertBefore) {
-      parentGrid.insertBefore(_placeholder, targetCard);
+      parentGrid.insertBefore(_dragEl, targetCard);
     } else {
-      parentGrid.insertBefore(_placeholder, targetCard.nextSibling);
+      parentGrid.insertBefore(_dragEl, targetCard.nextSibling);
     }
-  }
 
-  // 高亮目标卡片
-  if (_lastTarget && _lastTarget !== targetCard) _lastTarget.classList.remove('drag-target');
-  targetCard.classList.add('drag-target');
-  _lastTarget = targetCard;
+    if (_lastTarget && _lastTarget !== targetCard) _lastTarget.classList.remove('drag-target');
+    targetCard.classList.add('drag-target');
+    _lastTarget = targetCard;
+  }
 }
 
 function onEmbedMouseUp(e) {
   if (!_dragEl) return;
 
-  // 清理高亮
+  // 移除 ghost
+  if (_ghost && _ghost.parentNode) { _ghost.remove(); }
+  _ghost = null;
+
+  // 恢复原卡片样式
+  _dragEl.classList.remove('drag-active');
+  _dragEl.style.opacity = '';
   if (_lastTarget) { _lastTarget.classList.remove('drag-target'); _lastTarget = null; }
 
-  // 关键：先把卡片在 DOM 中移动到占位符的位置（此时还是 fixed，不会跳）
-  if (_placeholder && _placeholder.parentNode) {
-    _placeholder.parentNode.replaceChild(_dragEl, _placeholder);
-  }
-  
-  // 然后才解除 fixed → 卡片在新位置正常显示
-  _dragEl.style.position = '';
-  _dragEl.style.zIndex = '';
-  _dragEl.style.width = '';
-  _dragEl.style.left = '';
-  _dragEl.style.top = '';
-  _dragEl.classList.remove('drag-active');
-  _dragEl.style.cursor = '';
-  
-  // 清理占位符引用
-  if (_placeholder && _placeholder.parentNode) {
-    _placeholder.remove();
-  }
-
-  // 更新数据模型（只更新顺序数据，不重新渲染DOM）
   updateDocOrderFromDOM();
-
-  _dragEl = null; _placeholder = null;
+  _dragEl = null;
 }
 
 // 从 DOM 更新 documents 数组顺序 + 跨分类移动
