@@ -1171,9 +1171,8 @@ function cancelEdit() {
 
 // ---------- 鼠标跟随式拖拽（实体嵌入） ----------
 var _ghost = null;       // 拖拽中的 ghost 副本
-var _lastTarget = null;    // 上一个高亮的目标卡片
-
-function bindDragEvents() {
+var _dragEl = null;      // 当前拖拽的原卡片
+var _lastTarget = null;  // 上一个高亮的目标卡片
 
 // 卡片内分类下拉选项
 function getCatOptionsForCard(currentCatKey) {
@@ -1204,8 +1203,9 @@ function changeCardCategoryInline(docUrl, newCat, selectEl) {
   }
   // 标记为有修改
   window._hasUnsavedChanges = true;
-  updateSaveBtn();
 }
+
+function bindDragEvents() {
   var handles = document.querySelectorAll('.card-drag-handle');
   for (var h = 0; h < handles.length; h++) {
     (function(handle) {
@@ -1463,6 +1463,9 @@ function saveToGitHub() {
   
   statusEl.textContent = '⏳ 正在保存...';
 
+  var repo = 'ss1016672393-prog/ss1016672393-prog';
+  var path = 'doc-index/data.js';
+
   try {
     function btoaSafe(s) {
       var u8 = unescape(encodeURIComponent(s));
@@ -1470,6 +1473,7 @@ function saveToGitHub() {
       for (var i = 0; i < u8.length; i++) bin += String.fromCharCode(u8.charCodeAt(i));
       return window.btoa(bin);
     }
+    var dataStr = buildDataJsString();
     var contentB64 = btoaSafe(dataStr);
 
     // 先获取 SHA
