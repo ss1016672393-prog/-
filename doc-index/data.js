@@ -1,5 +1,5 @@
 // CFH 设计中心索引数据 | 多职能通道格式
-// 更新时间: 2026-04-13 18:40:40
+// 更新时间: 2026-04-13 19:35:30
 // 总计: 180 个文件 | 3 个通道
 
 var DOC_DATA = {
@@ -7,7 +7,7 @@ var DOC_DATA = {
     "ixd": {
       "title": "CFH交互稿索引",
       "subtitle": "Figma 交互设计文档",
-      "updatedAt": "2026-04-13 18:40:36",
+      "updatedAt": "2026-04-13 19:35:26",
       "totalDocuments": 79,
       "sections": [
             {
@@ -186,7 +186,7 @@ var DOC_DATA = {
                   "section": "通用",
                   "sectionOrder": 0,
                   "status": "active",
-                  "lastModified": "2026-04-08T06:59:25Z"
+                  "lastModified": "2026-04-13T11:34:44Z"
             },
             {
                   "name": "专项验收比照",
@@ -266,7 +266,7 @@ var DOC_DATA = {
                   "section": "局外",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-13T09:28:06Z"
+                  "lastModified": "2026-04-13T11:27:00Z"
             },
             {
                   "name": "【设计稿】开局流程",
@@ -576,7 +576,7 @@ var DOC_DATA = {
                   "section": "局外",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-13T07:39:54Z"
+                  "lastModified": "2026-04-13T11:29:17Z"
             },
             {
                   "name": "【设计稿】活动系统",
@@ -606,7 +606,7 @@ var DOC_DATA = {
                   "section": "局外",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-11T09:11:38Z"
+                  "lastModified": "2026-04-11T09:11:39Z"
             },
             {
                   "name": "【设计稿】派遣 MS8",
@@ -931,9 +931,9 @@ var DOC_DATA = {
             {
                   "name": "【设计稿】底层规则",
                   "url": "https://www.figma.com/file/WQ1cGxUtsCJQ9uKn7xshJb",
-                  "category": "规范",
-                  "categoryKey": "G03",
-                  "section": "通用",
+                  "category": "底层规则",
+                  "categoryKey": "D02",
+                  "section": "主机相关",
                   "sectionOrder": 3,
                   "status": "stable",
                   "lastModified": "2026-03-05T02:33:21Z"
@@ -941,19 +941,19 @@ var DOC_DATA = {
             {
                   "name": "【设计稿】外观藏品系统",
                   "url": "https://www.figma.com/file/pppwTkwNlOS3bnljiRvEsf",
-                  "category": "通用系统",
+                  "category": "未分类",
                   "categoryKey": "Z99",
-                  "section": "通用",
-                  "sectionOrder": 2,
+                  "section": "其他",
+                  "sectionOrder": 9,
                   "status": "active",
-                  "lastModified": "2026-04-13T09:18:44Z"
+                  "lastModified": "2026-04-13T11:30:46Z"
             }
       ]
 },
     "refactor": {
       "title": "CFH重构落地",
       "subtitle": "重构与落地跟踪",
-      "updatedAt": "2026-04-13 18:40:37",
+      "updatedAt": "2026-04-13 19:35:27",
       "totalDocuments": 11,
       "sections": [
             {
@@ -1108,7 +1108,7 @@ var DOC_DATA = {
     "weekly": {
       "title": "CFH概念推导 & 周报",
       "subtitle": "概念推导、周报与汇报材料",
-      "updatedAt": "2026-04-13 18:40:40",
+      "updatedAt": "2026-04-13 19:35:30",
       "totalDocuments": 90,
       "sections": [
             {
@@ -1156,7 +1156,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-13T08:23:50Z"
+                  "lastModified": "2026-04-13T11:28:08Z"
             },
             {
                   "name": "PARKI1.0概念推导",
@@ -1316,7 +1316,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-13T10:30:11Z"
+                  "lastModified": "2026-04-13T10:46:22Z"
             },
             {
                   "name": "【概念推导】Zongshi概念推导",
@@ -1336,7 +1336,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-13T10:39:04Z"
+                  "lastModified": "2026-04-13T10:44:20Z"
             },
             {
                   "name": "【概念推导】loop概念推导",
@@ -1506,7 +1506,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-13T09:34:01Z"
+                  "lastModified": "2026-04-13T09:34:02Z"
             },
             {
                   "name": "【概念推导】背景_环境标尺",
@@ -1526,7 +1526,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-13T09:28:43Z"
+                  "lastModified": "2026-04-13T11:33:18Z"
             },
             {
                   "name": "【概念推导】进出局流程概念",
@@ -1556,7 +1556,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-13T09:28:02Z"
+                  "lastModified": "2026-04-13T11:35:23Z"
             },
             {
                   "name": "王慧概念推导",
