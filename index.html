@@ -810,8 +810,15 @@ function renderAll() {
     var yearGroups = {};
     for (var ri = 0; ri < docs.length; ri++) {
       var rd = docs[ri];
+      var name = rd.name || '';
+      // 优先判断是否为模板（名称含"模板"）
+      if (name.indexOf('模板') >= 0) {
+        if (!yearGroups['模板']) yearGroups['模板'] = [];
+        yearGroups['模板'].push(rd);
+        continue;
+      }
       var year = '模板';
-      var ym = rd.name.match(/(20\d{2})/);
+      var ym = name.match(/(20\d{2})/);
       if (ym) year = ym[1];
       else if (rd.updatedAt) {
         var dym = rd.updatedAt.match(/(20\d{2})/);
