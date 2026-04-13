@@ -601,25 +601,6 @@ var SECTION_ICONS = {
       appData.channels['weekly']    = { title: 'CFH周报',     subtitle: '', documents: [], updatedAt: '' };
     } else {
       appData = typeof DOC_DATA !== 'undefined' ? DOC_DATA : INDEX_DATA;
-      // 兼容：如果有旧的 weekly channel，拆分 concept + weekly
-      if (appData.channels && appData.channels['weekly']) {
-        var oldWeekly = appData.channels['weekly'];
-        if (oldWeekly.documents && oldWeekly.documents.length > 0) {
-          var conceptDocs = [];
-          var weeklyDocs = [];
-          for (var wi = 0; wi < oldWeekly.documents.length; wi++) {
-            var wd = oldWeekly.documents[wi];
-            if ((wd.tags || []).some(function(t){ return t.indexOf('周报') >= 0; }) ||
-                (wd.name || '').indexOf('周报') >= 0) {
-              weeklyDocs.push(wd);
-            } else {
-              conceptDocs.push(wd);
-            }
-          }
-          appData.channels['concept'] = { title: 'CFH概念推导', subtitle: '', documents: conceptDocs, updatedAt: oldWeekly.updatedAt };
-          appData.channels['weekly']  = { title: 'CFH周报',     subtitle: '', documents: weeklyDocs,  updatedAt: oldWeekly.updatedAt };
-        }
-      }
     }
 
     renderNavTabs();
