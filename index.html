@@ -1212,25 +1212,36 @@ function onEmbedMouseMove(e) {
   e.preventDefault();
 
   // Ghost 跟随鼠标
-  var rect = _dragEl.getBoundingClientRect();
-  _ghost.style.left = (e.clientX - rect.width * 0.15) + 'px';
-  _ghost.style.top = (e.clientY - 10) + 'px';
+  _ghost.style.left = (e.clientX + 15) + 'px';
+  _ghost.style.top = (e.clientY - 8) + 'px';
 
   // 隐藏 ghost 找下方元素
-  _ghost.style.display = 'none';
+  _ghost.style.pointerEvents = 'none';
   var below = document.elementFromPoint(e.clientX, e.clientY);
-  _ghost.style.display = '';
+  _ghost.style.pointerEvents = 'auto';
 
   if (!below || !below.closest('#mainContent')) return;
 
+  // 支持跨模块拖拽：找任何卡片或 section 标题区域
   var targetCard = below.closest('.doc-card:not(.drag-active)');
-  if (!targetCard || targetCard === _dragEl) return;
+  
+  // 如果没有找到卡片，尝试找 card-grid 容器（空分类区域）
+  if (!targetCard) {
+    var gridArea = below.closest('.card-grid');
+    if (gridArea) {
+      // 空容器，直接插入到末尾
+      if (_dragEl.parentNode !== gridArea) gridArea.appendChild(_dragEl);
+    }
+    return;
+  }
+
+  if (targetCard === _dragEl) return;
 
   // 判断插入方向
   var tR = targetCard.getBoundingClientRect();
   var insertBefore = (e.clientY < tR.top + tR.height / 2);
 
-  // 移动原卡片到目标位置
+  // 移动原卡片到目标位置（支持跨 card-grid，即跨模块）
   var parentGrid = targetCard.parentNode;
   if (_dragEl.parentNode !== parentGrid ||
       (insertBefore && _dragEl.previousSibling !== targetCard) ||
@@ -1259,7 +1270,16 @@ function onEmbedMouseUp(e) {
   _dragEl.style.opacity = '';
   if (_lastTarget) { _lastTarget.classList.remove('drag-target'); _lastTarget = null; }
 
+  // 更新数据模型（不触发重新渲染，保持事件绑定）
   updateDocOrderFromDOM();
+  
+  // 重新绑定拖拽事件（DOM 移动后可能丢失）
+  var handle = _dragEl.querySelector('.card-drag-handle');
+  if (handle) {
+    handle.addEventListener('mousedown', onEmbedMouseDown);
+    _dragEl.addEventListener('mousedown', onEmbedMouseDown);
+  }
+
   _dragEl = null;
 }
 
