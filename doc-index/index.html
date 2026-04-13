@@ -373,15 +373,14 @@
   body.edit-mode .card-drag-handle:hover { color: var(--accent); background: rgba(88,166,255,0.12); }
   body.edit-mode .card-drag-handle:active { cursor: grabbing; }
   body.edit-mode .card-inline-cat-select {
-    position: absolute; left: 10px; bottom: 4px;
-    font-size: 10px; padding: 1px 6px; border-radius: 4px;
+    display: block;
+    width: 100%; box-sizing: border-box;
+    font-size: 13px; padding: 5px 8px; border-radius: 6px;
     border: 1px solid var(--border-color); background: var(--bg-card);
-    color: var(--text-muted); cursor: pointer;
-    opacity: 0; transition: opacity 0.2s;
-    max-width: 70px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    color: var(--text-secondary); cursor: pointer;
+    transition: all 0.2s; margin-top: 6px;
   }
-  body.edit-mode .doc-card:hover .card-inline-cat-select,
-  body.edit-mode .card-inline-cat-select:focus { opacity: 0.8; border-color: var(--accent); outline: none; }
+  body.edit-mode .card-inline-cat-select:focus { border-color: var(--accent); outline: none; background: rgba(88,166,255,0.06); color: var(--text-primary); }
   .toolbar-btn-add-circle {
     width: 32px; height: 32px; border-radius: 50%;
     border: 1.5px solid var(--accent); background: rgba(88,166,255,0.08);
