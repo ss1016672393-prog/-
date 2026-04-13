@@ -788,7 +788,42 @@ function renderAll() {
     return;
   }
 
-  // 周报：隐藏筛选，按年份分组
+  // 重构落地：隐藏筛选，按分类分组展示
+  if (activeChannel === 'refactor') {
+    document.getElementById('filterSection').innerHTML = '';
+
+    var container = document.getElementById('mainContent');
+    var rHtml = '';
+
+    // 按 category 分组
+    var refGrouped = {};
+    for (var ri = 0; ri < docs.length; ri++) {
+      var rd = docs[ri];
+      var rk = (rd.categoryKey || rd.category || 'other');
+      if (!refGrouped[rk]) refGrouped[rk] = { name: rd.category || rk, items: [] };
+      refGrouped[rk].items.push(rd);
+    }
+
+    // 搜索过滤
+    if (keyword) {
+      Object.keys(refGrouped).forEach(function(rk) {
+        refGrouped[rk].items = refGrouped[rk].items.filter(function(d) { return ((d.name||'')).toLowerCase().indexOf(keyword)!==-1; });
+      });
+    }
+
+    var sortedKeys = Object.keys(refGrouped).sort();
+    for (var ski = 0; ski < sortedKeys.length; ski++) {
+      var sk = sortedKeys[ski];
+      var sd2 = refGrouped[sk];
+      if (sd2.items.length === 0) continue;
+      rHtml += '<section class="section-group"><h2 class="section-title">🔧 ' + escapeHtml(sd2.name) + '</h2><div class="card-grid">';
+      for (var ri3 = 0; ri3 < sd2.items.length; ri3++) rHtml += renderCard(sd2.items[ri3], ri3);
+      rHtml += '</div></section>';
+    }
+    container.innerHTML = rHtml || '<div class="no-results"><div class="no-results-icon">🔍</div><p>暂无重构落地数据</p></div>';
+    setTimeout(function() { fillGridGaps(container); }, 0);
+    return;
+  }
   if (activeChannel === 'report') {
     document.getElementById('filterSection').innerHTML = '';
 
