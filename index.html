@@ -793,13 +793,13 @@ function renderAll() {
     document.getElementById('filterSection').innerHTML = '';
 
     var container = document.getElementById('mainContent');
-    var rHtml = '<div class="card-grid">';
+    var rHtml = '<section class="section-group"><h2 class="section-title">🔧 重构落地</h2><div class="card-grid">';
 
     // 搜索过滤
     var refDocs = keyword ? docs.filter(function(d) { return (d.name||'').toLowerCase().indexOf(keyword)!==-1; }) : docs;
     for (var ri3 = 0; ri3 < refDocs.length; ri3++) rHtml += renderCard(refDocs[ri3], ri3);
     
-    rHtml += '</div>';
+    rHtml += '</div></section>';
     container.innerHTML = rHtml || '<div class="no-results"><div class="no-results-icon">🔍</div><p>暂无重构落地数据</p></div>';
     setTimeout(function() { fillGridGaps(container); }, 0);
     return;
