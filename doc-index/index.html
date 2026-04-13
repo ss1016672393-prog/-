@@ -376,12 +376,14 @@
     position: absolute; right: 44px; top: 50%; transform: translateY(-50%);
     font-size: 13px; padding: 5px 8px; border-radius: 6px;
     border: 1px solid var(--border-color); background: var(--bg-card);
-    color: var(--text-secondary); cursor: pointer;
+    color: #e0e0e0; cursor: pointer;
     transition: all 0.2s; min-width: 90px;
     max-width: 120px;
     z-index: 2;
   }
-  body.edit-mode .card-inline-cat-select:focus { border-color: var(--accent); outline: none; background: rgba(88,166,255,0.06); color: var(--text-primary); }
+  body.edit-mode .card-inline-cat-select:focus { border-color: var(--accent); outline: none; background: rgba(88,166,255,0.06); color: #fff; }
+  body.edit-mode .card-inline-cat-select option { background: #1e2233; color: #e8e8e8; padding: 4px 6px; }
+  body.edit-mode .card-inline-cat-select option:checked, body.edit-mode .card-inline-cat-select option:hover { background: #2a3050; }
   .toolbar-btn-add-circle {
     width: 32px; height: 32px; border-radius: 50%;
     border: 1.5px solid var(--accent); background: rgba(88,166,255,0.08);
