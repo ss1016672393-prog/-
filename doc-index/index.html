@@ -1246,26 +1246,32 @@ function onEmbedMouseMove(e) {
   _lastTarget = targetCard;
 }
 
-function onEmbedMouseUp() {
+function onEmbedMouseUp(e) {
   if (!_dragEl) return;
 
   // 清理高亮
   if (_lastTarget) { _lastTarget.classList.remove('drag-target'); _lastTarget = null; }
 
-  // 把卡片放到占位符位置，恢复样式
+  // 关键：先把卡片在 DOM 中移动到占位符的位置（此时还是 fixed，不会跳）
+  if (_placeholder && _placeholder.parentNode) {
+    _placeholder.parentNode.replaceChild(_dragEl, _placeholder);
+  }
+  
+  // 然后才解除 fixed → 卡片在新位置正常显示
   _dragEl.style.position = '';
   _dragEl.style.zIndex = '';
   _dragEl.style.width = '';
   _dragEl.style.left = '';
   _dragEl.style.top = '';
   _dragEl.classList.remove('drag-active');
-
+  _dragEl.style.cursor = '';
+  
+  // 清理占位符引用
   if (_placeholder && _placeholder.parentNode) {
-    _placeholder.parentNode.insertBefore(_dragEl, _placeholder.nextSibling);
     _placeholder.remove();
   }
 
-  // 更新数据
+  // 更新数据模型（只更新顺序数据，不重新渲染DOM）
   updateDocOrderFromDOM();
 
   _dragEl = null; _placeholder = null;
