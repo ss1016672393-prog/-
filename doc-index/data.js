@@ -1,5 +1,5 @@
 // CFH 设计中心索引数据 | 多职能通道格式
-// 更新时间: 2026/4/13 19:17:55
+// 更新时间: 2026/4/13 19:20:58
 
 var DOC_DATA = {
   "channels": {
@@ -462,6 +462,16 @@ var DOC_DATA = {
               "lastModified": "2024-10-29T11:43:29Z"
         },
         {
+              "name": "【设计稿】外观藏品系统",
+              "url": "https://www.figma.com/file/pppwTkwNlOS3bnljiRvEsf",
+              "category": "未分类",
+              "categoryKey": "Z99",
+              "section": "其他",
+              "sectionOrder": 9,
+              "status": "active",
+              "lastModified": "2026-04-13T09:18:44Z"
+        },
+        {
               "name": "【设计稿】BOSS召唤+赏金",
               "url": "https://www.figma.com/file/R8TlR6DNJyDQ7wFoH0CPTQ",
               "category": "主要玩法",
@@ -710,16 +720,6 @@ var DOC_DATA = {
               "sectionOrder": 2,
               "status": "active",
               "lastModified": "2026-04-11T10:09:20Z"
-        },
-        {
-              "name": "【设计稿】外观藏品系统",
-              "url": "https://www.figma.com/file/pppwTkwNlOS3bnljiRvEsf",
-              "category": "未分类",
-              "categoryKey": "Z99",
-              "section": "其他",
-              "sectionOrder": 9,
-              "status": "active",
-              "lastModified": "2026-04-13T09:18:44Z"
         },
         {
               "name": "【设计稿】底层规则",
