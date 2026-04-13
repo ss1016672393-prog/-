@@ -389,16 +389,16 @@
   .toolbar-btn-add-circle:hover {
     background: rgba(88,166,255,0.2); transform: scale(1.1);
   }
-  /* 鼠标跟随拖拽 */
-  .drag-ghost {
-    opacity: 0.9; box-shadow: 0 8px 30px rgba(0,0,0,0.5), 0 0 20px rgba(88,166,255,0.3) !important;
-    border-color: var(--accent) !important; transform: rotate(2deg);
-    transition: none !important;
+  /* 鼠标跟随拖拽 - 实体嵌入 */
+  .doc-card.drag-active {
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 25px rgba(88,166,255,0.35) !important;
+    border-color: var(--accent) !important; transform: scale(1.02) rotate(1deg);
+    transition: none !important; cursor: grabbing !important;
+    opacity: 0.95 !important;
   }
   .drag-placeholder {
-    background: rgba(88,166,255,0.06); border: 2px dashed var(--accent);
-    border-radius: var(--radius-sm); min-height: 52px;
-    transition: all 0.15s ease;
+    background: rgba(88,166,255,0.06); border: 2px dashed rgba(88,166,255,0.4) !important;
+    border-radius: var(--radius-sm); transition: all 0.15s ease; pointer-events: none;
   }
   .doc-card.drag-target {
     border-color: var(--accent) !important;
@@ -1163,9 +1163,10 @@ function cancelEdit() {
   renderAll();
 }
 
-// ---------- 鼠标跟随式拖拽（实时预览） ----------
-var _dragEl = null, _ghostEl = null, _placeholder = null;
-var _dragStartX = 0, _dragStartY = 0;
+// ---------- 鼠标跟随式拖拽（实体嵌入） ----------
+var _dragEl = null, _placeholder = null;
+var _dragOffsetX = 0, _dragOffsetY = 0;
+var _lastTarget = null;
 
 function bindDragEvents() {
   var handles = document.querySelectorAll('.card-drag-handle');
@@ -1176,97 +1177,98 @@ function bindDragEvents() {
         e.preventDefault();
         var card = this.closest('.doc-card');
         if (!card) return;
-        startMouseDrag(card, e.clientX, e.clientY);
+        startEmbedDrag(card, e.clientX, e.clientY);
       });
     })(handles[h]);
   }
-  document.addEventListener('mousemove', onMouseMove);
-  document.addEventListener('mouseup', onMouseUp);
+  document.addEventListener('mousemove', onEmbedMouseMove);
+  document.addEventListener('mouseup', onEmbedMouseUp);
 }
 
-function startMouseDrag(card, x, y) {
+function startEmbedDrag(card, x, y) {
   _dragEl = card;
-  _dragStartX = x - card.getBoundingClientRect().left;
-  _dragStartY = y - card.getBoundingClientRect().top;
+  var rect = card.getBoundingClientRect();
+  _dragOffsetX = x - rect.left;
+  _dragOffsetY = y - rect.top;
 
-  // 创建 ghost（跟随鼠标的副本）
-  _ghostEl = card.cloneNode(true);
-  _ghostEl.className = 'doc-card drag-ghost';
-  _ghostEl.style.position = 'fixed';
-  _ghostEl.style.zIndex = '10000';
-  _ghostEl.style.pointerEvents = 'none';
-  _ghostEl.style.width = card.offsetWidth + 'px';
-  _ghostEl.style.left = (x - _dragStartX) + 'px';
-  _ghostEl.style.top = (y - _dragStartY) + 'px';
-  document.body.appendChild(_ghostEl);
+  // 卡片脱离文档流，跟随鼠标
+  card.classList.add('drag-active');
+  card.style.position = 'fixed';
+  card.style.zIndex = '10000';
+  card.style.width = rect.width + 'px';
+  card.style.left = (x - _dragOffsetX) + 'px';
+  card.style.top = (y - _dragOffsetY) + 'px';
 
-  // 原卡片变为占位
+  // 占位符留在原位置
   _placeholder = document.createElement('div');
   _placeholder.className = 'doc-card drag-placeholder';
-  _placeholder.style.height = card.offsetHeight + 'px';
+  _placeholder.style.height = rect.height + 'px';
   card.parentNode.insertBefore(_placeholder, card);
-
-  card.style.opacity = '0';
-  card.setAttribute('data-dragging', '1');
 }
 
-function onMouseMove(e) {
-  if (!_ghostEl || !_dragEl) return;
+function onEmbedMouseMove(e) {
+  if (!_dragEl) return;
   e.preventDefault();
 
-  // 移动 ghost
-  _ghostEl.style.left = (e.clientX - _dragStartX) + 'px';
-  _ghostEl.style.top = (e.clientY - _dragStartY) + 'px';
+  // 跟随鼠标
+  _dragEl.style.left = (e.clientX - _dragOffsetX) + 'px';
+  _dragEl.style.top = (e.clientY - _dragOffsetY) + 'px';
 
-  // 找到鼠标下方的目标卡片
-  _ghostEl.style.display = 'none';
+  // 找到鼠标下方的目标位置
+  _dragEl.style.display = 'none';
   var below = document.elementFromPoint(e.clientX, e.clientY);
-  _ghostEl.style.display = '';
+  _dragEl.style.display = '';
 
-  if (!below) return;
-  var targetCard = below.closest('.doc-card[data-dragging!="1"]');
+  if (!below || !below.closest('.content-area')) return;
+
+  var targetCard = below.closest('.doc-card:not(.drag-active):not(.drag-placeholder)');
   if (!targetCard) return;
 
-  // 实时移动 placeholder 到新位置
-  var targetGrid = targetCard.closest('.card-grid');
-  if (!targetGrid) return;
+  // 判断插入位置：上半部分→前面，下半部分→后面
+  var tRect = targetCard.getBoundingClientRect();
+  var insertBefore = (e.clientY < tRect.top + tRect.height / 2);
+  var parentGrid = targetCard.parentNode;
 
-  var allCards = Array.from(targetGrid.querySelectorAll('.doc-card[data-dragging!="1"]'));
-  var rect = targetCard.getBoundingClientRect();
-  var midY = rect.top + rect.height / 2;
-
-  if (e.clientY < midY) {
-    targetGrid.insertBefore(_placeholder, targetCard);
-  } else {
-    targetGrid.insertBefore(_placeholder, targetCard.nextSibling);
+  // 移动占位符到新位置（触发其他卡片实时位移）
+  if (_placeholder.parentNode !== parentGrid || 
+      (insertBefore && _placeholder.nextSibling !== targetCard) ||
+      (!insertBefore && _placeholder.nextSibling !== targetCard.nextSibling)) {
+    if (insertBefore) {
+      parentGrid.insertBefore(_placeholder, targetCard);
+    } else {
+      parentGrid.insertBefore(_placeholder, targetCard.nextSibling);
+    }
   }
 
-  // 高亮当前目标位置
-  document.querySelectorAll('.doc-card.drag-target').forEach(function(c) { c.classList.remove('drag-target'); });
+  // 高亮目标卡片
+  if (_lastTarget && _lastTarget !== targetCard) _lastTarget.classList.remove('drag-target');
   targetCard.classList.add('drag-target');
+  _lastTarget = targetCard;
 }
 
-function onMouseUp() {
-  if (!_ghostEl) return;
+function onEmbedMouseUp() {
+  if (!_dragEl) return;
 
   // 清理高亮
-  document.querySelectorAll('.doc-card.drag-target').forEach(function(c) { c.classList.remove('drag-target'); });
+  if (_lastTarget) { _lastTarget.classList.remove('drag-target'); _lastTarget = null; }
 
-  // 把原卡片放到 placeholder 的位置
+  // 把卡片放到占位符位置，恢复样式
+  _dragEl.style.position = '';
+  _dragEl.style.zIndex = '';
+  _dragEl.style.width = '';
+  _dragEl.style.left = '';
+  _dragEl.style.top = '';
+  _dragEl.classList.remove('drag-active');
+
   if (_placeholder && _placeholder.parentNode) {
     _placeholder.parentNode.insertBefore(_dragEl, _placeholder.nextSibling);
     _placeholder.remove();
   }
-  _dragEl.style.opacity = '';
-  _dragEl.removeAttribute('data-dragging');
-
-  // 移除 ghost
-  _ghostEl.remove();
 
   // 更新数据
-  if (_dragEl) updateDocOrderFromDOM();
+  updateDocOrderFromDOM();
 
-  _ghostEl = null; _dragEl = null; _placeholder = null;
+  _dragEl = null; _placeholder = null;
 }
 
 // 从 DOM 更新 documents 数组顺序 + 跨分类移动
