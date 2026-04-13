@@ -833,11 +833,57 @@ function renderAll() {
       });
     }
 
+    // 将三组数据统一包装成 renderContent 兼容的格式（同一个板块下）
     var conceptGrouped = {};
-    if (conceptDocs.length > 0)  conceptGrouped['_concept']   = { category: '📐 概念推导',     docs: conceptDocs };
-    if (bcdDocs.length > 0)      conceptGrouped['_bcd']       = { category: '🔷 BCD系列',     docs: bcdDocs };
-    if (worldDocs.length > 0)    conceptGrouped['_world']     = { category: '🌍 世界观元素',  docs: worldDocs };
-    renderContentWeekly(conceptGrouped);
+    if (conceptDocs.length > 0)  conceptGrouped['_concept']   = { category: '概念推导',     docs: conceptDocs, section: '推导&周报' };
+    if (bcdDocs.length > 0)      conceptGrouped['_bcd']       = { category: 'BCD系列',       docs: bcdDocs,     section: '推导&周报' };
+    if (worldDocs.length > 0)    conceptGrouped['_world']     = { category: '世界观元素',    docs: worldDocs,    section: '推导&周报' };
+
+    // 直接渲染内容（跳过常规分组逻辑）
+    var container = document.getElementById('mainContent');
+
+    var sections = {};
+    Object.keys(conceptGrouped).forEach(function(ck) {
+      var info = conceptGrouped[ck];
+      var sec = info.section || '其他';
+      if (!sections[sec]) sections[sec] = {};
+      sections[sec][ck] = info;
+    });
+
+    var html = '';
+    var secOrder = ['推导&周报'];
+    var sortedSecs = Object.keys(sections).sort(function(a,b) {
+      return secOrder.indexOf(a) - secOrder.indexOf(b);
+    });
+    for (var si = 0; si < sortedSecs.length; si++) {
+      var secName = sortedSecs[si];
+      var secIcon = SECTION_ICONS[secName] || '💡';
+      html += '<section class="section-group">';
+      html += '<h2 class="section-title">' + secIcon + ' ' + escapeHtml(secName) + '</h2>';
+
+      var catOrder = ['概念推导', '世界观元素', '视觉推导', 'BCD系列'];
+      var catKeys = Object.keys(sections[secName]).sort(function(a, b) {
+        var ca = (sections[secName][a] || {}).category || a;
+        var cb = (sections[secName][b] || {}).category || b;
+        var ai = catOrder.indexOf(ca), bi = catOrder.indexOf(cb);
+        return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+      });
+
+      for (var ci = 0; ci < catKeys.length; ci++) {
+        var ck = catKeys[ci];
+        var cInfo = sections[secName][ck];
+        html += '<div class="category-section">' +
+          '<div class="category-header"><span class="category-title">' + secIcon + ' ' + escapeHtml(cInfo.category) + '</span>' +
+          '<span class="category-count">' + cInfo.docs.length + '</span></div><div class="card-grid">';
+        for (var di = 0; di < cInfo.docs.length; di++) {
+          html += renderCard(cInfo.docs[di], di);
+        }
+        html += '</div></div>';
+      }
+      html += '</section>';
+    }
+    container.innerHTML = html;
+    setTimeout(function() { fillGridGaps(container); }, 0);
     return;
   }
 
