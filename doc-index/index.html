@@ -363,22 +363,25 @@
     color: var(--accent) !important; border-bottom-color: var(--accent) !important;
   }
   /* 卡片拖动手柄 + 分类选择 */
-  body.edit-mode .doc-card { position: relative; padding-right: 36px; }
+  body.edit-mode .doc-card { position: relative; padding-right: 44px; }
   body.edit-mode .card-drag-handle {
-    position: absolute; right: 8px; top: 10px;
-    width: 20px; height: 20px; cursor: grab;
-    color: var(--text-muted); font-size: 14px; text-align: center; line-height: 20px;
-    user-select: none; flex-shrink: 0;
+    position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
+    width: 36px; height: 36px; cursor: grab;
+    color: var(--text-muted); font-size: 18px; text-align: center; line-height: 36px;
+    user-select: none; flex-shrink: 0; border-radius: var(--radius-sm); transition: all 0.2s;
   }
-  body.edit-mode .card-drag-handle:hover { color: var(--text-primary); }
-  body.edit_mode .card-drag-handle:active { cursor: grabbing; }
-  body.edit-mode .card-cat-select {
-    position: absolute; right: 8px; bottom: 8px;
-    font-size: 11px; padding: 2px 6px; border-radius: 4px;
-    border: 1px solid var(--border-color); background: var(--bg-secondary);
-    color: var(--text-secondary); cursor: pointer; max-width: 100px;
+  body.edit-mode .card-drag-handle:hover { color: var(--accent); background: rgba(88,166,255,0.12); }
+  body.edit-mode .card-drag-handle:active { cursor: grabbing; }
+  body.edit-mode .card-inline-cat-select {
+    position: absolute; left: 10px; bottom: 4px;
+    font-size: 10px; padding: 1px 6px; border-radius: 4px;
+    border: 1px solid var(--border-color); background: var(--bg-card);
+    color: var(--text-muted); cursor: pointer;
+    opacity: 0; transition: opacity 0.2s;
+    max-width: 70px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
-  body.edit-mode .card-cat-select:focus { border-color: var(--accent); outline: none; }
+  body.edit-mode .doc-card:hover .card-inline-cat-select,
+  body.edit-mode .card-inline-cat-select:focus { opacity: 0.8; border-color: var(--accent); outline: none; }
   .toolbar-btn-add-circle {
     width: 32px; height: 32px; border-radius: 50%;
     border: 1.5px solid var(--accent); background: rgba(88,166,255,0.08);
@@ -1097,7 +1100,10 @@ function renderCard(doc, index) {
   // 编辑模式额外元素
   var editExtra = '';
   if (isEditMode) {
-    editExtra = '<div class="card-drag-handle" title="拖拽排序">⠿</div>';
+    editExtra = '<div class="card-drag-handle" title="拖拽排序">⠿</div>' +
+      '<select class="card-inline-cat-select" onchange="changeCardCategoryInline(\'' + escapeHtml(doc.url) + '\', this.value, this)" title="切换分类">' +
+      getCatOptionsForCard(catKey) +
+      '</select>';
   }
 
   return '<a class="doc-card' + visitedCls + '" href="' + (isEditMode ? '#' : escapeHtml(doc.url || '#')) + '"' + (isEditMode ? '' : ' target="_blank" rel="noopener"') +
@@ -1168,6 +1174,38 @@ var _ghost = null;       // 拖拽中的 ghost 副本
 var _lastTarget = null;    // 上一个高亮的目标卡片
 
 function bindDragEvents() {
+
+// 卡片内分类下拉选项
+function getCatOptionsForCard(currentCatKey) {
+  var cats = [];
+  var seen = {};
+  var docs = appData.channels[activeChannel].documents;
+  for (var i = 0; i < docs.length; i++) {
+    var c = (docs[i].category || '').trim();
+    if (c && !seen[c]) { seen[c] = true; cats.push(c); }
+  }
+  cats.sort();
+  var html = '';
+  for (var j = 0; j < cats.length; j++) {
+    var sel = (cats[j] === currentCatKey) ? ' selected' : '';
+    html += '<option value="' + cats[j] + '"' + sel + '>' + cats[j] + '</option>';
+  }
+  return html;
+}
+
+// 卡片内分类切换（不触发重新渲染）
+function changeCardCategoryInline(docUrl, newCat, selectEl) {
+  var docs = appData.channels[activeChannel].documents;
+  for (var i = 0; i < docs.length; i++) {
+    if (docs[i].url === docUrl) {
+      docs[i].category = newCat;
+      break;
+    }
+  }
+  // 标记为有修改
+  window._hasUnsavedChanges = true;
+  updateSaveBtn();
+}
   var handles = document.querySelectorAll('.card-drag-handle');
   for (var h = 0; h < handles.length; h++) {
     (function(handle) {
