@@ -1017,6 +1017,11 @@ function setSection(btn, section) {
   renderAll();
 }
 
+// 板块 icon 映射（与 Tab icon 保持一致）
+var SECTION_ICONS = {
+  '局外': '🌐', '局内': '🏠', '主机相关': '🖥️', '通用': '⚙️'
+};
+
 // ========== 内容区域（按板块分组渲染）==========
 function renderContent(grouped, showNoResults) {
   var container = document.getElementById('mainContent');
@@ -1056,7 +1061,8 @@ function renderContent(grouped, showNoResults) {
     var secData = sections[secName];
 
     html += '<section class="section-group">';
-    html += '<h2 class="section-title">' + escapeHtml(secName) + '</h2>';
+    var secIcon = SECTION_ICONS[secName] || '📁';
+    html += '<h2 class="section-title">' + secIcon + ' ' + escapeHtml(secName) + '</h2>';
 
     var catKeys = Object.keys(secData.docs).sort();
     for (var ci = 0; ci < catKeys.length; ci++) {
@@ -1067,7 +1073,7 @@ function renderContent(grouped, showNoResults) {
 
       html += '<div class="category-section" data-category="' + catKey + '">' +
         '<div class="category-header">' +
-          '<span class="category-title">' + escapeHtml(catName) + '</span>' +
+          '<span class="category-title">' + secIcon + ' ' + escapeHtml(catName) + '</span>' +
           '<span class="category-count">' + catDocs.length + '</span>' +
         '</div>' +
         '<div class="card-grid">';
