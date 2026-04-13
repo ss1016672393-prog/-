@@ -798,22 +798,16 @@ function renderAll() {
     return;
   }
 
-  // 概念推导：隐藏筛选，按类型分组（概念推导 / BCD系列 / 世界观元素）
+  // 概念推导：隐藏筛选，分为「概念推导」「世界观元素」两个板块
   if (activeChannel === 'concept') {
     document.getElementById('filterSection').innerHTML = '';
 
-    var conceptDocs = [];   // 纯"XXX概念推导"格式
-    var bcdDocs = [];       // 名称包含 BCD
-    var worldDocs = [];     // 其余 = 世界观元素
+    var conceptDocs = [];   // 名称包含"推导"
+    var worldDocs = [];     // 其余（BCD、世界观等）
     for (var ci = 0; ci < docs.length; ci++) {
       var cd = docs[ci];
       var name = cd.name || '';
-      var cleaned = name.replace(/^\s*【[^】]+】\s*/, '');
-      var isBCD = name.indexOf('BCD') >= 0;
-      var isConcept = /^[^【】\d]{2,15}概念推导$/.test(cleaned);
-      if (isBCD) {
-        bcdDocs.push(cd);
-      } else if (isConcept) {
+      if (name.indexOf('推导') >= 0) {
         conceptDocs.push(cd);
       } else {
         worldDocs.push(cd);
@@ -822,66 +816,26 @@ function renderAll() {
 
     // 搜索过滤
     if (keyword) {
-      conceptDocs = conceptDocs.filter(function(d) {
-        return ((d.name || '') + ' ' + (d.tags || []).join(' ') + ' ' + (d.desc || '')).toLowerCase().indexOf(keyword) !== -1;
-      });
-      bcdDocs = bcdDocs.filter(function(d) {
-        return ((d.name || '') + ' ' + (d.tags || []).join(' ') + ' ' + (d.desc || '')).toLowerCase().indexOf(keyword) !== -1;
-      });
-      worldDocs = worldDocs.filter(function(d) {
-        return ((d.name || '') + ' ' + (d.tags || []).join(' ') + ' ' + (d.desc || '')).toLowerCase().indexOf(keyword) !== -1;
-      });
+      conceptDocs = conceptDocs.filter(function(d) { return ((d.name||'')+' '+(d.tags||[]).join(' ')+' '+(d.desc||'')).toLowerCase().indexOf(keyword)!==-1; });
+      worldDocs = worldDocs.filter(function(d) { return ((d.name||'')+' '+(d.tags||[]).join(' ')+' '+(d.desc||'')).toLowerCase().indexOf(keyword)!==-1; });
     }
 
-    // 将三组数据统一包装成 renderContent 兼容的格式（同一个板块下）
-    var conceptGrouped = {};
-    if (conceptDocs.length > 0)  conceptGrouped['_concept']   = { category: '概念推导',     docs: conceptDocs, section: '推导&周报' };
-    if (bcdDocs.length > 0)      conceptGrouped['_bcd']       = { category: 'BCD系列',       docs: bcdDocs,     section: '推导&周报' };
-    if (worldDocs.length > 0)    conceptGrouped['_world']     = { category: '世界观元素',    docs: worldDocs,    section: '推导&周报' };
-
-    // 直接渲染内容（跳过常规分组逻辑）
     var container = document.getElementById('mainContent');
-
-    var sections = {};
-    Object.keys(conceptGrouped).forEach(function(ck) {
-      var info = conceptGrouped[ck];
-      var sec = info.section || '其他';
-      if (!sections[sec]) sections[sec] = {};
-      sections[sec][ck] = info;
-    });
-
     var html = '';
-    var secOrder = ['推导&周报'];
-    var sortedSecs = Object.keys(sections).sort(function(a,b) {
-      return secOrder.indexOf(a) - secOrder.indexOf(b);
-    });
-    for (var si = 0; si < sortedSecs.length; si++) {
-      var secName = sortedSecs[si];
-      var secIcon = SECTION_ICONS[secName] || '💡';
-      html += '<section class="section-group">';
-      html += '<h2 class="section-title">' + secIcon + ' ' + escapeHtml(secName) + '</h2>';
 
-      var catOrder = ['概念推导', '世界观元素', '视觉推导', 'BCD系列'];
-      var catKeys = Object.keys(sections[secName]).sort(function(a, b) {
-        var ca = (sections[secName][a] || {}).category || a;
-        var cb = (sections[secName][b] || {}).category || b;
-        var ai = catOrder.indexOf(ca), bi = catOrder.indexOf(cb);
-        return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
-      });
-
-      for (var ci = 0; ci < catKeys.length; ci++) {
-        var ck = catKeys[ci];
-        var cInfo = sections[secName][ck];
-        html += '<div class="category-section">' +
-          '<div class="category-header"><span class="category-title">' + secIcon + ' ' + escapeHtml(cInfo.category) + '</span>' +
-          '<span class="category-count">' + cInfo.docs.length + '</span></div><div class="card-grid">';
-        for (var di = 0; di < cInfo.docs.length; di++) {
-          html += renderCard(cInfo.docs[di], di);
-        }
-        html += '</div></div>';
-      }
-      html += '</section>';
+    // 板块1: 💡 概念推导
+    if (conceptDocs.length > 0) {
+      html += '<section class="section-group"><h2 class="section-title">💡 概念推导</h2><div class="card-grid">';
+      for (var i = 0; i < conceptDocs.length; i++) html += renderCard(conceptDocs[i], i);
+      html += '</div></section>';
     }
+    // 板块2: 🌐 世界观元素
+    if (worldDocs.length > 0) {
+      html += '<section class="section-group"><h2 class="section-title">🌐 世界观元素</h2><div class="card-grid">';
+      for (var j = 0; j < worldDocs.length; j++) html += renderCard(worldDocs[j], j);
+      html += '</div></section>';
+    }
+
     container.innerHTML = html;
     setTimeout(function() { fillGridGaps(container); }, 0);
     return;
