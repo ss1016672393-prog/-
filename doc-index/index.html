@@ -541,7 +541,7 @@
   <p id="footerText">📋 CFH设计中心 · 最后更新中...</p>
 </footer>
 
-<script src="doc-index/data.js?v=2"></script>
+<script src="doc-index/data.js?v=20260413"></script>
 <script>
 /**
  * ============================================================
@@ -562,9 +562,9 @@ if (typeof DOC_DATA === 'undefined' && typeof INDEX_DATA === 'undefined') {
 // 每个 Tab 对应 data.js 中的一套独立数据（通过 channel 字段区分）
 var CHANNELS = [
   { key: 'ixd',       label: '✏️ 交互稿',     shortLabel: '交互稿',     colorClass: 'ixd',       icon: '✏️' },
-  { key: 'concept',   label: '💡 概念推导',    shortLabel: '概念推导',    colorClass: 'weekly',    icon: '💡' },
+  { key: 'weekly',    label: '💡 概念推导',    shortLabel: '概念推导',    colorClass: 'weekly',    icon: '💡' },
   { key: 'refactor',  label: '🔧 重构落地',    shortLabel: '重构落地',    colorClass: 'refactor',  icon: '🔧' },
-  { key: 'weekly',    label: '📊 周报',        shortLabel: '周报',        colorClass: 'weeklyreport', icon: '📊' },
+  { key: 'report',    label: '📊 周报',        shortLabel: '周报',        colorClass: 'weeklyreport', icon: '📊' },
 ];
 
 var activeChannel = 'ixd';   // 当前选中的职能 Tab
@@ -601,24 +601,27 @@ var SECTION_ICONS = {
       appData.channels['weekly']    = { title: 'CFH周报',     subtitle: '', documents: [], updatedAt: '' };
     } else {
       appData = typeof DOC_DATA !== 'undefined' ? DOC_DATA : INDEX_DATA;
-      // 兼容：如果有旧的 weekly channel，拆分 concept + weekly
+      // 将 weekly 数据拆分为「概念推导」+「周报」两个独立 channel
       if (appData.channels && appData.channels['weekly']) {
-        var oldWeekly = appData.channels['weekly'];
-        if (oldWeekly.documents && oldWeekly.documents.length > 0) {
-          var conceptDocs = [];
-          var weeklyDocs = [];
-          for (var wi = 0; wi < oldWeekly.documents.length; wi++) {
-            var wd = oldWeekly.documents[wi];
-            if ((wd.tags || []).some(function(t){ return t.indexOf('周报') >= 0; }) ||
-                (wd.name || '').indexOf('周报') >= 0) {
-              weeklyDocs.push(wd);
-            } else {
-              conceptDocs.push(wd);
-            }
-          }
-          appData.channels['concept'] = { title: 'CFH概念推导', subtitle: '', documents: conceptDocs, updatedAt: oldWeekly.updatedAt };
-          appData.channels['weekly']  = { title: 'CFH周报',     subtitle: '', documents: weeklyDocs,  updatedAt: oldWeekly.updatedAt };
+        var srcWeekly = appData.channels['weekly'];
+        var cDocs = [], rDocs = [];
+        for (var si = 0; si < (srcWeekly.documents || []).length; si++) {
+          var sd = srcWeekly.documents[si];
+          if ((sd.name || '').indexOf('推导') >= 0) { cDocs.push(sd); }
+          else { rDocs.push(sd); }
         }
+        appData.channels['weekly'] = {
+          title: 'CFH概念推导 & 周报',
+          subtitle: srcWeekly.subtitle || '',
+          documents: cDocs,
+          updatedAt: srcWeekly.updatedAt || ''
+        };
+        appData.channels['report'] = {
+          title: 'CFH设计周报',
+          subtitle: '',
+          documents: rDocs,
+          updatedAt: srcWeekly.updatedAt || ''
+        };
       }
     }
 
@@ -732,88 +735,17 @@ function renderAll() {
     return;
   }
 
-  // 周报：隐藏筛选，按年份分组
+
+  // 概念推导：隐藏筛选，分为「概念推导」「世界观元素」两个板块
   if (activeChannel === 'weekly') {
     document.getElementById('filterSection').innerHTML = '';
 
-    // 模板关键词：新人/视觉
-    var templateKw = /新人|视觉/;
-    // 从文档名或 updatedAt 提取年份分组（排除模板类）
-    var templateDocs = [];
-    var yearGroups = {};
-    for (var wi = 0; wi < docs.length; wi++) {
-      var wd = docs[wi];
-      // 先检查是否为模板
-      if (templateKw.test(wd.name) || (wd.tags || []).some(function(t){ return templateKw.test(t); })) {
-        templateDocs.push(wd);
-        continue;
-      }
-      var year = '未知';
-      // 优先从名称中提取（如 "2026年xx周报"、"2025-..."）
-      var nameMatch = wd.name.match(/(20\d{2})/);
-      if (nameMatch) year = nameMatch[1];
-      // 其次从 updatedAt 提取
-      else if (wd.updatedAt) {
-        var dateMatch = wd.updatedAt.match(/(20\d{2})/);
-        if (dateMatch) year = dateMatch[1];
-      }
-      if (!yearGroups[year]) yearGroups[year] = [];
-      yearGroups[year].push(wd);
-    }
-
-    // 年份倒序排列（不含模板类）
-    var sortedYears = Object.keys(yearGroups).sort().reverse();
-
-    // 构建 filteredGrouped 格式供 renderContent 使用
-    var weeklyGrouped = {};
-    for (var yi = 0; yi < sortedYears.length; yi++) {
-      var yr = sortedYears[yi];
-      var yDocs = yearGroups[yr];
-      // 搜索过滤
-      if (keyword) {
-        yDocs = yDocs.filter(function(d) {
-          var h = (d.name || '') + ' ' + (d.tags || []).join(' ') + ' ' + (d.desc || '');
-          return h.toLowerCase().indexOf(keyword) !== -1;
-        });
-      }
-      if (yDocs.length > 0) {
-        weeklyGrouped['year_' + yr] = { category: yr + '年', docs: yDocs };
-      }
-    }
-
-    // 模板类周报（新人/视觉）单独一组，放在最底部
-    if (templateDocs.length > 0) {
-      var filteredTemplate = keyword
-        ? templateDocs.filter(function(d) {
-            var h = (d.name || '') + ' ' + (d.tags || []).join(' ') + ' ' + (d.desc || '');
-            return h.toLowerCase().indexOf(keyword) !== -1;
-          })
-        : templateDocs;
-      if (filteredTemplate.length > 0) {
-        weeklyGrouped['_template'] = { category: '📋 模板', docs: filteredTemplate };
-      }
-    }
-
-    renderContentWeekly(weeklyGrouped);
-    return;
-  }
-
-  // 概念推导：隐藏筛选，按类型分组（概念推导 / BCD系列 / 世界观元素）
-  if (activeChannel === 'concept') {
-    document.getElementById('filterSection').innerHTML = '';
-
-    var conceptDocs = [];   // 纯"XXX概念推导"格式
-    var bcdDocs = [];       // 名称包含 BCD
-    var worldDocs = [];     // 其余 = 世界观元素
+    var conceptDocs = [];   // 名称包含"推导"
+    var worldDocs = [];     // 其余（BCD、周报等）
     for (var ci = 0; ci < docs.length; ci++) {
       var cd = docs[ci];
       var name = cd.name || '';
-      var cleaned = name.replace(/^\s*【[^】]+】\s*/, '');
-      var isBCD = name.indexOf('BCD') >= 0;
-      var isConcept = /^[^【】\d]{2,15}概念推导$/.test(cleaned);
-      if (isBCD) {
-        bcdDocs.push(cd);
-      } else if (isConcept) {
+      if (name.indexOf('推导') >= 0) {
         conceptDocs.push(cd);
       } else {
         worldDocs.push(cd);
@@ -822,22 +754,69 @@ function renderAll() {
 
     // 搜索过滤
     if (keyword) {
-      conceptDocs = conceptDocs.filter(function(d) {
-        return ((d.name || '') + ' ' + (d.tags || []).join(' ') + ' ' + (d.desc || '')).toLowerCase().indexOf(keyword) !== -1;
-      });
-      bcdDocs = bcdDocs.filter(function(d) {
-        return ((d.name || '') + ' ' + (d.tags || []).join(' ') + ' ' + (d.desc || '')).toLowerCase().indexOf(keyword) !== -1;
-      });
-      worldDocs = worldDocs.filter(function(d) {
-        return ((d.name || '') + ' ' + (d.tags || []).join(' ') + ' ' + (d.desc || '')).toLowerCase().indexOf(keyword) !== -1;
+      conceptDocs = conceptDocs.filter(function(d) { return ((d.name||'')+' '+(d.tags||[]).join(' ')+' '+(d.desc||'')).toLowerCase().indexOf(keyword)!==-1; });
+      worldDocs = worldDocs.filter(function(d) { return ((d.name||'')+' '+(d.tags||[]).join(' ')+' '+(d.desc||'')).toLowerCase().indexOf(keyword)!==-1; });
+    }
+
+    var container = document.getElementById('mainContent');
+    var html = '';
+
+    // 板块1: 💡 概念推导
+    if (conceptDocs.length > 0) {
+      html += '<section class="section-group"><h2 class="section-title">💡 概念推导</h2><div class="card-grid">';
+      for (var i = 0; i < conceptDocs.length; i++) html += renderCard(conceptDocs[i], i);
+      html += '</div></section>';
+    }
+    // 板块2: 🌐 世界观元素
+    if (worldDocs.length > 0) {
+      html += '<section class="section-group"><h2 class="section-title">🌐 世界观元素</h2><div class="card-grid">';
+      for (var j = 0; j < worldDocs.length; j++) html += renderCard(worldDocs[j], j);
+      html += '</div></section>';
+    }
+
+    container.innerHTML = html;
+    setTimeout(function() { fillGridGaps(container); }, 0);
+    return;
+  }
+
+  // 周报：隐藏筛选，按年份分组
+  if (activeChannel === 'report') {
+    document.getElementById('filterSection').innerHTML = '';
+
+    var yearGroups = {};
+    for (var ri = 0; ri < docs.length; ri++) {
+      var rd = docs[ri];
+      var year = '未知';
+      var ym = rd.name.match(/(20\d{2})/);
+      if (ym) year = ym[1];
+      else if (rd.updatedAt) {
+        var dym = rd.updatedAt.match(/(20\d{2})/);
+        if (dym) year = dym[1];
+      }
+      if (!yearGroups[year]) yearGroups[year] = [];
+      yearGroups[year].push(rd);
+    }
+
+    // 搜索过滤
+    if (keyword) {
+      Object.keys(yearGroups).forEach(function(yk) {
+        yearGroups[yk] = yearGroups[yk].filter(function(d) { return ((d.name||'')+' '+(d.tags||[]).join(' ')+' '+(d.desc||'')).toLowerCase().indexOf(keyword)!==-1; });
       });
     }
 
-    var conceptGrouped = {};
-    if (conceptDocs.length > 0)  conceptGrouped['_concept']   = { category: '📐 概念推导',     docs: conceptDocs };
-    if (bcdDocs.length > 0)      conceptGrouped['_bcd']       = { category: '🔷 BCD系列',     docs: bcdDocs };
-    if (worldDocs.length > 0)    conceptGrouped['_world']     = { category: '🌍 世界观元素',  docs: worldDocs };
-    renderContentWeekly(conceptGrouped);
+    var container = document.getElementById('mainContent');
+    var rHtml = '';
+    var sortedYears = Object.keys(yearGroups).sort().reverse();
+    for (var ryi = 0; ryi < sortedYears.length; ryi++) {
+      var ry = sortedYears[ryi];
+      var rDocs = yearGroups[ry];
+      if (rDocs.length === 0) continue;
+      rHtml += '<section class="section-group"><h2 class="section-title">📅 ' + escapeHtml(ry) + '年</h2><div class="card-grid">';
+      for (var ri2 = 0; ri2 < rDocs.length; ri2++) rHtml += renderCard(rDocs[ri2], ri2);
+      rHtml += '</div></section>';
+    }
+    container.innerHTML = rHtml || '<div class="no-results"><div class="no-results-icon">🔍</div><p>暂无周报数据</p></div>';
+    setTimeout(function() { fillGridGaps(container); }, 0);
     return;
   }
 
@@ -975,7 +954,7 @@ function renderFilters(grouped) {
     sections[sec].cats.push({ key: catKey, name: catName, count: count, sectionOrder: doc.sectionOrder || 99 });
   });
 
-  var sectionOrder = ['局外', '局内', '主机相关', '通用'];
+  var sectionOrder = ['局外', '局内', '主机相关', '通用', '推导&周报', '重构跟踪', '其他'];
   var sortedSections = Object.keys(sections).sort(function(a, b) {
     var ai = sectionOrder.indexOf(a), bi = sectionOrder.indexOf(b);
     return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
@@ -1064,7 +1043,29 @@ function renderContent(grouped, showNoResults) {
     var secIcon = SECTION_ICONS[secName] || '📁';
     html += '<h2 class="section-title">' + secIcon + ' ' + escapeHtml(secName) + '</h2>';
 
-    var catKeys = Object.keys(secData.docs).sort();
+    // 分类排序：推导&周报板块用自定义顺序，其他板块按 sectionOrder 排序
+    var catKeys = Object.keys(secData.docs);
+    var catOrderMap = {
+      '推导&周报': ['概念推导', '视觉推导', '周报']
+    };
+    var secCatOrder = catOrderMap[secName] || null;
+    if (secCatOrder) {
+      catKeys.sort(function(a, b) {
+        var catA = (grouped[a] || {}).category || a;
+        var catB = (grouped[b] || {}).category || b;
+        var ai = secCatOrder.indexOf(catA), bi = secCatOrder.indexOf(catB);
+        if (ai !== -1 && bi !== -1) return ai - bi;
+        if (ai !== -1) return -1;
+        if (bi !== -1) return 1;
+        return catA.localeCompare(catB);
+      });
+    } else {
+      catKeys.sort(function(a, b) {
+        var docA = (secData.docs[a] || {}).docs ? (secData.docs[a].docs[0]||{}) : {};
+        var docB = (secData.docs[b] || {}).docs ? (secData.docs[b].docs[0]||{}) : {};
+        return (docA.sectionOrder || 99) - (docB.sectionOrder || 99);
+      });
+    }
     for (var ci = 0; ci < catKeys.length; ci++) {
       var catKey = catKeys[ci];
       var catInfo = grouped[catKey];
@@ -1497,7 +1498,7 @@ function saveToGitHub() {
   
   statusEl.textContent = '⏳ 正在保存...';
 
-  var repo = 'ss1016672393-prog/ss1016672393-prog';
+  var repo = 'ss1016672393-prog/-';
   var path = 'doc-index/data.js';
 
   try {
