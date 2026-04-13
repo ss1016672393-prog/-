@@ -1268,16 +1268,18 @@ function onEmbedMouseUp(e) {
   // 恢复原卡片样式
   _dragEl.classList.remove('drag-active');
   _dragEl.style.opacity = '';
-  if (_lastTarget) { _lastTarget.classList.remove('drag-target'); _lastTarget = null; }
+  
+  if (_lastTarget) { 
+    try { _lastTarget.classList.remove('drag-target'); } catch(ex) {}
+    _lastTarget = null; 
+  }
 
-  // 更新数据模型（不触发重新渲染，保持事件绑定）
   updateDocOrderFromDOM();
   
-  // 重新绑定拖拽事件（DOM 移动后可能丢失）
-  var handle = _dragEl.querySelector('.card-drag-handle');
-  if (handle) {
-    handle.addEventListener('mousedown', onEmbedMouseDown);
-    _dragEl.addEventListener('mousedown', onEmbedMouseDown);
+  // 彻底清理所有拖拽状态
+  if (_ghost && _ghost.parentNode) {
+    try { _ghost.remove(); } catch(ex) {}
+    _ghost = null;
   }
 
   _dragEl = null;
