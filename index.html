@@ -410,16 +410,16 @@
   /* 拖拽插入位置竖线提示 */
   .drag-indicator {
     position: absolute;
-    left: -8px; right: -8px;
-    height: 3px;
+    top: -2px; bottom: -2px;
+    width: 3px;
     background: var(--accent);
-    border-radius: 3px;
-    box-shadow: 0 0 10px rgba(88,166,255,0.6);
+    border-radius: 2px;
+    box-shadow: 0 0 8px rgba(88,166,255,0.6), 0 0 16px rgba(88,166,255,0.3);
     z-index: 100;
     pointer-events: none;
   }
-  .drag-indicator.top { top: -1.5px; }
-  .drag-indicator.bottom { bottom: -1.5px; }
+  .drag-indicator.top { left: 6px; }
+  .drag-indicator.bottom { right: 48px; }
   .edit-toolbar {
     position: fixed; bottom: 30px; right: 40px; z-index: 999;
     display: flex; gap: 8px; align-items: center;
