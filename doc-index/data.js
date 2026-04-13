@@ -1,5 +1,5 @@
 // CFH 设计中心索引数据 | 多职能通道格式
-// 更新时间: 2026-04-13 19:35:30
+// 更新时间: 2026-04-13 19:53:55
 // 总计: 180 个文件 | 3 个通道
 
 var DOC_DATA = {
@@ -7,7 +7,7 @@ var DOC_DATA = {
     "ixd": {
       "title": "CFH交互稿索引",
       "subtitle": "Figma 交互设计文档",
-      "updatedAt": "2026-04-13 19:35:26",
+      "updatedAt": "2026-04-13 19:53:51",
       "totalDocuments": 79,
       "sections": [
             {
@@ -186,7 +186,7 @@ var DOC_DATA = {
                   "section": "通用",
                   "sectionOrder": 0,
                   "status": "active",
-                  "lastModified": "2026-04-13T11:34:44Z"
+                  "lastModified": "2026-04-13T11:53:15Z"
             },
             {
                   "name": "专项验收比照",
@@ -266,7 +266,7 @@ var DOC_DATA = {
                   "section": "局外",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-13T11:27:00Z"
+                  "lastModified": "2026-04-13T11:51:19Z"
             },
             {
                   "name": "【设计稿】开局流程",
@@ -576,7 +576,7 @@ var DOC_DATA = {
                   "section": "局外",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-13T11:29:17Z"
+                  "lastModified": "2026-04-13T11:40:08Z"
             },
             {
                   "name": "【设计稿】活动系统",
@@ -953,7 +953,7 @@ var DOC_DATA = {
     "refactor": {
       "title": "CFH重构落地",
       "subtitle": "重构与落地跟踪",
-      "updatedAt": "2026-04-13 19:35:27",
+      "updatedAt": "2026-04-13 19:53:52",
       "totalDocuments": 11,
       "sections": [
             {
@@ -1108,7 +1108,7 @@ var DOC_DATA = {
     "weekly": {
       "title": "CFH概念推导 & 周报",
       "subtitle": "概念推导、周报与汇报材料",
-      "updatedAt": "2026-04-13 19:35:30",
+      "updatedAt": "2026-04-13 19:53:55",
       "totalDocuments": 90,
       "sections": [
             {
@@ -1120,7 +1120,7 @@ var DOC_DATA = {
                         },
                         {
                               "name": "概念推导",
-                              "count": 43
+                              "count": 47
                         },
                         {
                               "name": "视觉推导",
@@ -1136,11 +1136,11 @@ var DOC_DATA = {
             },
             {
                   "name": "未分类",
-                  "count": 7
+                  "count": 3
             },
             {
                   "name": "概念推导",
-                  "count": 43
+                  "count": 47
             },
             {
                   "name": "视觉推导",
@@ -1156,7 +1156,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-13T11:28:08Z"
+                  "lastModified": "2026-04-13T11:52:17Z"
             },
             {
                   "name": "PARKI1.0概念推导",
@@ -1316,7 +1316,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-13T10:46:22Z"
+                  "lastModified": "2026-04-13T11:37:42Z"
             },
             {
                   "name": "【概念推导】Zongshi概念推导",
@@ -1539,6 +1539,26 @@ var DOC_DATA = {
                   "lastModified": "2025-02-21T03:17:16Z"
             },
             {
+                  "name": "【设计稿】体验优化专项",
+                  "url": "https://www.figma.com/file/SQGuFtVmUHgQDraCFMv1q6",
+                  "category": "概念推导",
+                  "categoryKey": "W01",
+                  "section": "推导&周报",
+                  "sectionOrder": 1,
+                  "status": "active",
+                  "lastModified": "2026-04-11T09:21:45Z"
+            },
+            {
+                  "name": "世界观主流程",
+                  "url": "https://www.figma.com/file/QrBVABodoKp8DADcQ9GlRH",
+                  "category": "概念推导",
+                  "categoryKey": "W01",
+                  "section": "推导&周报",
+                  "sectionOrder": 1,
+                  "status": "review",
+                  "lastModified": "2026-03-31T13:33:47Z"
+            },
+            {
                   "name": "中天概念推导",
                   "url": "https://www.figma.com/file/EUGqj8CAdqiJXYrvmO0aiO",
                   "category": "概念推导",
@@ -1549,6 +1569,16 @@ var DOC_DATA = {
                   "lastModified": "2026-04-13T03:08:35Z"
             },
             {
+                  "name": "口味FIGMA",
+                  "url": "https://www.figma.com/file/22EeFZgzJNwauCGEgjaGwM",
+                  "category": "概念推导",
+                  "categoryKey": "W01",
+                  "section": "推导&周报",
+                  "sectionOrder": 1,
+                  "status": "active",
+                  "lastModified": "2026-04-11T07:47:07Z"
+            },
+            {
                   "name": "晶睿概念推导",
                   "url": "https://www.figma.com/file/73FVvGoN26NXA4fL98z9TQ",
                   "category": "概念推导",
@@ -1556,7 +1586,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-13T11:35:23Z"
+                  "lastModified": "2026-04-13T11:53:28Z"
             },
             {
                   "name": "王慧概念推导",
@@ -1577,6 +1607,16 @@ var DOC_DATA = {
                   "sectionOrder": 1,
                   "status": "active",
                   "lastModified": "2026-04-11T09:08:58Z"
+            },
+            {
+                  "name": "风格测试区域1",
+                  "url": "https://www.figma.com/file/ukMaU8hkCQ59fzz62UiGfg",
+                  "category": "概念推导",
+                  "categoryKey": "W01",
+                  "section": "推导&周报",
+                  "sectionOrder": 1,
+                  "status": "active",
+                  "lastModified": "2026-04-13T06:34:48Z"
             },
             {
                   "name": "2026-视觉BCD",
@@ -1870,16 +1910,6 @@ var DOC_DATA = {
             },
             {
                   "name": "2025.7月周报",
-                  "url": "https://www.figma.com/file/28XgVtjtufuUtBEWi1V1Jn",
-                  "category": "周报",
-                  "categoryKey": "W03",
-                  "section": "推导&周报",
-                  "sectionOrder": 1,
-                  "status": "stable",
-                  "lastModified": "2025-08-07T08:06:59Z"
-            },
-            {
-                  "name": "2025.7月周报",
                   "url": "https://www.figma.com/file/MgvCHXbyfjVunlBGyNGkzy",
                   "category": "周报",
                   "categoryKey": "W03",
@@ -1887,6 +1917,16 @@ var DOC_DATA = {
                   "sectionOrder": 1,
                   "status": "stable",
                   "lastModified": "2025-08-06T08:33:37Z"
+            },
+            {
+                  "name": "2025.7月周报",
+                  "url": "https://www.figma.com/file/28XgVtjtufuUtBEWi1V1Jn",
+                  "category": "周报",
+                  "categoryKey": "W03",
+                  "section": "推导&周报",
+                  "sectionOrder": 1,
+                  "status": "stable",
+                  "lastModified": "2025-08-07T08:06:59Z"
             },
             {
                   "name": "2025.8月周报",
@@ -1999,36 +2039,6 @@ var DOC_DATA = {
                   "lastModified": "2025-01-08T13:57:59Z"
             },
             {
-                  "name": "【设计稿】体验优化专项",
-                  "url": "https://www.figma.com/file/SQGuFtVmUHgQDraCFMv1q6",
-                  "category": "未分类",
-                  "categoryKey": "Z99",
-                  "section": "其他",
-                  "sectionOrder": 9,
-                  "status": "active",
-                  "lastModified": "2026-04-11T09:21:45Z"
-            },
-            {
-                  "name": "世界观主流程",
-                  "url": "https://www.figma.com/file/QrBVABodoKp8DADcQ9GlRH",
-                  "category": "未分类",
-                  "categoryKey": "Z99",
-                  "section": "其他",
-                  "sectionOrder": 9,
-                  "status": "review",
-                  "lastModified": "2026-03-31T13:33:47Z"
-            },
-            {
-                  "name": "口味FIGMA",
-                  "url": "https://www.figma.com/file/22EeFZgzJNwauCGEgjaGwM",
-                  "category": "未分类",
-                  "categoryKey": "Z99",
-                  "section": "其他",
-                  "sectionOrder": 9,
-                  "status": "active",
-                  "lastModified": "2026-04-11T07:47:07Z"
-            },
-            {
                   "name": "日报模板",
                   "url": "https://www.figma.com/file/BIVOm02vPWnuIzOSxtSu2B",
                   "category": "未分类",
@@ -2037,16 +2047,6 @@ var DOC_DATA = {
                   "sectionOrder": 9,
                   "status": "stable",
                   "lastModified": "2025-11-14T10:07:06Z"
-            },
-            {
-                  "name": "风格测试区域1",
-                  "url": "https://www.figma.com/file/ukMaU8hkCQ59fzz62UiGfg",
-                  "category": "未分类",
-                  "categoryKey": "Z99",
-                  "section": "其他",
-                  "sectionOrder": 9,
-                  "status": "active",
-                  "lastModified": "2026-04-13T06:34:48Z"
             }
       ]
 }
