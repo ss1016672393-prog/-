@@ -1164,9 +1164,8 @@ function cancelEdit() {
 }
 
 // ---------- 鼠标跟随式拖拽（实体嵌入） ----------
-var _dragEl = null, _placeholder = null;
-var _dragOffsetX = 0, _dragOffsetY = 0;
-var _lastTarget = null;
+var _ghost = null;       // 拖拽中的 ghost 副本
+var _lastTarget = null;    // 上一个高亮的目标卡片
 
 function bindDragEvents() {
   var handles = document.querySelectorAll('.card-drag-handle');
@@ -1206,7 +1205,6 @@ function startEmbedDrag(card, x, y) {
   _dragEl = card;
   _dragEl.classList.add('drag-active');
   _dragEl.style.opacity = '0.25';
-  _dragOffsetX = x; _dragOffsetY = y;
 }
 
 function onEmbedMouseMove(e) {
