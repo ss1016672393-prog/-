@@ -1169,10 +1169,11 @@ function cancelEdit() {
   renderAll();
 }
 
-// ---------- 鼠标跟随式拖拽（实体嵌入） ----------
+// ---------- 鼠标跟随式拖拽（实体嵌入）—— 事件委托版 ----------
 var _ghost = null;       // 拖拽中的 ghost 副本
 var _dragEl = null;      // 当前拖拽的原卡片
 var _lastTarget = null;  // 上一个高亮的目标卡片
+var _dragBound = false;  // 是否已绑定全局 move/up（防重复）
 
 // 卡片内分类下拉选项
 function getCatOptionsForCard(currentCatKey) {
@@ -1205,21 +1206,30 @@ function changeCardCategoryInline(docUrl, newCat, selectEl) {
   window._hasUnsavedChanges = true;
 }
 
+// 一次性绑定 document 级别的事件委托（只绑定一次，不随 DOM 重建丢失）
 function bindDragEvents() {
-  var handles = document.querySelectorAll('.card-drag-handle');
-  for (var h = 0; h < handles.length; h++) {
-    (function(handle) {
-      handle.addEventListener('mousedown', function(e) {
-        if (!isEditMode || e.button !== 0) return;
-        e.preventDefault(); e.stopPropagation();
-        var card = this.closest('.doc-card');
-        if (!card) return;
-        startEmbedDrag(card, e.clientX, e.clientY);
-      });
-    })(handles[h]);
-  }
-  document.addEventListener('mousemove', onEmbedMouseMove);
-  document.addEventListener('mouseup', onEmbedMouseUp);
+  if (_dragBound) return; // 已绑定过，跳过
+  _dragBound = true;
+
+  document.addEventListener('mousedown', function(e) {
+    if (!isEditMode || e.button !== 0) return;
+    var handle = e.target.closest('.card-drag-handle');
+    var card = handle ? handle.closest('.doc-card') : null;
+    if (!card) return;
+    e.preventDefault();
+    e.stopPropagation();
+    startEmbedDrag(card, e.clientX, e.clientY);
+  });
+
+  document.addEventListener('mousemove', function(e) {
+    if (!_ghost && !_dragEl) return; // 不在拖拽中，忽略（性能优化）
+    onEmbedMouseMove(e);
+  });
+
+  document.addEventListener('mouseup', function(e) {
+    if (!_dragEl) return; // 不在拖拽中，忽略
+    onEmbedMouseUp(e);
+  });
 }
 
 // ===== 实体嵌入拖拽系统 =====
@@ -1313,13 +1323,6 @@ function onEmbedMouseUp(e) {
   }
 
   updateDocOrderFromDOM();
-  
-  // 彻底清理所有拖拽状态
-  if (_ghost && _ghost.parentNode) {
-    try { _ghost.remove(); } catch(ex) {}
-    _ghost = null;
-  }
-
   _dragEl = null;
 }
 
