@@ -562,9 +562,9 @@ if (typeof DOC_DATA === 'undefined' && typeof INDEX_DATA === 'undefined') {
 // 每个 Tab 对应 data.js 中的一套独立数据（通过 channel 字段区分）
 var CHANNELS = [
   { key: 'ixd',       label: '✏️ 交互稿',     shortLabel: '交互稿',     colorClass: 'ixd',       icon: '✏️' },
-  { key: 'concept',   label: '💡 概念推导',    shortLabel: '概念推导',    colorClass: 'weekly',    icon: '💡' },
+  { key: 'weekly',    label: '💡 概念推导',    shortLabel: '概念推导',    colorClass: 'weekly',    icon: '💡' },
   { key: 'refactor',  label: '🔧 重构落地',    shortLabel: '重构落地',    colorClass: 'refactor',  icon: '🔧' },
-  { key: 'weekly',    label: '📊 周报',        shortLabel: '周报',        colorClass: 'weeklyreport', icon: '📊' },
+  { key: 'report',    label: '📊 周报',        shortLabel: '周报',        colorClass: 'weeklyreport', icon: '📊' },
 ];
 
 var activeChannel = 'ixd';   // 当前选中的职能 Tab
@@ -799,7 +799,7 @@ function renderAll() {
   }
 
   // 概念推导：隐藏筛选，分为「概念推导」「世界观元素」两个板块
-  if (activeChannel === 'concept') {
+  if (activeChannel === 'weekly') {
     document.getElementById('filterSection').innerHTML = '';
 
     var conceptDocs = [];   // 名称包含"推导"
