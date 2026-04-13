@@ -743,22 +743,25 @@ function renderAll() {
   }
 
 
-  // 概念推导：隐藏筛选，分为「概念推导」「世界观元素」两个板块
+  // 概念推导：隐藏筛选，分为「概念推导」「BCD」「世界观元素」三个板块
   if (activeChannel === 'weekly') {
     document.getElementById('filterSection').innerHTML = '';
 
-    var conceptDocs = [];   // 概念推导类
-    var worldDocs = [];     // 周报/汇报类
+    var conceptDocs = [];   // 💡 概念推导（核心推导类）
+    var bcdDocs = [];       // 🎨 BCD（视觉推导类）
+    var worldDocs = [];     // 🌐 世界观元素（其余）
     for (var ci = 0; ci < docs.length; ci++) {
       var cd = docs[ci];
       var name = cd.name || '';
-      // 同 init() 的拆分规则：含"推导"/"概念"/"KOTO"/"PARKI"/"PC主机"/
-      // "体验优化"/"世界观主流程"/"口味FIGMA"/"风格测试"/"视觉BCD"/"HUD专题"
-      if (name.indexOf('推导') >= 0 || name.indexOf('概念') >= 0 ||
+      // BCD 判定：视觉BCD / HUD专题 / 世界观主流程
+      if (name.indexOf('视觉BCD') >= 0 || name.indexOf('HUD专题') >= 0 ||
+          name.indexOf('世界观主流程') >= 0) {
+        bcdDocs.push(cd);
+      // 概念推导判定：概念/推导/KOTO/PARKI/PC主机/体验优化/口味FIGMA/风格测试
+      } else if (name.indexOf('推导') >= 0 || name.indexOf('概念') >= 0 ||
           name.indexOf('KOTO') >= 0 || name.indexOf('PARKI') >= 0 || name.indexOf('PC主机') >= 0 ||
-          name.indexOf('体验优化') >= 0 || name.indexOf('世界观主流程') >= 0 ||
-          name.indexOf('口味FIGMA') >= 0 || name.indexOf('风格测试') >= 0 ||
-          name.indexOf('视觉BCD') >= 0 || name.indexOf('HUD专题') >= 0) {
+          name.indexOf('体验优化') >= 0 ||
+          name.indexOf('口味FIGMA') >= 0 || name.indexOf('风格测试') >= 0) {
         conceptDocs.push(cd);
       } else {
         worldDocs.push(cd);
@@ -767,8 +770,9 @@ function renderAll() {
 
     // 搜索过滤
     if (keyword) {
-      conceptDocs = conceptDocs.filter(function(d) { return ((d.name||'')+' '+(d.tags||[]).join(' ')+' '+(d.desc||'')).toLowerCase().indexOf(keyword)!==-1; });
-      worldDocs = worldDocs.filter(function(d) { return ((d.name||'')+' '+(d.tags||[]).join(' ')+' '+(d.desc||'')).toLowerCase().indexOf(keyword)!==-1; });
+      conceptDocs = conceptDocs.filter(function(d) { return ((d.name||'')).toLowerCase().indexOf(keyword)!==-1; });
+      bcdDocs = bcdDocs.filter(function(d) { return ((d.name||'')).toLowerCase().indexOf(keyword)!==-1; });
+      worldDocs = worldDocs.filter(function(d) { return ((d.name||'')).toLowerCase().indexOf(keyword)!==-1; });
     }
 
     var container = document.getElementById('mainContent');
@@ -780,10 +784,16 @@ function renderAll() {
       for (var i = 0; i < conceptDocs.length; i++) html += renderCard(conceptDocs[i], i);
       html += '</div></section>';
     }
-    // 板块2: 🌐 世界观元素
+    // 板块2: 🎨 BCD
+    if (bcdDocs.length > 0) {
+      html += '<section class="section-group"><h2 class="section-title">🎨 BCD</h2><div class="card-grid">';
+      for (var j = 0; j < bcdDocs.length; j++) html += renderCard(bcdDocs[j], j);
+      html += '</div></section>';
+    }
+    // 板块3: 🌐 世界观元素
     if (worldDocs.length > 0) {
       html += '<section class="section-group"><h2 class="section-title">🌐 世界观元素</h2><div class="card-grid">';
-      for (var j = 0; j < worldDocs.length; j++) html += renderCard(worldDocs[j], j);
+      for (var k = 0; k < worldDocs.length; k++) html += renderCard(worldDocs[k], k);
       html += '</div></section>';
     }
 
