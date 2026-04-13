@@ -373,12 +373,13 @@
   body.edit-mode .card-drag-handle:hover { color: var(--accent); background: rgba(88,166,255,0.12); }
   body.edit-mode .card-drag-handle:active { cursor: grabbing; }
   body.edit-mode .card-inline-cat-select {
-    display: block;
-    width: 100%; box-sizing: border-box;
+    position: absolute; right: 44px; top: 50%; transform: translateY(-50%);
     font-size: 13px; padding: 5px 8px; border-radius: 6px;
     border: 1px solid var(--border-color); background: var(--bg-card);
     color: var(--text-secondary); cursor: pointer;
-    transition: all 0.2s; margin-top: 6px;
+    transition: all 0.2s; min-width: 90px;
+    max-width: 120px;
+    z-index: 2;
   }
   body.edit-mode .card-inline-cat-select:focus { border-color: var(--accent); outline: none; background: rgba(88,166,255,0.06); color: var(--text-primary); }
   .toolbar-btn-add-circle {
@@ -1113,10 +1114,10 @@ function renderCard(doc, index) {
   var editExtra = '';
   var catSelectHtml = '';
   if (isEditMode) {
-    editExtra = '<div class="card-drag-handle" title="拖拽排序">⠿</div>';
-    catSelectHtml = '<div style="margin-top:6px;"><select class="card-inline-cat-select" onchange="changeCardCategoryInline(\'' + escapeHtml(doc.url) + '\', this.value, this)" title="切换分类">' +
+    editExtra = '<div class="card-drag-handle" title="拖拽排序">⠿</div>' +
+      '<select class="card-inline-cat-select" onchange="changeCardCategoryInline(\'' + escapeHtml(doc.url) + '\', this.value, this)" title="切换分类">' +
       getCatOptionsForCard(catKey) +
-      '</select></div>';
+      '</select>';
   }
 
   return '<a class="doc-card' + visitedCls + '" href="' + (isEditMode ? '#' : escapeHtml(doc.url || '#')) + '"' + (isEditMode ? '' : ' target="_blank" rel="noopener"') +
@@ -1127,7 +1128,6 @@ function renderCard(doc, index) {
     editExtra +
     '<div class="card-top">' +
       '<span class="card-title">' + escapeHtml(displayName) + newBadge + '</span>' +
-      catSelectHtml +
     '</div>' +
     '<div class="card-desc">' + escapeHtml(doc.desc || '') + '</div>' +
     tagsHtml +
