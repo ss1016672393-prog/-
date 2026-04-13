@@ -403,9 +403,22 @@
     transition: none !important; pointer-events: none !important;
   }
   .doc-card.drag-target {
-    border-color: var(--accent) !important;
-    box-shadow: 0 0 10px rgba(88,166,255,0.25) !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
   }
+  /* 拖拽插入位置竖线提示 */
+  .drag-indicator {
+    position: absolute;
+    left: -8px; right: -8px;
+    height: 3px;
+    background: var(--accent);
+    border-radius: 3px;
+    box-shadow: 0 0 10px rgba(88,166,255,0.6);
+    z-index: 100;
+    pointer-events: none;
+  }
+  .drag-indicator.top { top: -1.5px; }
+  .drag-indicator.bottom { bottom: -1.5px; }
   .edit-toolbar {
     position: fixed; bottom: 30px; right: 40px; z-index: 999;
     display: flex; gap: 8px; align-items: center;
@@ -1174,6 +1187,7 @@ function cancelEdit() {
 var _ghost = null;       // 拖拽中的 ghost 副本
 var _dragEl = null;      // 当前拖拽的原卡片
 var _lastTarget = null;  // 上一个高亮的目标卡片
+var _indicator = null;    // 竖线指示器元素
 var _dragBound = false;  // 是否已绑定全局 move/up（防重复）
 
 // 卡片内分类下拉选项
@@ -1301,9 +1315,21 @@ function onEmbedMouseMove(e) {
       parentGrid.insertBefore(_dragEl, targetCard.nextSibling);
     }
 
-    if (_lastTarget && _lastTarget !== targetCard) _lastTarget.classList.remove('drag-target');
-    targetCard.classList.add('drag-target');
+    // 更新竖线位置
+    removeDragIndicator();
+    _indicator = document.createElement('div');
+    _indicator.className = 'drag-indicator ' + (insertBefore ? 'top' : 'bottom');
+    targetCard.appendChild(_indicator);
     _lastTarget = targetCard;
+  }
+}
+
+function removeDragIndicator() {
+  if (_indicator && _indicator.parentNode) { _indicator.remove(); }
+  _indicator = null;
+  if (_lastTarget) {
+    try { _lastTarget.classList.remove('drag-target'); } catch(ex) {}
+    _lastTarget = null;
   }
 }
 
@@ -1318,10 +1344,7 @@ function onEmbedMouseUp(e) {
   _dragEl.classList.remove('drag-active');
   _dragEl.style.opacity = '';
   
-  if (_lastTarget) { 
-    try { _lastTarget.classList.remove('drag-target'); } catch(ex) {}
-    _lastTarget = null; 
-  }
+  removeDragIndicator();
 
   updateDocOrderFromDOM();
   _dragEl = null;
