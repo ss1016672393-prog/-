@@ -574,6 +574,11 @@ var activeStatus = 'all';    // 状态筛选
 var newDocSet = null;        // 随机标记"新"的文档 URL 集合
 var appData = null;          // 当前职能的数据
 
+// 板块 icon 映射（与 Tab icon 保持一致）
+var SECTION_ICONS = {
+  '局外': '🌐', '局内': '🏠', '主机相关': '🖥️', '通用': '⚙️'
+};
+
 // ========== 初始化 ==========
 (function init() {
   try {
@@ -1016,11 +1021,6 @@ function setSection(btn, section) {
   activeCategory = 'all';
   renderAll();
 }
-
-// 板块 icon 映射（与 Tab icon 保持一致）
-var SECTION_ICONS = {
-  '局外': '🌐', '局内': '🏠', '主机相关': '🖥️', '通用': '⚙️'
-};
 
 // ========== 内容区域（按板块分组渲染）==========
 function renderContent(grouped, showNoResults) {
