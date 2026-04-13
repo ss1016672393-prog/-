@@ -835,7 +835,9 @@ function renderAll() {
       var ry = sortedYears[ryi];
       var rDocs = yearGroups[ry];
       if (rDocs.length === 0) continue;
-      rHtml += '<section class="section-group"><h2 class="section-title">📅 ' + escapeHtml(ry) + '年</h2><div class="card-grid">';
+      var titleText = escapeHtml(ry) + (ry === '模板' ? '' : '年');
+      var prefix = (ry === '模板') ? '📄' : '📅 ';
+      rHtml += '<section class="section-group"><h2 class="section-title">' + prefix + titleText + '</h2><div class="card-grid">';
       for (var ri2 = 0; ri2 < rDocs.length; ri2++) rHtml += renderCard(rDocs[ri2], ri2);
       rHtml += '</div></section>';
     }
