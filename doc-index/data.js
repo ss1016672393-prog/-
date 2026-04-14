@@ -1,5 +1,5 @@
 // CFH 设计中心索引数据 | 多职能通道格式
-// 更新时间: 2026/4/14 20:11:59
+// 更新时间: 2026/4/14 21:04:38
 
 var DOC_DATA = {
   "channels": {
@@ -732,16 +732,6 @@ var DOC_DATA = {
               "lastModified": "2026-04-14T08:29:28Z"
         },
         {
-              "name": "【设计稿】底层规则",
-              "url": "https://www.figma.com/file/WQ1cGxUtsCJQ9uKn7xshJb",
-              "category": "资源存档",
-              "categoryKey": "Z99",
-              "section": "其他",
-              "sectionOrder": 9,
-              "status": "stable",
-              "lastModified": "2026-03-05T02:33:21Z"
-        },
-        {
               "name": "【设计稿】通用界面&控件",
               "url": "https://www.figma.com/file/l7O1W0eEnYgT7mhI81wWOY",
               "category": "规范",
@@ -760,6 +750,16 @@ var DOC_DATA = {
               "sectionOrder": 0,
               "status": "active",
               "lastModified": "2026-04-13T12:13:31Z"
+        },
+        {
+              "name": "【设计稿】底层规则",
+              "url": "https://www.figma.com/file/WQ1cGxUtsCJQ9uKn7xshJb",
+              "category": "资源存档",
+              "categoryKey": "Z99",
+              "section": "其他",
+              "sectionOrder": 9,
+              "status": "stable",
+              "lastModified": "2026-03-05T02:33:21Z"
         },
         {
               "name": "专项验收比照",
