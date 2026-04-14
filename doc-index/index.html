@@ -764,7 +764,11 @@ function renderAll() {
       // 世界观元素判定：世界观(非主流程)
       } else if ((name.indexOf('世界观') >= 0 && name.indexOf('世界观主流程') < 0)) {
         worldDocs.push(cd);
-      // 概念推导判定 + 兜底
+      // 概念推导判定 + 兜底（排除周报类，留给周报 Tab）
+      } else if (name.indexOf('周报') >= 0 || name.indexOf('月报') >= 0 ||
+          name.indexOf('例会') >= 0 || name.indexOf('汇报') >= 0 ||
+          name.indexOf('排期') >= 0 || name.indexOf('资源') >= 0) {
+        continue;  // 跳过，这些文件由 init() 分给周报 Tab
       } else {
         conceptDocs.push(cd);
       }
