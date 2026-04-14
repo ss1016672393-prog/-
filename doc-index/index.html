@@ -801,25 +801,25 @@ function renderAll() {
 
     // 板块1: 💡 概念推导
     if (conceptDocs.length > 0) {
-      html += '<section class="section-group"><h2 class="section-title">💡 概念推导</h2><div class="card-grid">';
+      html += '<section class="section-group"><h2 class="section-title" data-cat="概念推导">💡 概念推导</h2><div class="card-grid">';
       for (var i = 0; i < conceptDocs.length; i++) html += renderCard(conceptDocs[i], i);
       html += '</div></section>';
     }
     // 板块2: 🎨 BCD
     if (bcdDocs.length > 0) {
-      html += '<section class="section-group"><h2 class="section-title">🎨 BCD</h2><div class="card-grid">';
+      html += '<section class="section-group"><h2 class="section-title" data-cat="BCD">🎨 BCD</h2><div class="card-grid">';
       for (var j = 0; j < bcdDocs.length; j++) html += renderCard(bcdDocs[j], j);
       html += '</div></section>';
     }
     // 板块3: 🎭 风格探索
     if (styleDocs.length > 0) {
-      html += '<section class="section-group"><h2 class="section-title">🎭 风格探索</h2><div class="card-grid">';
+      html += '<section class="section-group"><h2 class="section-title" data-cat="风格探索">🎭 风格探索</h2><div class="card-grid">';
       for (var s = 0; s < styleDocs.length; s++) html += renderCard(styleDocs[s], s);
       html += '</div></section>';
     }
     // 板块4: 🌐 世界观元素
     if (worldDocs.length > 0) {
-      html += '<section class="section-group"><h2 class="section-title">🌐 世界观元素</h2><div class="card-grid">';
+      html += '<section class="section-group"><h2 class="section-title" data-cat="世界观元素">🌐 世界观元素</h2><div class="card-grid">';
       for (var k = 0; k < worldDocs.length; k++) html += renderCard(worldDocs[k], k);
       html += '</div></section>';
     }
@@ -1449,13 +1449,21 @@ function updateDocOrderFromDOM() {
   var chData = appData.channels[activeChannel];
   var seenUrls = {};
   document.querySelectorAll('.card-grid').forEach(function(grid) {
-    // 从 section-title 的 data-cat 获取目标分类
+    // 从 section-title 或 category-section 获取目标分类（兼容两种 Tab 结构）
     var catKey = '';
+    
+    // 方式1: section-group > section-title[data-cat]（概念推导/重构落地/周报）
     var titleEl = grid.previousElementSibling;
     while(titleEl && !titleEl.classList.contains('section-title')) {
       titleEl = titleEl.previousElementSibling;
     }
-    if(titleEl) catKey = titleEl.getAttribute('data-cat') || '';
+    if(titleEl && titleEl.hasAttribute('data-cat')) catKey = titleEl.getAttribute('data-cat') || '';
+    
+    // 方式2: category-section[data-category]（交互稿等标准渲染）
+    if(!catKey) {
+      var secEl = grid.closest('.category-section');
+      if(secEl) catKey = secEl.getAttribute('data-category') || '';
+    }
 
     grid.querySelectorAll('.doc-card').forEach(function(card) {
       var url = card.getAttribute('data-doc-url') || '';
@@ -1490,10 +1498,29 @@ function updateDocOrderFromDOM() {
   chData.documents.forEach(function(d) { urlMap[d.url] = d; });
   var reordered = [];
   document.querySelectorAll('.card-grid').forEach(function(grid) {
+    // 获取当前 grid 对应的分类（复用上面的逻辑）
+    var catKey = '';
+    var titleEl = grid.previousElementSibling;
+    while(titleEl && !titleEl.classList.contains('section-title')) { titleEl = titleEl.previousElementSibling; }
+    if(titleEl && titleEl.hasAttribute('data-cat')) catKey = titleEl.getAttribute('data-cat') || '';
+    if(!catKey) {
+      var secEl = grid.closest('.category-section');
+      if(secEl) catKey = secEl.getAttribute('data-category') || '';
+    }
+
     grid.querySelectorAll('.doc-card').forEach(function(card) {
       var url = card.getAttribute('data-doc-url')||'';
-      if(urlMap[url]) reordered.push(urlMap[url]);
-      delete urlMap[url];
+      if(urlMap[url]) {
+        var doc = urlMap[url];
+        if(catKey && doc.category !== catKey) {
+          doc.category = catKey;
+          doc.categoryKey = catKey;
+          var secInfo = findCategoryInfo(catKey);
+          if(secInfo) { doc.section = secInfo.section; doc.sectionOrder = secInfo.sectionOrder; }
+        }
+        reordered.push(doc);
+        delete urlMap[url];
+      }
     });
   });
   Object.values(urlMap).forEach(function(d){reordered.push(d);});
@@ -1594,70 +1621,123 @@ function saveToGitHub() {
       for (var i = 0; i < u8.length; i++) bin += String.fromCharCode(u8.charCodeAt(i));
       return window.btoa(bin);
     }
-    var dataStr = buildDataJsString();
-    var contentB64 = btoaSafe(dataStr);
 
-    // 先获取 SHA
-    fetch('https://api.github.com/repos/' + repo + '/contents/' + path, {
-      headers: { 'Authorization': 'token ' + token }
-    }).then(function(r) { return r.json(); }).then(function(fileData) {
+    // 先获取当前文件 SHA
+    var headers = { 'Authorization': 'token ' + token };
+    fetch('https://api.github.com/repos/' + repo + '/contents/' + path, { headers: headers })
+    .then(function(r) {
+      if (!r.ok) throw new Error('获取文件失败(' + r.status + ')，请检查 Token 是否有效');
+      return r.json();
+    })
+    .then(function(fileData) {
       var sha = fileData.sha;
-      fetch('https://api.github.com/repos/' + repo + '/contents/' + path, {
+      
+      // 构建新内容：使用与 sync.py 相同的格式（INDEX_DATA 格式，含 sections/categories）
+      var dataStr = buildIndexDataString();
+      var contentB64 = btoaSafe(dataStr);
+      
+      // 推送
+      return fetch('https://api.github.com/repos/' + repo + '/contents/' + path, {
         method: 'PUT',
-        headers: { 'Authorization': 'token ' + token, 'Content-Type': 'application/json' },
+        headers: { 
+          'Authorization': 'token ' + token, 
+          'Content-Type': 'application/json',
+          'Accept': 'application/vnd.github.v3+json'
+        },
         body: JSON.stringify({
-          message: 'update: 编辑模式调整分类和顺序',
+          message: 'update: 编辑模式调整分类和顺序 | ' + new Date().toLocaleDateString('zh-CN'),
           content: contentB64,
           sha: sha
         })
-      }).then(function(r2) {
-        if (r2.ok) {
-          statusEl.textContent = '✅ 保存成功！';
-          setTimeout(function() { toggleEditMode(); }, 1000);
-        } else {
-          r2.json().then(function(err) { statusEl.textContent = '❌ 保存失败: ' + (err.message || ''); });
-        }
-      }).catch(function(err) { statusEl.textContent = '❌ 网络错误: ' + err.message; });
-    }).catch(function(err) { statusEl.textContent = '❌ 获取SHA失败: ' + err.message; });
+      });
+    })
+    .then(function(r2) {
+      if (!r2.ok) {
+        return r2.json().then(function(err) {
+          throw new Error((err.message || err.error || '') + ' (' + r2.status + ')');
+        });
+      }
+      statusEl.textContent = '✅ 保存成功！页面将在3秒后刷新...';
+      window._hasUnsavedChanges = false;
+      setTimeout(function() { location.reload(true); }, 3000);
+    })
+    .catch(function(err) {
+      console.error('[Save Error]', err);
+      statusEl.textContent = '❌ 保存失败: ' + err.message;
+    });
 
-  } catch(e) { statusEl.textContent = '❌ 错误: ' + e.message; }
+  } catch(e) { 
+    console.error('[Save Exception]', e);
+    statusEl.textContent = '❌ 错误: ' + e.message; 
+  }
 }
 
-// 将当前 appData 重新序列化为 data.js 字符串格式
-function buildDataJsString() {
-  // 简化版本：直接用 JSON 格式输出
+// 将当前 appData 重新序列化为完整 INDEX_DATA 格式（与 sync.py 输出格式一致）
+function buildIndexDataString() {
   var channels = appData.channels;
-  var lines = [
-    '// CFH 设计中心索引数据 | 多职能通道格式',
-    '// 更新时间: ' + new Date().toLocaleString('zh-CN'),
-    '',
-    'var DOC_DATA = {',
-    '  "channels": {'
-  ];
+  
+  // 从 documents 反推 sections 和 categories
+  function buildSectionInfo(docs) {
+    var secMap = {};
+    var secOrderMap = [];
+    docs.forEach(function(d) {
+      var sName = d.section || '其他';
+      if (!secMap[sName]) {
+        secMap[sName] = {
+          name: sName,
+          order: d.sectionOrder !== undefined ? d.sectionOrder : 99,
+          categories: {}
+        };
+        secOrderMap.push(sName);
+      }
+      sec = secMap[sName];
+      var cName = d.category || '未分类';
+      if (!sec.categories[cName]) {
+        sec.categories[cName] = { name: cName, count: 0 };
+      }
+      sec.categories[cName].count++;
+    });
+    
+    var secs = [], cats = [];
+    Object.keys(secMap).sort(function(a,b){ return secMap[a].order - secMap[b].order; }).forEach(function(sn) {
+      var s = secMap[sn];
+      secs.push({ name: sn, count: Object.keys(s.categories).length });
+      Object.keys(s.categories).sort().forEach(function(cn) {
+        var c = s.categories[cn];
+        cats.push({ name: cn, count: c.count });
+      });
+    });
+    return { sections: secs, categories: cats };
+  }
+
+  var chLines = [];
   Object.keys(channels).forEach(function(chKey) {
     var ch = channels[chKey];
-    lines.push('    "' + chKey + '": {');
-    lines.push('      "title": ' + JSON.stringify(ch.title) + ',');
-    lines.push('      "subtitle": ' + JSON.stringify(ch.subtitle || '') + ',');
-    lines.push('      "updatedAt": ' + JSON.stringify(ch.updatedAt || '') + ',');
-    lines.push('      "totalDocuments": ' + (ch.documents || []).length + ',');
-    // sections/categories 简化输出
-    lines.push('      "sections": [],');
-    lines.push('      "categories": [],');
-    lines.push('      "documents": [');
     var docs = ch.documents || [];
-    docs.forEach(function(d, di) {
-      var docJson = JSON.stringify(d, null, 6);
-      docJson = docJson.replace(/\n/g, '\n        ');
-      var comma = di < docs.length - 1 ? ',' : '';
-      lines.push('        ' + docJson + comma);
-    });
-    lines.push('      ]');
-    lines.push('    }' + (Object.keys(channels).indexOf(chKey) < Object.keys(channels).length - 1 ? ',' : ''));
+    var info = buildSectionInfo(docs);
+
+    var docArr = [];
+    docs.forEach(function(d) { docArr.push(JSON.stringify(d)); });
+
+    chLines.push('\t"' + chKey + '": {\n' +
+      '\t\t"title": ' + JSON.stringify(ch.title) + ',\n' +
+      '\t\t"subtitle": ' + JSON.stringify(ch.subtitle || '') + ',\n' +
+      '\t\t"updatedAt": ' + JSON.stringify(ch.updatedAt || '') + ',\n' +
+      '\t\t"totalDocuments": ' + docs.length + ',\n' +
+      '\t\t"sections": ' + JSON.stringify(info.sections) + ',\n' +
+      '\t\t"categories": ' + JSON.stringify(info.categories) + ',\n' +
+      '\t\t"documents": [\n' +
+      docArr.join(',\n') + '\n' +
+      '\t]\n' +
+      '\t}');
   });
-  lines.push('  }');
-  lines.push('};');
-  return lines.join('\n');
+
+  return 
+    '// CFH 设计中心索引数据 | 多职能通道格式\n' +
+    '// 更新时间: ' + new Date().toLocaleString('zh-CN') + '\n\n' +
+    'var INDEX_DATA = {\n' +
+    '\t"channels": {\n' + chLines.join(',\n') + '\n\t}\n' +
+    '};';
 }
 
 // ========== 工具函数 ==========
