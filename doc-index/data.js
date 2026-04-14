@@ -1,5 +1,5 @@
 // CFH 设计中心索引数据 | 多职能通道格式
-// 更新时间: 2026-04-13 20:24:01
+// 更新时间: 2026-04-14 15:11:44
 // 总计: 180 个文件 | 3 个通道
 
 var DOC_DATA = {
@@ -7,7 +7,7 @@ var DOC_DATA = {
     "ixd": {
       "title": "CFH交互稿索引",
       "subtitle": "Figma 交互设计文档",
-      "updatedAt": "2026-04-13 20:23:57",
+      "updatedAt": "2026-04-14 15:11:41",
       "totalDocuments": 79,
       "sections": [
             {
@@ -121,6 +121,10 @@ var DOC_DATA = {
                   "count": 2
             },
             {
+                  "name": "未分类",
+                  "count": 1
+            },
+            {
                   "name": "版本跟进",
                   "count": 3
             },
@@ -147,10 +151,6 @@ var DOC_DATA = {
             {
                   "name": "角色",
                   "count": 6
-            },
-            {
-                  "name": "资源存档",
-                  "count": 1
             },
             {
                   "name": "通用系统",
@@ -266,7 +266,7 @@ var DOC_DATA = {
                   "section": "局外",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-13T12:20:05Z"
+                  "lastModified": "2026-04-14T02:33:11Z"
             },
             {
                   "name": "【设计稿】开局流程",
@@ -316,7 +316,7 @@ var DOC_DATA = {
                   "section": "局外",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-11T09:04:48Z"
+                  "lastModified": "2026-04-14T06:42:05Z"
             },
             {
                   "name": "【设计稿】自定义房间",
@@ -326,7 +326,7 @@ var DOC_DATA = {
                   "section": "局外",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-11T09:33:14Z"
+                  "lastModified": "2026-04-13T13:59:40Z"
             },
             {
                   "name": "【设计稿】设置",
@@ -376,7 +376,7 @@ var DOC_DATA = {
                   "section": "局外",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-13T07:46:18Z"
+                  "lastModified": "2026-04-14T02:37:41Z"
             },
             {
                   "name": "【设计稿】角色系统MS3~MS8",
@@ -505,8 +505,8 @@ var DOC_DATA = {
                   "categoryKey": "B06",
                   "section": "局外",
                   "sectionOrder": 1,
-                  "status": "stable",
-                  "lastModified": "2026-02-02T14:15:13Z"
+                  "status": "active",
+                  "lastModified": "2026-04-14T07:09:53Z"
             },
             {
                   "name": "【设计稿】字幕",
@@ -576,7 +576,7 @@ var DOC_DATA = {
                   "section": "局外",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-13T11:40:09Z"
+                  "lastModified": "2026-04-14T06:55:55Z"
             },
             {
                   "name": "【设计稿】活动系统",
@@ -606,7 +606,7 @@ var DOC_DATA = {
                   "section": "局外",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-13T12:15:32Z"
+                  "lastModified": "2026-04-14T06:59:55Z"
             },
             {
                   "name": "【设计稿】派遣 MS8",
@@ -675,8 +675,8 @@ var DOC_DATA = {
                   "categoryKey": "B08",
                   "section": "局外",
                   "sectionOrder": 1,
-                  "status": "stable",
-                  "lastModified": "2024-10-29T11:43:29Z"
+                  "status": "active",
+                  "lastModified": "2026-04-14T07:11:21Z"
             },
             {
                   "name": "【设计稿】BOSS召唤+赏金",
@@ -931,29 +931,29 @@ var DOC_DATA = {
             {
                   "name": "【设计稿】底层规则",
                   "url": "https://www.figma.com/file/WQ1cGxUtsCJQ9uKn7xshJb",
-                  "category": "规范",
-                  "categoryKey": "A01",
-                  "section": "通用",
-                  "sectionOrder": 0,
+                  "category": "底层规则",
+                  "categoryKey": "D02",
+                  "section": "主机相关",
+                  "sectionOrder": 3,
                   "status": "stable",
                   "lastModified": "2026-03-05T02:33:21Z"
             },
             {
                   "name": "【设计稿】外观藏品系统",
                   "url": "https://www.figma.com/file/pppwTkwNlOS3bnljiRvEsf",
-                  "category": "通用系统",
-                  "categoryKey": "B06",
-                  "section": "局外",
-                  "sectionOrder": 1,
+                  "category": "未分类",
+                  "categoryKey": "Z99",
+                  "section": "其他",
+                  "sectionOrder": 9,
                   "status": "active",
-                  "lastModified": "2026-04-13T11:30:46Z"
+                  "lastModified": "2026-04-14T07:11:04Z"
             }
       ]
 },
     "refactor": {
       "title": "CFH重构落地",
       "subtitle": "重构与落地跟踪",
-      "updatedAt": "2026-04-13 20:23:58",
+      "updatedAt": "2026-04-14 15:11:42",
       "totalDocuments": 11,
       "sections": [
             {
@@ -964,11 +964,11 @@ var DOC_DATA = {
                               "count": 1
                         },
                         {
-                              "name": "模板",
+                              "name": "性能优化",
                               "count": 2
                         },
                         {
-                              "name": "资源存档",
+                              "name": "资源整理",
                               "count": 1
                         }
                   ]
@@ -980,19 +980,23 @@ var DOC_DATA = {
                   "count": 1
             },
             {
-                  "name": "模板",
+                  "name": "性能优化",
                   "count": 2
             },
             {
-                  "name": "资源存档",
-                  "count": 8
+                  "name": "未分类",
+                  "count": 7
+            },
+            {
+                  "name": "资源整理",
+                  "count": 1
             }
       ],
       "documents": [
             {
                   "name": "2026_3月性能双周会",
                   "url": "https://www.figma.com/file/F7PEjY0xOEO7suef8YHI24",
-                  "category": "模板",
+                  "category": "性能优化",
                   "categoryKey": "R01",
                   "section": "重构跟踪",
                   "sectionOrder": 1,
@@ -1002,7 +1006,7 @@ var DOC_DATA = {
             {
                   "name": "UI性能优化周会",
                   "url": "https://www.figma.com/file/5eb5mYnkPhgR7uoVclfCAD",
-                  "category": "模板",
+                  "category": "性能优化",
                   "categoryKey": "R01",
                   "section": "重构跟踪",
                   "sectionOrder": 1,
@@ -1022,7 +1026,7 @@ var DOC_DATA = {
             {
                   "name": "版权资源排查",
                   "url": "https://www.figma.com/file/LnlYwxRNDpoVsJUItudlV8",
-                  "category": "资源存档",
+                  "category": "资源整理",
                   "categoryKey": "R04",
                   "section": "重构跟踪",
                   "sectionOrder": 1,
@@ -1032,7 +1036,7 @@ var DOC_DATA = {
             {
                   "name": "月报",
                   "url": "https://www.figma.com/file/mpTJDcSJVRG6LclRV6l031",
-                  "category": "资源存档",
+                  "category": "未分类",
                   "categoryKey": "Z99",
                   "section": "其他",
                   "sectionOrder": 9,
@@ -1042,7 +1046,7 @@ var DOC_DATA = {
             {
                   "name": "系统串联DEMO",
                   "url": "https://www.figma.com/file/IJunI1slXAUY9vka8pmMSx",
-                  "category": "资源存档",
+                  "category": "未分类",
                   "categoryKey": "Z99",
                   "section": "其他",
                   "sectionOrder": 9,
@@ -1052,7 +1056,7 @@ var DOC_DATA = {
             {
                   "name": "落地版本存档",
                   "url": "https://www.figma.com/file/saZ6rCoxXl2vBS6CAQb7cC",
-                  "category": "资源存档",
+                  "category": "未分类",
                   "categoryKey": "Z99",
                   "section": "其他",
                   "sectionOrder": 9,
@@ -1062,7 +1066,7 @@ var DOC_DATA = {
             {
                   "name": "重构引擎ICON图集",
                   "url": "https://www.figma.com/file/Sl89SjdrUBzLXROzt5Ajfb",
-                  "category": "资源存档",
+                  "category": "未分类",
                   "categoryKey": "Z99",
                   "section": "其他",
                   "sectionOrder": 9,
@@ -1072,7 +1076,7 @@ var DOC_DATA = {
             {
                   "name": "重构梳理",
                   "url": "https://www.figma.com/file/xg6cYSeHGtt0SR0kTNBUgp",
-                  "category": "资源存档",
+                  "category": "未分类",
                   "categoryKey": "Z99",
                   "section": "其他",
                   "sectionOrder": 9,
@@ -1082,7 +1086,7 @@ var DOC_DATA = {
             {
                   "name": "重构测试题",
                   "url": "https://www.figma.com/file/g1CgA1tZWejcMEj4U44w0a",
-                  "category": "资源存档",
+                  "category": "未分类",
                   "categoryKey": "Z99",
                   "section": "其他",
                   "sectionOrder": 9,
@@ -1092,7 +1096,7 @@ var DOC_DATA = {
             {
                   "name": "项目计划",
                   "url": "https://www.figma.com/file/vxYlMhdVmTI40JwYkebu6D",
-                  "category": "资源存档",
+                  "category": "未分类",
                   "categoryKey": "Z99",
                   "section": "其他",
                   "sectionOrder": 9,
@@ -1104,7 +1108,7 @@ var DOC_DATA = {
     "weekly": {
       "title": "CFH概念推导 & 周报",
       "subtitle": "概念推导、周报与汇报材料",
-      "updatedAt": "2026-04-13 20:24:01",
+      "updatedAt": "2026-04-14 15:11:44",
       "totalDocuments": 90,
       "sections": [
             {
@@ -1116,7 +1120,7 @@ var DOC_DATA = {
                         },
                         {
                               "name": "概念推导",
-                              "count": 47
+                              "count": 43
                         },
                         {
                               "name": "视觉推导",
@@ -1131,16 +1135,16 @@ var DOC_DATA = {
                   "count": 38
             },
             {
+                  "name": "未分类",
+                  "count": 7
+            },
+            {
                   "name": "概念推导",
-                  "count": 47
+                  "count": 43
             },
             {
                   "name": "视觉推导",
                   "count": 2
-            },
-            {
-                  "name": "资源存档",
-                  "count": 3
             }
       ],
       "documents": [
@@ -1152,7 +1156,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-13T12:12:55Z"
+                  "lastModified": "2026-04-14T02:45:15Z"
             },
             {
                   "name": "PARKI1.0概念推导",
@@ -1182,7 +1186,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-13T07:08:13Z"
+                  "lastModified": "2026-04-14T07:05:04Z"
             },
             {
                   "name": "luccy的概念推导",
@@ -1232,7 +1236,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-13T09:20:49Z"
+                  "lastModified": "2026-04-14T06:57:21Z"
             },
             {
                   "name": "【概念推导】C4-HUD UI概念推导",
@@ -1282,7 +1286,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-13T03:35:21Z"
+                  "lastModified": "2026-04-14T03:42:52Z"
             },
             {
                   "name": "【概念推导】PVE界面问题讨论",
@@ -1312,7 +1316,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-13T11:57:58Z"
+                  "lastModified": "2026-04-14T06:54:43Z"
             },
             {
                   "name": "【概念推导】Zongshi概念推导",
@@ -1342,7 +1346,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-13T09:30:32Z"
+                  "lastModified": "2026-04-14T07:07:41Z"
             },
             {
                   "name": "【概念推导】三组图书馆",
@@ -1502,7 +1506,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-13T09:34:02Z"
+                  "lastModified": "2026-04-14T06:36:00Z"
             },
             {
                   "name": "【概念推导】背景_环境标尺",
@@ -1522,7 +1526,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-13T12:19:19Z"
+                  "lastModified": "2026-04-14T03:21:53Z"
             },
             {
                   "name": "【概念推导】进出局流程概念",
@@ -1535,26 +1539,6 @@ var DOC_DATA = {
                   "lastModified": "2025-02-21T03:17:16Z"
             },
             {
-                  "name": "【设计稿】体验优化专项",
-                  "url": "https://www.figma.com/file/SQGuFtVmUHgQDraCFMv1q6",
-                  "category": "概念推导",
-                  "categoryKey": "W01",
-                  "section": "推导&周报",
-                  "sectionOrder": 1,
-                  "status": "active",
-                  "lastModified": "2026-04-11T09:21:45Z"
-            },
-            {
-                  "name": "世界观主流程",
-                  "url": "https://www.figma.com/file/QrBVABodoKp8DADcQ9GlRH",
-                  "category": "概念推导",
-                  "categoryKey": "W01",
-                  "section": "推导&周报",
-                  "sectionOrder": 1,
-                  "status": "review",
-                  "lastModified": "2026-03-31T13:33:47Z"
-            },
-            {
                   "name": "中天概念推导",
                   "url": "https://www.figma.com/file/EUGqj8CAdqiJXYrvmO0aiO",
                   "category": "概念推导",
@@ -1565,16 +1549,6 @@ var DOC_DATA = {
                   "lastModified": "2026-04-13T03:08:35Z"
             },
             {
-                  "name": "口味FIGMA",
-                  "url": "https://www.figma.com/file/22EeFZgzJNwauCGEgjaGwM",
-                  "category": "概念推导",
-                  "categoryKey": "W01",
-                  "section": "推导&周报",
-                  "sectionOrder": 1,
-                  "status": "active",
-                  "lastModified": "2026-04-11T07:47:07Z"
-            },
-            {
                   "name": "晶睿概念推导",
                   "url": "https://www.figma.com/file/73FVvGoN26NXA4fL98z9TQ",
                   "category": "概念推导",
@@ -1582,7 +1556,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-13T12:21:44Z"
+                  "lastModified": "2026-04-14T07:10:23Z"
             },
             {
                   "name": "王慧概念推导",
@@ -1592,7 +1566,7 @@ var DOC_DATA = {
                   "section": "推导&周报",
                   "sectionOrder": 1,
                   "status": "active",
-                  "lastModified": "2026-04-13T12:03:40Z"
+                  "lastModified": "2026-04-13T12:03:41Z"
             },
             {
                   "name": "蛋挞概念推导",
@@ -1603,16 +1577,6 @@ var DOC_DATA = {
                   "sectionOrder": 1,
                   "status": "active",
                   "lastModified": "2026-04-11T09:08:58Z"
-            },
-            {
-                  "name": "风格测试区域1",
-                  "url": "https://www.figma.com/file/ukMaU8hkCQ59fzz62UiGfg",
-                  "category": "概念推导",
-                  "categoryKey": "W01",
-                  "section": "推导&周报",
-                  "sectionOrder": 1,
-                  "status": "active",
-                  "lastModified": "2026-04-13T06:34:48Z"
             },
             {
                   "name": "2026-视觉BCD",
@@ -2017,7 +1981,7 @@ var DOC_DATA = {
             {
                   "name": "CFBH设计周会规则",
                   "url": "https://www.figma.com/file/yJIucmPwokBt5rGQeV14Ek",
-                  "category": "资源存档",
+                  "category": "未分类",
                   "categoryKey": "Z99",
                   "section": "其他",
                   "sectionOrder": 9,
@@ -2027,7 +1991,7 @@ var DOC_DATA = {
             {
                   "name": "Ms4设计产出大合集",
                   "url": "https://www.figma.com/file/Zbs3TJ1e9IuS3CbWPvOR44",
-                  "category": "资源存档",
+                  "category": "未分类",
                   "categoryKey": "Z99",
                   "section": "其他",
                   "sectionOrder": 9,
@@ -2035,14 +1999,54 @@ var DOC_DATA = {
                   "lastModified": "2025-01-08T13:57:59Z"
             },
             {
+                  "name": "【设计稿】体验优化专项",
+                  "url": "https://www.figma.com/file/SQGuFtVmUHgQDraCFMv1q6",
+                  "category": "未分类",
+                  "categoryKey": "Z99",
+                  "section": "其他",
+                  "sectionOrder": 9,
+                  "status": "active",
+                  "lastModified": "2026-04-11T09:21:45Z"
+            },
+            {
+                  "name": "世界观主流程",
+                  "url": "https://www.figma.com/file/QrBVABodoKp8DADcQ9GlRH",
+                  "category": "未分类",
+                  "categoryKey": "Z99",
+                  "section": "其他",
+                  "sectionOrder": 9,
+                  "status": "review",
+                  "lastModified": "2026-03-31T13:33:47Z"
+            },
+            {
+                  "name": "口味FIGMA",
+                  "url": "https://www.figma.com/file/22EeFZgzJNwauCGEgjaGwM",
+                  "category": "未分类",
+                  "categoryKey": "Z99",
+                  "section": "其他",
+                  "sectionOrder": 9,
+                  "status": "active",
+                  "lastModified": "2026-04-11T07:47:07Z"
+            },
+            {
                   "name": "日报模板",
                   "url": "https://www.figma.com/file/BIVOm02vPWnuIzOSxtSu2B",
-                  "category": "资源存档",
+                  "category": "未分类",
                   "categoryKey": "Z99",
                   "section": "其他",
                   "sectionOrder": 9,
                   "status": "stable",
                   "lastModified": "2025-11-14T10:07:06Z"
+            },
+            {
+                  "name": "风格测试区域1",
+                  "url": "https://www.figma.com/file/ukMaU8hkCQ59fzz62UiGfg",
+                  "category": "未分类",
+                  "categoryKey": "Z99",
+                  "section": "其他",
+                  "sectionOrder": 9,
+                  "status": "active",
+                  "lastModified": "2026-04-13T06:34:48Z"
             }
       ]
 }
