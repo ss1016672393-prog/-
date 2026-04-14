@@ -1652,7 +1652,29 @@ function hideSaveDialog() {
 function saveToGitHub() {
   hideSaveDialog();
   var statusEl = document.getElementById('toolbarStatus');
-  
+
+  // ========== 日志收集（必须在最前面定义） ==========
+  var logs = [];
+  function log(msg) { logs.push(new Date().toLocaleTimeString() + ' | ' + msg); console.log('[Save]', msg); }
+
+  // ★ 关键：立即从 DOM 采集最新的卡片位置和分类
+  log('=== 步骤0: 从 DOM 采集最新状态 ===');
+  try { updateDocOrderFromDOM(); log('✅ DOM 采集完成'); } catch(e) { log('⚠️ DOM 采集异常: ' + e.message); }
+
+  // ★ 诊断：打印当前通道所有文档的状态
+  var chDocs = (appData.channels[activeChannel] || {}).documents || [];
+  log('当前通道: ' + activeChannel + ', 文档数: ' + chDocs.length);
+  var hasManual = 0, hasSaved = 0;
+  for (var di = 0; di < chDocs.length && di < 10; di++) {
+    var dd = chDocs[di];
+    if (dd._manualOrder !== undefined) hasManual++;
+    if (dd._savedSubCat) hasSaved++;
+    log('  [' + di + '] ' + (dd.name||'').substring(0,30) + ' | cat=' + (dd.category||'') + ' | _savedSubCat=' + (dd._savedSubCat||'-') + ' | _order=' + (dd._manualOrder||'-'));
+  }
+  if (chDocs.length > 10) log('  ... 还有 ' + (chDocs.length - 10) + ' 个文档');
+  log('_manualOrder 文档数: ' + hasManual + '/' + chDocs.length);
+  log('_savedSubCat 文档数: ' + hasSaved + '/' + chDocs.length);
+
   var token = prompt('请输入 GitHub Token 以保存更改：', '');
   if (!token || !token.trim()) { statusEl.textContent = '❌ 已取消'; return; }
   
@@ -1661,10 +1683,6 @@ function saveToGitHub() {
 
   var repo = 'ss1016672393-prog/-';
   var path = 'doc-index/data.js';
-
-  // ========== 日志收集 ==========
-  var logs = [];
-  function log(msg) { logs.push(new Date().toLocaleTimeString() + ' | ' + msg); console.log('[Save]', msg); }
 
   try {
     function btoaSafe(s) {
