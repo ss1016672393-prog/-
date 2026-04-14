@@ -758,8 +758,8 @@ function renderAll() {
       if (name.indexOf('视觉BCD') >= 0 || name.indexOf('HUD专题') >= 0 ||
           name.indexOf('世界观主流程') >= 0) {
         bcdDocs.push(cd);
-      // 世界观元素判定：世界观(非主流程) / 口味 / 元素 / 风格测试
-      } else if (name.indexOf('口味FIGMA') >= 0 || name.indexOf('风格测试') >= 0 ||
+      // 世界观元素判定：风格测试 / 世界观(非主流程)
+      } else if (name.indexOf('风格测试') >= 0 ||
           (name.indexOf('世界观') >= 0 && name.indexOf('世界观主流程') < 0)) {
         worldDocs.push(cd);
       // 概念推导判定：概念/推导/KOTO/PARKI/PC主机/体验优化
