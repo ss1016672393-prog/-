@@ -1189,7 +1189,8 @@ function renderCard(doc, index) {
   }
 
   var displayName = doc.name.replace(/^\s*【[^】]+】\s*/, '');
-  var catKey = (doc._displayCat || doc.category || '').toLowerCase();  // 优先使用显示分类
+  // 使用显示分类或原始分类（不转小写，保持与选项一致）
+  var catKey = doc._displayCat || (doc.category || '').trim();
 
   // 编辑模式额外元素
   var editExtra = '';
