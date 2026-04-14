@@ -1692,11 +1692,13 @@ function saveToGitHub() {
   log('_manualOrder 文档数: ' + hasManual + ' / ' + chDocs.length + (hasManual > 0 ? ' ✅ 有手动排序标记' : ' ⚠️ 无任何手动排序！'));
   log('_savedSubCat 文档数:  ' + hasSaved + ' / ' + chDocs.length + (hasSaved > 0 ? ' ✅ 有子分类标记' : ' ⚠️ 无任何子分类标记'));
 
-  var token = prompt('请输入 GitHub Token 以保存更改：', '');
-  if (!token || !token.trim()) { log('\n❌ 用户取消'); return; }
+  var token = prompt('GitHub Token:', '');
+  if (!token || !token.trim()) { log('\n[Cancelled] User cancelled'); return; }
 
-  statusEl.textContent = '⏳ 正在验证 Token...';
+  statusEl.textContent = 'Verifying token...';
   token = token.trim();
+  // Ensure token is ASCII only
+  token = token.replace(/[^\x20-\x7E]/g, '');
 
   var repo = 'ss1016672393-prog/-';
   var path = 'doc-index/data.js';
@@ -1759,13 +1761,13 @@ function saveToGitHub() {
       
       return fetch('https://api.github.com/repos/' + repo + '/contents/' + path, {
         method: 'PUT',
-        headers: { 
-          'Authorization': 'token ' + token, 
+        headers: {
+          'Authorization': 'token ' + token,
           'Content-Type': 'application/json',
           'Accept': 'application/vnd.github.v3+json'
         },
         body: JSON.stringify({
-          message: 'update: 编辑模式调整分类和顺序 | ' + new Date().toLocaleDateString('zh-CN'),
+          message: 'update: doc reorder | ' + new Date().toISOString().slice(0,10),
           content: contentB64,
           sha: sha
         })
