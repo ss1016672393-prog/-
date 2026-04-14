@@ -541,7 +541,7 @@
   <p id="footerText">📋 CFH设计中心 · 最后更新中...</p>
 </footer>
 
-<script src="doc-index/data.js?v=20260413"></script>
+<script src="doc-index/data.js?v=20260414-1501"></script>
 <script>
 /**
  * ============================================================
@@ -607,7 +607,14 @@ var SECTION_ICONS = {
         var cDocs = [], rDocs = [];
         for (var si = 0; si < (srcWeekly.documents || []).length; si++) {
           var sd = srcWeekly.documents[si];
-          if ((sd.name || '').indexOf('推导') >= 0) { cDocs.push(sd); }
+          var sn = sd.name || '';
+          // 概念推导判定：名称含"推导"/"概念"/"KOTO"/"PARKI"/"PC主机"/
+          // "体验优化"/"世界观主流程"/"口味FIGMA"/"风格测试"/"视觉BCD"/"HUD专题"
+          if (sn.indexOf('推导') >= 0 || sn.indexOf('概念') >= 0 ||
+              sn.indexOf('KOTO') >= 0 || sn.indexOf('PARKI') >= 0 || sn.indexOf('PC主机') >= 0 ||
+              sn.indexOf('体验优化') >= 0 || sn.indexOf('世界观主流程') >= 0 ||
+              sn.indexOf('口味FIGMA') >= 0 || sn.indexOf('风格测试') >= 0 ||
+              sn.indexOf('视觉BCD') >= 0 || sn.indexOf('HUD专题') >= 0) { cDocs.push(sd); }
           else { rDocs.push(sd); }
         }
         appData.channels['weekly'] = {
@@ -736,26 +743,39 @@ function renderAll() {
   }
 
 
-  // 概念推导：隐藏筛选，分为「概念推导」「世界观元素」两个板块
+  // 概念推导：隐藏筛选，分为「概念推导」「BCD」「风格探索」「世界观元素」四个板块
   if (activeChannel === 'weekly') {
     document.getElementById('filterSection').innerHTML = '';
 
-    var conceptDocs = [];   // 名称包含"推导"
-    var worldDocs = [];     // 其余（BCD、周报等）
+    var conceptDocs = [];   // 💡 概念推导（核心推导类 + 未归类）
+    var bcdDocs = [];       // 🎨 BCD（视觉/BCD类）
+    var styleDocs = [];     // 🎭 风格探索
+    var worldDocs = [];     // 🌐 世界观元素
     for (var ci = 0; ci < docs.length; ci++) {
       var cd = docs[ci];
       var name = cd.name || '';
-      if (name.indexOf('推导') >= 0) {
-        conceptDocs.push(cd);
-      } else {
+      // BCD 判定：视觉BCD / HUD专题 / 世界观主流程
+      if (name.indexOf('视觉BCD') >= 0 || name.indexOf('HUD专题') >= 0 ||
+          name.indexOf('世界观主流程') >= 0) {
+        bcdDocs.push(cd);
+      // 风格探索判定
+      } else if (name.indexOf('风格') >= 0) {
+        styleDocs.push(cd);
+      // 世界观元素判定：世界观(非主流程)
+      } else if ((name.indexOf('世界观') >= 0 && name.indexOf('世界观主流程') < 0)) {
         worldDocs.push(cd);
+      // 概念推导判定 + 兜底
+      } else {
+        conceptDocs.push(cd);
       }
     }
 
     // 搜索过滤
     if (keyword) {
-      conceptDocs = conceptDocs.filter(function(d) { return ((d.name||'')+' '+(d.tags||[]).join(' ')+' '+(d.desc||'')).toLowerCase().indexOf(keyword)!==-1; });
-      worldDocs = worldDocs.filter(function(d) { return ((d.name||'')+' '+(d.tags||[]).join(' ')+' '+(d.desc||'')).toLowerCase().indexOf(keyword)!==-1; });
+      conceptDocs = conceptDocs.filter(function(d) { return ((d.name||'')).toLowerCase().indexOf(keyword)!==-1; });
+      bcdDocs = bcdDocs.filter(function(d) { return ((d.name||'')).toLowerCase().indexOf(keyword)!==-1; });
+      styleDocs = styleDocs.filter(function(d) { return ((d.name||'')).toLowerCase().indexOf(keyword)!==-1; });
+      worldDocs = worldDocs.filter(function(d) { return ((d.name||'')).toLowerCase().indexOf(keyword)!==-1; });
     }
 
     var container = document.getElementById('mainContent');
@@ -767,10 +787,22 @@ function renderAll() {
       for (var i = 0; i < conceptDocs.length; i++) html += renderCard(conceptDocs[i], i);
       html += '</div></section>';
     }
-    // 板块2: 🌐 世界观元素
+    // 板块2: 🎨 BCD
+    if (bcdDocs.length > 0) {
+      html += '<section class="section-group"><h2 class="section-title">🎨 BCD</h2><div class="card-grid">';
+      for (var j = 0; j < bcdDocs.length; j++) html += renderCard(bcdDocs[j], j);
+      html += '</div></section>';
+    }
+    // 板块3: 🎭 风格探索
+    if (styleDocs.length > 0) {
+      html += '<section class="section-group"><h2 class="section-title">🎭 风格探索</h2><div class="card-grid">';
+      for (var s = 0; s < styleDocs.length; s++) html += renderCard(styleDocs[s], s);
+      html += '</div></section>';
+    }
+    // 板块4: 🌐 世界观元素
     if (worldDocs.length > 0) {
       html += '<section class="section-group"><h2 class="section-title">🌐 世界观元素</h2><div class="card-grid">';
-      for (var j = 0; j < worldDocs.length; j++) html += renderCard(worldDocs[j], j);
+      for (var k = 0; k < worldDocs.length; k++) html += renderCard(worldDocs[k], k);
       html += '</div></section>';
     }
 
@@ -779,15 +811,37 @@ function renderAll() {
     return;
   }
 
-  // 周报：隐藏筛选，按年份分组
+  // 重构落地：隐藏筛选，平铺展示
+  if (activeChannel === 'refactor') {
+    document.getElementById('filterSection').innerHTML = '';
+
+    var container = document.getElementById('mainContent');
+    var rHtml = '<section class="section-group"><h2 class="section-title">🔧 重构落地</h2><div class="card-grid">';
+
+    // 搜索过滤
+    var refDocs = keyword ? docs.filter(function(d) { return (d.name||'').toLowerCase().indexOf(keyword)!==-1; }) : docs;
+    for (var ri3 = 0; ri3 < refDocs.length; ri3++) rHtml += renderCard(refDocs[ri3], ri3);
+    
+    rHtml += '</div></section>';
+    container.innerHTML = rHtml || '<div class="no-results"><div class="no-results-icon">🔍</div><p>暂无重构落地数据</p></div>';
+    setTimeout(function() { fillGridGaps(container); }, 0);
+    return;
+  }
   if (activeChannel === 'report') {
     document.getElementById('filterSection').innerHTML = '';
 
     var yearGroups = {};
     for (var ri = 0; ri < docs.length; ri++) {
       var rd = docs[ri];
-      var year = '未知';
-      var ym = rd.name.match(/(20\d{2})/);
+      var name = rd.name || '';
+      // 优先判断是否为模板（名称含"模板"）
+      if (name.indexOf('模板') >= 0) {
+        if (!yearGroups['模板']) yearGroups['模板'] = [];
+        yearGroups['模板'].push(rd);
+        continue;
+      }
+      var year = '模板';
+      var ym = name.match(/(20\d{2})/);
       if (ym) year = ym[1];
       else if (rd.updatedAt) {
         var dym = rd.updatedAt.match(/(20\d{2})/);
@@ -811,7 +865,9 @@ function renderAll() {
       var ry = sortedYears[ryi];
       var rDocs = yearGroups[ry];
       if (rDocs.length === 0) continue;
-      rHtml += '<section class="section-group"><h2 class="section-title">📅 ' + escapeHtml(ry) + '年</h2><div class="card-grid">';
+      var titleText = escapeHtml(ry) + (ry === '模板' ? '' : '年');
+      var prefix = (ry === '模板') ? '📄' : '📅 ';
+      rHtml += '<section class="section-group"><h2 class="section-title">' + prefix + titleText + '</h2><div class="card-grid">';
       for (var ri2 = 0; ri2 < rDocs.length; ri2++) rHtml += renderCard(rDocs[ri2], ri2);
       rHtml += '</div></section>';
     }
