@@ -785,6 +785,20 @@ function renderAll() {
     var container = document.getElementById('mainContent');
     var html = '';
 
+    // 辅助：给文档打上显示用的分类标签
+    function tagDocs(docsArray, displayCat) {
+      for (var ti = 0; ti < docsArray.length; ti++) {
+        docsArray[ti]._displayCat = displayCat;
+      }
+    }
+    tagDocs(conceptDocs, '概念推导');
+    tagDocs(bcdDocs, 'BCD');
+    tagDocs(styleDocs, '风格探索');
+    tagDocs(worldDocs, '世界观元素');
+
+    // 合并用于搜索（保持顺序）
+    var allDisplayDocs = conceptDocs.concat(bcdDocs).concat(styleDocs).concat(worldDocs);
+
     // 板块1: 💡 概念推导
     if (conceptDocs.length > 0) {
       html += '<section class="section-group"><h2 class="section-title">💡 概念推导</h2><div class="card-grid">';
@@ -1175,7 +1189,7 @@ function renderCard(doc, index) {
   }
 
   var displayName = doc.name.replace(/^\s*【[^】]+】\s*/, '');
-  var catKey = (doc.categoryKey || '').toLowerCase();
+  var catKey = (doc._displayCat || doc.category || '').toLowerCase();  // 优先使用显示分类
 
   // 编辑模式额外元素
   var editExtra = '';
@@ -1259,6 +1273,17 @@ var _dragBound = false;  // 是否已绑定全局 move/up（防重复）
 
 // 卡片内分类下拉选项
 function getCatOptionsForCard(currentCatKey) {
+  // 概念推导 Tab：固定显示四个子分类
+  if (activeChannel === 'weekly') {
+    var subCats = ['概念推导', 'BCD', '风格探索', '世界观元素'];
+    var html = '';
+    for (var j = 0; j < subCats.length; j++) {
+      var sel = (subCats[j] === currentCatKey) ? ' selected' : '';
+      html += '<option value="' + subCats[j] + '"' + sel + '>' + subCats[j] + '</option>';
+    }
+    return html;
+  }
+  // 其他 Tab：从原始数据提取
   var cats = [];
   var seen = {};
   var docs = appData.channels[activeChannel].documents;
@@ -1267,12 +1292,12 @@ function getCatOptionsForCard(currentCatKey) {
     if (c && !seen[c]) { seen[c] = true; cats.push(c); }
   }
   cats.sort();
-  var html = '';
-  for (var j = 0; j < cats.length; j++) {
-    var sel = (cats[j] === currentCatKey) ? ' selected' : '';
-    html += '<option value="' + cats[j] + '"' + sel + '>' + cats[j] + '</option>';
+  var html2 = '';
+  for (var k = 0; k < cats.length; k++) {
+    var sel2 = (cats[k] === currentCatKey) ? ' selected' : '';
+    html2 += '<option value="' + cats[k] + '"' + sel2 + '>' + cats[k] + '</option>';
   }
-  return html;
+  return html2;
 }
 
 // 卡片内分类切换（不触发重新渲染）
