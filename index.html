@@ -743,12 +743,13 @@ function renderAll() {
   }
 
 
-  // 概念推导：隐藏筛选，分为「概念推导」「BCD」「世界观元素」三个板块
+  // 概念推导：隐藏筛选，分为「概念推导」「BCD」「风格探索」「世界观元素」四个板块
   if (activeChannel === 'weekly') {
     document.getElementById('filterSection').innerHTML = '';
 
     var conceptDocs = [];   // 💡 概念推导（核心推导类 + 未归类）
     var bcdDocs = [];       // 🎨 BCD（视觉/BCD类）
+    var styleDocs = [];     // 🎭 风格探索
     var worldDocs = [];     // 🌐 世界观元素
     for (var ci = 0; ci < docs.length; ci++) {
       var cd = docs[ci];
@@ -757,9 +758,11 @@ function renderAll() {
       if (name.indexOf('视觉BCD') >= 0 || name.indexOf('HUD专题') >= 0 ||
           name.indexOf('世界观主流程') >= 0) {
         bcdDocs.push(cd);
-      // 世界观元素判定：风格测试 / 世界观(非主流程)
-      } else if (name.indexOf('风格测试') >= 0 ||
-          (name.indexOf('世界观') >= 0 && name.indexOf('世界观主流程') < 0)) {
+      // 风格探索判定
+      } else if (name.indexOf('风格') >= 0) {
+        styleDocs.push(cd);
+      // 世界观元素判定：世界观(非主流程)
+      } else if ((name.indexOf('世界观') >= 0 && name.indexOf('世界观主流程') < 0)) {
         worldDocs.push(cd);
       // 概念推导判定 + 兜底
       } else {
@@ -771,6 +774,7 @@ function renderAll() {
     if (keyword) {
       conceptDocs = conceptDocs.filter(function(d) { return ((d.name||'')).toLowerCase().indexOf(keyword)!==-1; });
       bcdDocs = bcdDocs.filter(function(d) { return ((d.name||'')).toLowerCase().indexOf(keyword)!==-1; });
+      styleDocs = styleDocs.filter(function(d) { return ((d.name||'')).toLowerCase().indexOf(keyword)!==-1; });
       worldDocs = worldDocs.filter(function(d) { return ((d.name||'')).toLowerCase().indexOf(keyword)!==-1; });
     }
 
@@ -789,7 +793,13 @@ function renderAll() {
       for (var j = 0; j < bcdDocs.length; j++) html += renderCard(bcdDocs[j], j);
       html += '</div></section>';
     }
-    // 板块3: 🌐 世界观元素
+    // 板块3: 🎭 风格探索
+    if (styleDocs.length > 0) {
+      html += '<section class="section-group"><h2 class="section-title">🎭 风格探索</h2><div class="card-grid">';
+      for (var s = 0; s < styleDocs.length; s++) html += renderCard(styleDocs[s], s);
+      html += '</div></section>';
+    }
+    // 板块4: 🌐 世界观元素
     if (worldDocs.length > 0) {
       html += '<section class="section-group"><h2 class="section-title">🌐 世界观元素</h2><div class="card-grid">';
       for (var k = 0; k < worldDocs.length; k++) html += renderCard(worldDocs[k], k);
