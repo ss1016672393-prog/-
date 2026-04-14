@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title id="pageTitle">📋 CFH设计中心</title>
+<title id="pageTitle">📋 CFH设计中心 | v2212</title>
 <style>
   :root {
     --bg-primary: #0d1117;
@@ -1650,6 +1650,9 @@ function hideSaveDialog() {
 }
 
 function saveToGitHub() {
+  // ★ 最基础的诊断 — 如果这个都不弹出来，说明函数根本没被调用或文件没更新
+  alert('[DEBUG] saveToGitHub() is running! If you see this, the function exists.');
+  
   hideSaveDialog();
   var statusEl = document.getElementById('toolbarStatus');
 
