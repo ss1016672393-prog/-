@@ -1653,31 +1653,48 @@ function saveToGitHub() {
   hideSaveDialog();
   var statusEl = document.getElementById('toolbarStatus');
 
-  // ========== 日志收集（必须在最前面定义） ==========
+  // ========== 创建屏幕日志面板 ==========
+  var logPanel = document.createElement('div');
+  logPanel.id = '_saveLogPanel';
+  logPanel.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;display:flex;flex-direction:column;padding:20px;box-sizing:border-box;color:#fff;font-family:Consolas,monospace;font-size:13px;line-height:1.6;overflow:auto;';
+  logPanel.innerHTML = '<div style="font-size:16px;font-weight:bold;margin-bottom:10px;">📋 保存诊断日志</div><div id="_saveLogContent" style="white-space:pre-wrap;"></div><button onclick="document.getElementById(\'_saveLogPanel\').remove()" style="margin-top:15px;padding:6px 16px;background:#4a90d9;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:14px;">关闭</button>';
+  document.body.appendChild(logPanel);
+  var logContent = document.getElementById('_saveLogContent');
+
   var logs = [];
-  function log(msg) { logs.push(new Date().toLocaleTimeString() + ' | ' + msg); console.log('[Save]', msg); }
+  function log(msg) {
+    var line = new Date().toLocaleTimeString() + ' | ' + msg;
+    logs.push(line);
+    console.log('[Save]', msg);
+    logContent.textContent += line + '\n';
+    // 自动滚动到底部
+    logPanel.scrollTop = logPanel.scrollHeight;
+  }
 
   // ★ 关键：立即从 DOM 采集最新的卡片位置和分类
   log('=== 步骤0: 从 DOM 采集最新状态 ===');
-  try { updateDocOrderFromDOM(); log('✅ DOM 采集完成'); } catch(e) { log('⚠️ DOM 采集异常: ' + e.message); }
+  try { updateDocOrderFromDOM(); log('✅ DOM 采集完成'); } catch(e) { log('❌ DOM 采集异常: ' + e.message); }
 
   // ★ 诊断：打印当前通道所有文档的状态
   var chDocs = (appData.channels[activeChannel] || {}).documents || [];
-  log('当前通道: ' + activeChannel + ', 文档数: ' + chDocs.length);
+  log('当前通道: ' + activeChannel + ', 总文档数: ' + chDocs.length);
+
   var hasManual = 0, hasSaved = 0;
-  for (var di = 0; di < chDocs.length && di < 10; di++) {
+  for (var di = 0; di < chDocs.length && di < 12; di++) {
     var dd = chDocs[di];
     if (dd._manualOrder !== undefined) hasManual++;
     if (dd._savedSubCat) hasSaved++;
-    log('  [' + di + '] ' + (dd.name||'').substring(0,30) + ' | cat=' + (dd.category||'') + ' | _savedSubCat=' + (dd._savedSubCat||'-') + ' | _order=' + (dd._manualOrder||'-'));
+    log('  [' + di + '] ' + (dd.name||'').substring(0,32) + '\n       cat=' + (dd.category||'') + ' | _savedSubCat=' + (dd._savedSubCat||'-') + ' | _order=' + (dd._manualOrder||'-'));
   }
-  if (chDocs.length > 10) log('  ... 还有 ' + (chDocs.length - 10) + ' 个文档');
-  log('_manualOrder 文档数: ' + hasManual + '/' + chDocs.length);
-  log('_savedSubCat 文档数: ' + hasSaved + '/' + chDocs.length);
+  if (chDocs.length > 12) log('  ... 还有 ' + (chDocs.length - 12) + ' 个文档');
+  log('');
+  log('========== 关键指标 ==========');
+  log('_manualOrder 文档数: ' + hasManual + ' / ' + chDocs.length + (hasManual > 0 ? ' ✅ 有手动排序标记' : ' ⚠️ 无任何手动排序！'));
+  log('_savedSubCat 文档数:  ' + hasSaved + ' / ' + chDocs.length + (hasSaved > 0 ? ' ✅ 有子分类标记' : ' ⚠️ 无任何子分类标记'));
 
   var token = prompt('请输入 GitHub Token 以保存更改：', '');
-  if (!token || !token.trim()) { statusEl.textContent = '❌ 已取消'; return; }
-  
+  if (!token || !token.trim()) { log('\n❌ 用户取消'); return; }
+
   statusEl.textContent = '⏳ 正在验证 Token...';
   token = token.trim();
 
@@ -1692,35 +1709,35 @@ function saveToGitHub() {
       return window.btoa(bin);
     }
 
-    log('开始保存流程, repo=' + repo + ', path=' + path);
-    log('当前通道: ' + activeChannel + ', 文档数: ' + (appData.channels[activeChannel] || {}).documents?.length);
+    log('');
+    log('=== 步骤1: 获取远程文件 SHA ===');
+    log('repo=' + repo + ', path=' + path);
 
-    // 先获取当前文件 SHA
     var headers = { 'Authorization': 'token ' + token };
-    
-    log('正在获取文件 SHA...');
+
     statusEl.textContent = '⏳ 正在获取远程文件信息...';
 
     fetch('https://api.github.com/repos/' + repo + '/contents/' + path, { headers: headers })
     .then(function(r) {
       log('SHA请求状态: ' + r.status);
       if (!r.ok) {
-        throw new Error('获取文件失败(HTTP ' + r.status + ')\n请检查:\n1. Token 是否有效\n2. Token 是否有 repo 权限\n3. 仓库路径是否正确: ' + repo);
+        throw new Error('获取文件失败(HTTP ' + r.status + ')');
       }
       return r.json();
     })
     .then(function(fileData) {
       var sha = fileData.sha;
-      log('获取到 SHA: ' + sha.substring(0, 10) + '...');
-      
+      log('获取到 SHA: ' + sha.substring(0, 12) + '...');
+
       // 构建新内容
       statusEl.textContent = '⏳ 正在构建数据文件...';
-      log('正在构建新数据...');
-      
+      log('');
+      log('=== 步骤2: 构建新数据 ===');
+
       var dataStr = buildIndexDataString();
-      log('构建完成, 数据大小: ' + dataStr.length + ' 字符 (' + Math.round(dataStr.length/1024) + 'KB)');
-      
-      // 验证生成的数据可被解析（用 try-catch 包裹执行避免污染当前环境）
+      log('构建完成, 大小: ' + dataStr.length + ' 字符 (' + Math.round(dataStr.length/1024) + 'KB)');
+
+      // 验证生成的数据可被解析
       log('验证数据格式...');
       try {
         var verifyStr = '(function(){' + dataStr + '; return typeof DOC_DATA !== "undefined" || typeof INDEX_DATA !== "undefined"; })()';
@@ -1780,17 +1797,23 @@ function saveToGitHub() {
     })
     .catch(function(err) {
       console.error('[Save Error]', err);
-      console.error('[Save Logs]', logs.join('\n'));
       statusEl.textContent = '❌ 保存失败';
-      // 用 alert 确保用户能看到错误详情
-      alert('❌ 保存失败\n\n' + err.message + '\n\n完整日志:\n' + logs.join('\n'));
+      log('');
+      log('==========================================');
+      log('❌❌❌ 保存失败 ❌❌❌');
+      log('==========================================');
+      log('错误: ' + err.message);
+      // 日志已在面板中显示
     });
 
-  } catch(e) { 
+  } catch(e) {
     console.error('[Save Exception]', e);
-    console.error('[Save Logs]', logs.join('\n'));
     statusEl.textContent = '❌ 保存出错';
-    alert('❌ 保存过程出错: ' + e.message + '\n\n日志:\n' + logs.join('\n')); 
+    log('');
+    log('==========================================');
+    log('❌❌❌ 保存过程出错(同步异常) ❌❌❌');
+    log('==========================================');
+    log('错误: ' + e.message);
   }
 }
 
