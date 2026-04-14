@@ -942,9 +942,9 @@ var DOC_DATA = {
                   "name": "【设计稿】外观藏品系统",
                   "url": "https://www.figma.com/file/pppwTkwNlOS3bnljiRvEsf",
                   "category": "通用系统",
-                  "categoryKey": "G02",
-                  "section": "通用",
-                  "sectionOrder": 2,
+                  "categoryKey": "B06",
+                  "section": "局外",
+                  "sectionOrder": 1,
                   "status": "active",
                   "lastModified": "2026-04-13T11:30:46Z"
             }
