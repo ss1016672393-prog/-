@@ -931,10 +931,10 @@ var DOC_DATA = {
             {
                   "name": "【设计稿】底层规则",
                   "url": "https://www.figma.com/file/WQ1cGxUtsCJQ9uKn7xshJb",
-                  "category": "底层规则",
-                  "categoryKey": "D02",
-                  "section": "主机相关",
-                  "sectionOrder": 3,
+                  "category": "规范",
+                  "categoryKey": "A01",
+                  "section": "通用",
+                  "sectionOrder": 0,
                   "status": "stable",
                   "lastModified": "2026-03-05T02:33:21Z"
             },
