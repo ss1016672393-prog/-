@@ -541,7 +541,7 @@
   <p id="footerText">📋 CFH设计中心 · 最后更新中...</p>
 </footer>
 
-<script src="doc-index/data.js?v=20260414-1501"></script>
+<script src="doc-index/data.js?v=20260414-2200"></script>
 <script>
 /**
  * ============================================================
@@ -602,19 +602,32 @@ var SECTION_ICONS = {
     } else {
       appData = typeof DOC_DATA !== 'undefined' ? DOC_DATA : INDEX_DATA;
       // 将 weekly 数据拆分为「概念推导」+「周报」两个独立 channel
+      // ★ 关键：保留 _savedSubCat 和 _manualOrder，优先使用手动分类而非纯关键词
       if (appData.channels && appData.channels['weekly']) {
         var srcWeekly = appData.channels['weekly'];
         var cDocs = [], rDocs = [];
+        var validSubCats = ['概念推导', 'BCD', '风格探索', '世界观元素'];
         for (var si = 0; si < (srcWeekly.documents || []).length; si++) {
           var sd = srcWeekly.documents[si];
           var sn = sd.name || '';
-          // 概念推导判定：名称含"推导"/"概念"/"KOTO"/"PARKI"/"PC主机"/
-          // "体验优化"/"世界观主流程"/"口味FIGMA"/"风格测试"/"视觉BCD"/"HUD专题"
-          if (sn.indexOf('推导') >= 0 || sn.indexOf('概念') >= 0 ||
-              sn.indexOf('KOTO') >= 0 || sn.indexOf('PARKI') >= 0 || sn.indexOf('PC主机') >= 0 ||
-              sn.indexOf('体验优化') >= 0 || sn.indexOf('世界观主流程') >= 0 ||
-              sn.indexOf('口味FIGMA') >= 0 || sn.indexOf('风格测试') >= 0 ||
-              sn.indexOf('视觉BCD') >= 0 || sn.indexOf('HUD专题') >= 0) { cDocs.push(sd); }
+          var isConcept = false;
+
+          // ★ 优先级1：读取手动保存的子分类（_savedSubCat > category）
+          var storedSubCat = sd._savedSubCat || sd.category || '';
+          if (storedSubCat && validSubCats.indexOf(storedSubCat) >= 0) {
+            isConcept = true;  // 有有效子分类标记 → 归概念推导
+          }
+
+          // ★ 优先级2：按文件名关键词判定（仅当没有手动分类时）
+          if (!isConcept) {
+            if (sn.indexOf('推导') >= 0 || sn.indexOf('概念') >= 0 ||
+                sn.indexOf('KOTO') >= 0 || sn.indexOf('PARKI') >= 0 || sn.indexOf('PC主机') >= 0 ||
+                sn.indexOf('体验优化') >= 0 || sn.indexOf('世界观主流程') >= 0 ||
+                sn.indexOf('口味FIGMA') >= 0 || sn.indexOf('风格测试') >= 0 ||
+                sn.indexOf('视觉BCD') >= 0 || sn.indexOf('HUD专题') >= 0) { isConcept = true; }
+          }
+
+          if (isConcept) { cDocs.push(sd); }
           else { rDocs.push(sd); }
         }
         appData.channels['weekly'] = {
@@ -708,17 +721,29 @@ function renderAll() {
   var chData = appData.channels[activeChannel] || {};
   var docs = chData.documents || [];
 
-  // 周报按时间排序（最新的在最前面），新人周报/视觉周报置底
+  // ★ 概念推导 Tab：如果有手动排序标记，优先使用手动顺序；否则按时间排序
   if (activeChannel === 'weekly' && docs.length > 0) {
-    docs = docs.slice().sort(function(a, b) {
-      var na = (a.name || ''), nb = (b.name || '');
-      var aIsBottom = (na.indexOf('新人') >= 0 || na.indexOf('视觉') >= 0) ? 1 : 0;
-      var bIsBottom = (nb.indexOf('新人') >= 0 || nb.indexOf('视觉') >= 0) ? 1 : 0;
-      if (aIsBottom !== bIsBottom) return aIsBottom - bIsBottom;  // 置底的排后面
-      var ta = a.updatedAt || a.lastUpdated || '';
-      var tb = b.updatedAt || b.lastUpdated || '';
-      return ta < tb ? 1 : (ta > tb ? -1 : 0);
-    });
+    var hasManualOrder = false;
+    for (var oi = 0; oi < docs.length; oi++) {
+      if (docs[oi]._manualOrder !== undefined) { hasManualOrder = true; break; }
+    }
+    if (!hasManualOrder) {
+      // 无手动排序：按时间排序（最新在前），新人周报/视觉周报置底
+      docs = docs.slice().sort(function(a, b) {
+        var na = (a.name || ''), nb = (b.name || '');
+        var aIsBottom = (na.indexOf('新人') >= 0 || na.indexOf('视觉') >= 0) ? 1 : 0;
+        var bIsBottom = (nb.indexOf('新人') >= 0 || nb.indexOf('视觉') >= 0) ? 1 : 0;
+        if (aIsBottom !== bIsBottom) return aIsBottom - bIsBottom;
+        var ta = a.updatedAt || a.lastUpdated || '';
+        var tb = b.updatedAt || b.lastUpdated || '';
+        return ta < tb ? 1 : (ta > tb ? -1 : 0);
+      });
+    } else {
+      // 有手动排序：按 _manualOrder 排列，保持用户拖拽的顺序
+      docs = docs.slice().sort(function(a, b) {
+        return (a._manualOrder || 999) - (b._manualOrder || 999);
+      });
+    }
   }
 
   var keyword = document.getElementById('searchInput').value.toLowerCase().trim();
@@ -751,27 +776,42 @@ function renderAll() {
     var bcdDocs = [];       // 🎨 BCD（视觉/BCD类）
     var styleDocs = [];     // 🎭 风格探索
     var worldDocs = [];     // 🌐 世界观元素
+    var validSubCats = ['概念推导', 'BCD', '风格探索', '世界观元素'];
+
     for (var ci = 0; ci < docs.length; ci++) {
       var cd = docs[ci];
       var name = cd.name || '';
-      // BCD 判定：视觉BCD / HUD专题 / 世界观主流程
-      if (name.indexOf('视觉BCD') >= 0 || name.indexOf('HUD专题') >= 0 ||
-          name.indexOf('世界观主流程') >= 0) {
-        bcdDocs.push(cd);
-      // 风格探索判定
-      } else if (name.indexOf('风格') >= 0) {
-        styleDocs.push(cd);
-      // 世界观元素判定：世界观(非主流程)
-      } else if ((name.indexOf('世界观') >= 0 && name.indexOf('世界观主流程') < 0)) {
-        worldDocs.push(cd);
-      // 概念推导判定 + 兜底（排除周报类，留给周报 Tab）
-      } else if (name.indexOf('周报') >= 0 || name.indexOf('月报') >= 0 ||
-          name.indexOf('例会') >= 0 || name.indexOf('汇报') >= 0 ||
-          name.indexOf('排期') >= 0 || name.indexOf('资源') >= 0) {
-        continue;  // 跳过，这些文件由 init() 分给周报 Tab
-      } else {
-        conceptDocs.push(cd);
+      var assignedCat = null;
+
+      // ★ 优先级1：使用已存储的手动分类（编辑模式拖拽/下拉修改后保留在 category 或 _savedSubCat 中）
+      var storedCat = cd._savedSubCat || cd.category || '';
+      if (storedCat && validSubCats.indexOf(storedCat) >= 0) {
+        assignedCat = storedCat;
       }
+
+      // ★ 优先级2：按文件名关键词自动分类（仅当没有手动分类时）
+      if (!assignedCat) {
+        if (name.indexOf('视觉BCD') >= 0 || name.indexOf('HUD专题') >= 0 ||
+            name.indexOf('世界观主流程') >= 0) {
+          assignedCat = 'BCD';
+        } else if (name.indexOf('风格') >= 0) {
+          assignedCat = '风格探索';
+        } else if ((name.indexOf('世界观') >= 0 && name.indexOf('世界观主流程') < 0)) {
+          assignedCat = '世界观元素';
+        } else if (name.indexOf('周报') >= 0 || name.indexOf('月报') >= 0 ||
+            name.indexOf('例会') >= 0 || name.indexOf('汇报') >= 0 ||
+            name.indexOf('排期') >= 0 || name.indexOf('资源') >= 0) {
+          continue; // 跳过周报类
+        } else {
+          assignedCat = '概念推导'; // 兜底
+        }
+      }
+
+      // 放入对应分组
+      if (assignedCat === 'BCD') bcdDocs.push(cd);
+      else if (assignedCat === '风格探索') styleDocs.push(cd);
+      else if (assignedCat === '世界观元素') worldDocs.push(cd);
+      else conceptDocs.push(cd);
     }
 
     // 搜索过滤
@@ -1307,6 +1347,8 @@ function changeCardCategoryInline(docUrl, newCat, selectEl) {
   for (var i = 0; i < docs.length; i++) {
     if (docs[i].url === docUrl) {
       docs[i].category = newCat;
+      // ★ 概念推导 Tab：持久化子分类
+      if (activeChannel === 'weekly') { docs[i]._savedSubCat = newCat; }
       break;
     }
   }
@@ -1473,17 +1515,16 @@ function updateDocOrderFromDOM() {
       // 找到对应文档并更新
       for(var di=0;di<chData.documents.length;di++) {
         if(chData.documents[di].url === url) {
-          // 如果分类变了，更新 tags 中的分类
           if(catKey) {
             var doc = chData.documents[di];
+            doc.category = catKey;
+            // ★ 概念推导 Tab：持久化子分类到 _savedSubCat（渲染时会优先读取）
+            if (activeChannel === 'weekly') { doc._savedSubCat = catKey; }
             var cats = doc.categories || [];
             if(cats.indexOf(catKey)===-1 && cats.length>0) {
-              // 替换第一个分类为新分类（简化处理）
               cats[0] = catKey;
-              doc.category = catKey;
               doc.categories = cats;
             } else if(cats.length===0){
-              doc.category = catKey;
               doc.categories=[catKey];
             }
           }
@@ -1493,10 +1534,11 @@ function updateDocOrderFromDOM() {
     });
   });
 
-  // 按当前 DOM 顺序重排 documents
+  // 按当前 DOM 顺序重排 documents，并记录手动排序标记
   var urlMap = {};
   chData.documents.forEach(function(d) { urlMap[d.url] = d; });
   var reordered = [];
+  var manualIdx = 0;
   document.querySelectorAll('.card-grid').forEach(function(grid) {
     // 获取当前 grid 对应的分类（复用上面的逻辑）
     var catKey = '';
@@ -1515,11 +1557,16 @@ function updateDocOrderFromDOM() {
         if(catKey && doc.category !== catKey) {
           doc.category = catKey;
           doc.categoryKey = catKey;
+          // ★ 概念推导 Tab：持久化子分类
+          if (activeChannel === 'weekly') { doc._savedSubCat = catKey; }
           var secInfo = findCategoryInfo(catKey);
           if(secInfo) { doc.section = secInfo.section; doc.sectionOrder = secInfo.sectionOrder; }
         }
+        // ★ 记录手动排序位置（用于刷新后保持顺序）
+        if (activeChannel === 'weekly') { doc._manualOrder = manualIdx; }
         reordered.push(doc);
         delete urlMap[url];
+        manualIdx++;
       }
     });
   });
@@ -1609,10 +1656,15 @@ function saveToGitHub() {
   var token = prompt('请输入 GitHub Token 以保存更改：', '');
   if (!token || !token.trim()) { statusEl.textContent = '❌ 已取消'; return; }
   
-  statusEl.textContent = '⏳ 正在保存...';
+  statusEl.textContent = '⏳ 正在验证 Token...';
+  token = token.trim();
 
   var repo = 'ss1016672393-prog/-';
   var path = 'doc-index/data.js';
+
+  // ========== 日志收集 ==========
+  var logs = [];
+  function log(msg) { logs.push(new Date().toLocaleTimeString() + ' | ' + msg); console.log('[Save]', msg); }
 
   try {
     function btoaSafe(s) {
@@ -1622,21 +1674,54 @@ function saveToGitHub() {
       return window.btoa(bin);
     }
 
+    log('开始保存流程, repo=' + repo + ', path=' + path);
+    log('当前通道: ' + activeChannel + ', 文档数: ' + (appData.channels[activeChannel] || {}).documents?.length);
+
     // 先获取当前文件 SHA
     var headers = { 'Authorization': 'token ' + token };
+    
+    log('正在获取文件 SHA...');
+    statusEl.textContent = '⏳ 正在获取远程文件信息...';
+
     fetch('https://api.github.com/repos/' + repo + '/contents/' + path, { headers: headers })
     .then(function(r) {
-      if (!r.ok) throw new Error('获取文件失败(' + r.status + ')，请检查 Token 是否有效');
+      log('SHA请求状态: ' + r.status);
+      if (!r.ok) {
+        throw new Error('获取文件失败(HTTP ' + r.status + ')\n请检查:\n1. Token 是否有效\n2. Token 是否有 repo 权限\n3. 仓库路径是否正确: ' + repo);
+      }
       return r.json();
     })
     .then(function(fileData) {
       var sha = fileData.sha;
+      log('获取到 SHA: ' + sha.substring(0, 10) + '...');
       
-      // 构建新内容：使用与 sync.py 相同的格式（INDEX_DATA 格式，含 sections/categories）
+      // 构建新内容
+      statusEl.textContent = '⏳ 正在构建数据文件...';
+      log('正在构建新数据...');
+      
       var dataStr = buildIndexDataString();
-      var contentB64 = btoaSafe(dataStr);
+      log('构建完成, 数据大小: ' + dataStr.length + ' 字符 (' + Math.round(dataStr.length/1024) + 'KB)');
       
-      // 推送
+      // 验证生成的数据可被解析（用 try-catch 包裹执行避免污染当前环境）
+      log('验证数据格式...');
+      try {
+        var verifyStr = '(function(){' + dataStr + '; return typeof DOC_DATA !== "undefined" || typeof INDEX_DATA !== "undefined"; })()';
+        var valid = eval(verifyStr);
+        if (!valid) {
+          throw new Error('生成的数据无法解析为有效 JavaScript');
+        }
+        log('✅ 数据格式验证通过');
+      } catch (verifyErr) {
+        throw new Error('生成的内容有语法错误: ' + verifyErr.message);
+      }
+
+      var contentB64 = btoaSafe(dataStr);
+      log('Base64 编码完成, 长度: ' + contentB64.length);
+
+      // 推送到 GitHub
+      statusEl.textContent = '⏳ 正在上传到 GitHub...';
+      log('正在推送到 GitHub API...');
+      
       return fetch('https://api.github.com/repos/' + repo + '/contents/' + path, {
         method: 'PUT',
         headers: { 
@@ -1652,34 +1737,52 @@ function saveToGitHub() {
       });
     })
     .then(function(r2) {
+      log('推送响应状态: ' + r2.status);
       if (!r2.ok) {
         return r2.json().then(function(err) {
-          throw new Error((err.message || err.error || '') + ' (' + r2.status + ')');
+          var errMsg = err.message || err.error || JSON.stringify(err);
+          log('❌ 推送失败: ' + errMsg);
+          throw new Error('GitHub API 错误(' + r2.status + '): ' + errMsg +
+            '\n\n常见原因:\n- SHA 过期(有人同时修改了文件)\n- Token 权限不足\n- 文件大小超限');
         });
       }
+      return r2.json();
+    })
+    .then(function(result) {
+      if (!result) return; // 已在上方处理错误
+      
+      log('✅ 保存成功! commit SHA: ' + result.commit.sha.substring(0, 10));
       statusEl.textContent = '✅ 保存成功！页面将在3秒后刷新...';
       window._hasUnsavedChanges = false;
-      setTimeout(function() { location.reload(true); }, 3000);
+      
+      // 强制刷新（带时间戳避免缓存）
+      setTimeout(function() {
+        location.href = location.pathname + '?t=' + Date.now();
+      }, 2500);
     })
     .catch(function(err) {
       console.error('[Save Error]', err);
-      statusEl.textContent = '❌ 保存失败: ' + err.message;
+      console.error('[Save Logs]', logs.join('\n'));
+      statusEl.textContent = '❌ 保存失败';
+      // 用 alert 确保用户能看到错误详情
+      alert('❌ 保存失败\n\n' + err.message + '\n\n完整日志:\n' + logs.join('\n'));
     });
 
   } catch(e) { 
     console.error('[Save Exception]', e);
-    statusEl.textContent = '❌ 错误: ' + e.message; 
+    console.error('[Save Logs]', logs.join('\n'));
+    statusEl.textContent = '❌ 保存出错';
+    alert('❌ 保存过程出错: ' + e.message + '\n\n日志:\n' + logs.join('\n')); 
   }
 }
 
-// 将当前 appData 重新序列化为完整 INDEX_DATA 格式（与 sync.py 输出格式一致）
+// 将当前 appData 重新序列化为完整 DOC_DATA 格式（与 sync.py 输出格式完全一致）
 function buildIndexDataString() {
   var channels = appData.channels;
   
   // 从 documents 反推 sections 和 categories
   function buildSectionInfo(docs) {
     var secMap = {};
-    var secOrderMap = [];
     docs.forEach(function(d) {
       var sName = d.section || '其他';
       if (!secMap[sName]) {
@@ -1688,7 +1791,6 @@ function buildIndexDataString() {
           order: d.sectionOrder !== undefined ? d.sectionOrder : 99,
           categories: {}
         };
-        secOrderMap.push(sName);
       }
       sec = secMap[sName];
       var cName = d.category || '未分类';
@@ -1710,32 +1812,65 @@ function buildIndexDataString() {
     return { sections: secs, categories: cats };
   }
 
+  // 统计总文档数
+  var totalDocs = 0;
+  Object.keys(channels).forEach(function(k) { totalDocs += (channels[k].documents || []).length; });
+
   var chLines = [];
-  Object.keys(channels).forEach(function(chKey) {
+  // 按固定顺序输出通道
+  var chOrder = ['ixd', 'weekly', 'refactor', 'report', 'concept'];
+  var writtenKeys = {};
+  for (var oi = 0; oi < chOrder.length; oi++) {
+    var ck = chOrder[oi];
+    if (channels[ck]) { writtenKeys[ck] = true; writeChannel(ck); }
+  }
+  // 输出剩余通道
+  Object.keys(channels).forEach(function(k) {
+    if (!writtenKeys[k]) writeChannel(k);
+  });
+
+  function writeChannel(chKey) {
     var ch = channels[chKey];
     var docs = ch.documents || [];
     var info = buildSectionInfo(docs);
 
     var docArr = [];
-    docs.forEach(function(d) { docArr.push(JSON.stringify(d)); });
+    docs.forEach(function(d) {
+      // 确保所有关键字段都保留（含手动排序/分类标记）
+      docArr.push(JSON.stringify({
+        name: d.name || '',
+        url: d.url || '',
+        desc: d.desc || '',
+        tags: d.tags || [],
+        category: d.category || '',
+        categoryKey: d.categoryKey || '',
+        section: d.section || '',
+        sectionOrder: d.sectionOrder !== undefined ? d.sectionOrder : 99,
+        updatedAt: d.updatedAt || '',
+        lastUpdated: d.lastUpdated || '',
+        _manualOrder: d._manualOrder !== undefined ? d._manualOrder : undefined,
+        _savedSubCat: d._savedSubCat || undefined
+      }));
+    });
 
     chLines.push('\t"' + chKey + '": {\n' +
-      '\t\t"title": ' + JSON.stringify(ch.title) + ',\n' +
+      '\t\t"title": ' + JSON.stringify(ch.title || '') + ',\n' +
       '\t\t"subtitle": ' + JSON.stringify(ch.subtitle || '') + ',\n' +
       '\t\t"updatedAt": ' + JSON.stringify(ch.updatedAt || '') + ',\n' +
       '\t\t"totalDocuments": ' + docs.length + ',\n' +
-      '\t\t"sections": ' + JSON.stringify(info.sections) + ',\n' +
-      '\t\t"categories": ' + JSON.stringify(info.categories) + ',\n' +
+      '\t\t"sections": ' + JSON.stringify(info.sections, null, 4) + ',\n' +
+      '\t\t"categories": ' + JSON.stringify(info.categories, null, 4) + ',\n' +
       '\t\t"documents": [\n' +
       docArr.join(',\n') + '\n' +
       '\t]\n' +
       '\t}');
-  });
+  }
 
   return 
     '// CFH 设计中心索引数据 | 多职能通道格式\n' +
-    '// 更新时间: ' + new Date().toLocaleString('zh-CN') + '\n\n' +
-    'var INDEX_DATA = {\n' +
+    '// 更新时间: ' + new Date().toLocaleString('zh-CN') + '\n' +
+    '// 总计: ' + totalDocs + ' 个文件 | ' + Object.keys(channels).length + ' 个通道\n\n' +
+    'var DOC_DATA = {\n' +
     '\t"channels": {\n' + chLines.join(',\n') + '\n\t}\n' +
     '};';
 }
