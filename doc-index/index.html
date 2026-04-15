@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title id="pageTitle">📋 CFH设计中心 | v2212</title>
+<title id="pageTitle">📋 ProjectH | v2212</title>
 <style>
   :root {
     --bg-primary: #0d1117;
@@ -486,8 +486,8 @@
     <div class="logo">
       <div class="logo-icon">🎮</div>
       <div>
-        <div class="logo-text" id="logoTitle">CFH设计中心</div>
-        <div class="logo-sub" id="logoSub">CFH Design Hub · 访客可编辑</div>
+        <div class="logo-text" id="logoTitle">ProjectH</div>
+        <div class="logo-sub" id="logoSub">ProjectH · 访客可编辑</div>
         <div class="update-time" id="updateTime"></div>
       </div>
     </div>
@@ -538,14 +538,14 @@
 </div>
 
 <footer class="footer">
-  <p id="footerText">📋 CFH设计中心 · 最后更新中...</p>
+  <p id="footerText">📋 ProjectH · 最后更新中...</p>
 </footer>
 
 <script src="doc-index/data.js?v=20260414-2200"></script>
 <script>
 /**
  * ============================================================
- * 🎮 CFH 设计中心 - 多职能索引页
+ * 🎮 ProjectH - 多职能索引页
  * ============================================================
  * 支持多个职能 Tab：交互稿 / 视觉稿 / 重构落地 / 概念推导&周报
  * 每个 Tab 独立展示对应的文档集合
@@ -590,15 +590,15 @@ var SECTION_ICONS = {
     if (typeof DOC_DATA !== 'undefined' && !DOC_DATA.channels) {
       appData = { channels: {} };
       appData.channels['ixd'] = DOC_DATA;
-      appData.channels['refactor'] = { title: 'CFH重构落地', subtitle: '', documents: [], updatedAt: '' };
-      appData.channels['concept']   = { title: 'CFH概念推导', subtitle: '', documents: [], updatedAt: '' };
-      appData.channels['weekly']    = { title: 'CFH周报',     subtitle: '', documents: [], updatedAt: '' };
+      appData.channels['refactor'] = { title: 'ProjectH重构落地', subtitle: '', documents: [], updatedAt: '' };
+      appData.channels['concept']   = { title: 'ProjectH概念推导', subtitle: '', documents: [], updatedAt: '' };
+      appData.channels['weekly']    = { title: 'ProjectH周报',     subtitle: '', documents: [], updatedAt: '' };
     } else if (typeof INDEX_DATA !== 'undefined' && !INDEX_DATA.channels) {
       appData = { channels: {} };
       appData.channels['ixd'] = INDEX_DATA;
-      appData.channels['refactor'] = { title: 'CFH重构落地', subtitle: '', documents: [], updatedAt: '' };
-      appData.channels['concept']   = { title: 'CFH概念推导', subtitle: '', documents: [], updatedAt: '' };
-      appData.channels['weekly']    = { title: 'CFH周报',     subtitle: '', documents: [], updatedAt: '' };
+      appData.channels['refactor'] = { title: 'ProjectH重构落地', subtitle: '', documents: [], updatedAt: '' };
+      appData.channels['concept']   = { title: 'ProjectH概念推导', subtitle: '', documents: [], updatedAt: '' };
+      appData.channels['weekly']    = { title: 'ProjectH周报',     subtitle: '', documents: [], updatedAt: '' };
     } else {
       appData = typeof DOC_DATA !== 'undefined' ? DOC_DATA : INDEX_DATA;
       // 将 weekly 数据拆分为「概念推导」+「周报」两个独立 channel
@@ -631,13 +631,13 @@ var SECTION_ICONS = {
           else { rDocs.push(sd); }
         }
         appData.channels['weekly'] = {
-          title: 'CFH概念推导 & 周报',
+          title: 'ProjectH概念推导 & 周报',
           subtitle: srcWeekly.subtitle || '',
           documents: cDocs,
           updatedAt: srcWeekly.updatedAt || ''
         };
         appData.channels['report'] = {
-          title: 'CFH设计周报',
+          title: 'ProjectH设计周报',
           subtitle: '',
           documents: rDocs,
           updatedAt: srcWeekly.updatedAt || ''
@@ -657,7 +657,7 @@ var SECTION_ICONS = {
       }
     }
     var ft = document.getElementById('footerText');
-    if (ft) ft.textContent = '📋 CFH设计中心 · 最后更新: ' + (latest || new Date().toLocaleDateString('zh-CN'));
+    if (ft) ft.textContent = '📋 ProjectH · 最后更新: ' + (latest || new Date().toLocaleDateString('zh-CN'));
     
     // 隐藏 loading
     var loadingEl = document.querySelector('.loading');
@@ -751,8 +751,8 @@ function renderAll() {
   // 更新全局信息
   var chInfo = CHANNELS.find(function(c) { return c.key === activeChannel; });
   var chLabel = chInfo ? chInfo.shortLabel : '文档';
-  document.getElementById('pageTitle').textContent = '🎮 CFH设计中心 · ' + chLabel;
-  document.getElementById('logoTitle').textContent = 'CFH设计中心';
+  document.getElementById('pageTitle').textContent = '🎮 ProjectH · ' + chLabel;
+  document.getElementById('logoTitle').textContent = 'ProjectH';
   document.getElementById('logoSub').textContent = (chInfo ? chInfo.label : '') + (chData.subtitle ? ' · ' + chData.subtitle : '');
   // 显示最后更新日期
   var updateTimeEl = document.getElementById('updateTime');
@@ -1913,7 +1913,7 @@ function buildIndexDataString() {
   }
 
   return 
-    '// CFH 设计中心索引数据 | 多职能通道格式\n' +
+    '// ProjectH 索引数据 | 多职能通道格式\n' +
     '// 更新时间: ' + new Date().toLocaleString('zh-CN') + '\n' +
     '// 总计: ' + totalDocs + ' 个文件 | ' + Object.keys(channels).length + ' 个通道\n\n' +
     'var DOC_DATA = {\n' +
